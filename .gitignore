@@ -1,0 +1,14 @@
+bin/
+obj/
+*.suo
+*.bak
+*.user
+packages/
+VersionInfo.cs
+
+# ReSharper files
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Visual Studio 2015 cache/options directory
+.vs/

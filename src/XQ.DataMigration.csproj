@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{070DB93A-41C6-45BF-B413-F4526E0995C7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XQ.DataMigration</RootNamespace>
+    <AssemblyName>XQ.DataMigration</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ExpressionEvaluator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=90d9f15d622e2348, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ExpressionEvaluator.2.0.4.0\lib\net40\ExpressionEvaluator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.4.4.1\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\ISourceProvider.cs" />
+    <Compile Include="Data\CachedDataSet.cs" />
+    <Compile Include="Data\IDataProvider.cs" />
+    <Compile Include="Data\IValuesObject.cs" />
+    <Compile Include="Data\ITargetProvider.cs" />
+    <Compile Include="Data\ValuesObject.cs" />
+    <Compile Include="MapConfig\KeyDefinition.cs" />
+    <Compile Include="MapConfig\MapConfig.cs" />
+    <Compile Include="MapConfig\MapConfigReader.cs" />
+    <Compile Include="Mapping\Expressions\ExpressionContext.cs" />
+    <Compile Include="Mapping\Migrator.cs" />
+    <Compile Include="Mapping\Expressions\ExpressionCompiler.cs" />
+    <Compile Include="Mapping\Expressions\ExpressionEvaluator.cs" />
+    <Compile Include="Mapping\TransitionNodes\ObjectTransitions\GlobalObjectTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\ValueTransitions\LookupValueTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitionGroup.cs" />
+    <Compile Include="Mapping\TransitionNodes\ObjectTransitions\PivotObjectTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitionNode.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitResult.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />
+    <Compile Include="MappingLogger.cs" />
+    <Compile Include="MapConfig\MapAction.cs" />
+    <Compile Include="Mapping\TransitionNodes\ObjectTransitions\ObjectTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceRule.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceTransitUnit.cs" />
+    <Compile Include="Mapping\Logic\TransitContext.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\TransitUnit.cs" />
+    <Compile Include="Mapping\TransitionNodes\ValueTransitions\ValueTransitionBase.cs" />
+    <Compile Include="Mapping\TransitionNodes\ValueTransitions\ValueTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ValidationUnit.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteTransitUnit.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\TypeConvertTransitUnit.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Data\IDataSet.cs" />
+    <Compile Include="MapConfig\DataProviderSettings.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NLog.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
