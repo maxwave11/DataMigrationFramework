@@ -67,6 +67,7 @@
     <Compile Include="Mapping\Expressions\ExpressionCompiler.cs" />
     <Compile Include="Mapping\Expressions\ExpressionEvaluator.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\GlobalObjectTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\ObjectTransitions\TransitMode.cs" />
     <Compile Include="Mapping\TransitionNodes\ValueTransitions\LookupValueTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitionGroup.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\PivotObjectTransition.cs" />

@@ -51,12 +51,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         public KeyDefinition KeyDefinition { get; set; }
 
         /// <summary>
-        /// Indicates that current transition will not create and save new objects,
-        /// just update values of already existed object
+        /// Indicates which objects will be transitted depend from their existence in target system. 
+        /// <seealso cref="TransitMode"/>
         /// </summary>
         [XmlAttribute]
-        public bool OnlyUpdate { get; set; }
-
+        public TransitMode TransitMode { get; set; }
         /// <summary>
         /// The name of provider from which should be fetched source objects
         /// </summary>
@@ -175,8 +174,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             var existedObject = provider.GetDataSet(TargetDataSetId).GetObjectByKey(key, GetKeyFromTarget);
 
-            if (OnlyUpdate)
+            if (TransitMode == TransitMode.OnlyExistedObjects)
                 return existedObject;
+
+            if (TransitMode == TransitMode.OnlyNewObjects && existedObject != null)
+                return null;
 
             return existedObject ?? provider.CreateObject(TargetDataSetId);
         }
