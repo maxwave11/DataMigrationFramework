@@ -86,7 +86,12 @@ namespace XQ.DataMigration.Mapping.Expressions
                 nameof(ExpressionContext.GLOBAL),
                 $@"{nameof(ExpressionContext.HISTORY)}.*?\)"
             };
-            var regexp = new Regex($@"({string.Join("|", valuesObjectPrefixes)})\s*\[\s*([^\]]*?)\s*\]");
+            //braces regex wich define expression like [.....] or with nested braces [..[...]...]
+            //nested braces can be for some nested queries instead of field name
+            //Example with simple field name: 1. [field_name] => ["field_name"]
+            //Example with expression (query): 2. [$.parent[?(@.jll_propertyid)].jll_propertyid] => ["$.parent[?(@.jll_propertyid)].jll_propertyid"]
+            var bracesRegex = @"\s*\[(\s*(([^\[\]]*)?(\[[^\[\]]{1,}\])?([^\[\]]*)?)*\s*)\]";
+            var regexp = new Regex($@"({string.Join("|", valuesObjectPrefixes)}){bracesRegex}");
             newExpression = regexp.Replace(newExpression, $"(({nameof(IValuesObject)})$1)[\"$2\"]");
 
             //determine if expression is string template 
