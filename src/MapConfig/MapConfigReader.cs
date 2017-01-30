@@ -64,18 +64,6 @@ namespace XQ.DataMigration.MapConfig
             _customProviders[type.Name] = type;
         }
 
-        public void GenerateSchema()
-        {
-            var soapReflectionImporter = new SoapReflectionImporter();
-            var xmlTypeMapping = soapReflectionImporter.ImportTypeMapping(typeof(MapConfig));
-
-            var xmlSchemas = new XmlSchemas();
-            var xmlSchema = new XmlSchema();
-            xmlSchemas.Add(xmlSchema);
-            var xmlSchemaExporter = new XmlSchemaExporter(xmlSchemas);
-            xmlSchemaExporter.ExportTypeMapping(xmlTypeMapping);
-        }
-
         private XmlAttributeOverrides GetCustomAttributeOverrides()
         {
             //register default object transitions

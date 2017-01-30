@@ -24,11 +24,20 @@ namespace XQ.DataMigration.Mapping
 
     public class Migrator
     {
+        /// <summary>
+        /// Event fires each time when any value transition started. By use this event
+        /// you can control (for example stop/pause) migration flow.
+        /// </summary>
         public event EventHandler TransitValueStarted;
+
+        /// <summary>
+        /// Event fires each time when any unhandled error occured while migration process
+        /// </summary>
         public event EventHandler<ValueTransitErrorEventArgs> OnValueTransitError;
-        public static Migrator Current => _current;
-        public MapAction Action { get; private set; }
-        public ExpressionCompiler ExpressionCompiler { get; } = new ExpressionCompiler();
+
+        internal static Migrator Current => _current;
+        internal MapAction Action { get; private set; }
+        internal ExpressionCompiler ExpressionCompiler { get; } = new ExpressionCompiler();
 
         private static Migrator _current;
         private readonly MapConfig.MapConfig _mapConfig;
