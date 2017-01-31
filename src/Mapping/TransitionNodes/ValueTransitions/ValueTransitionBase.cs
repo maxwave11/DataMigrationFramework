@@ -94,7 +94,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             if (continuation == TransitContinuation.RaiseError)
             {
                 message = $"Transition stopped on {transition.Name}, message: {message}, info: \n{transition.TreeInfo()}";
-                TransitLogger.LogInfo(message);
+                TransitLogger.Log(message);
                 continuation = Migrator.Current.RaiseOnTransitError(transition, ctx);
             }
 
@@ -104,7 +104,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         protected void Trace(string traceMessage, ValueTransitContext ctx)
         {
             if (ActualLogVerbosity == LogVerbosity.Values)
-                TransitLogger.LogInfo(GetIndent() + traceMessage, ConsoleColor);
+                TransitLogger.Log(GetIndent() + traceMessage, ConsoleColor);
 
             ctx.AddTraceEntry(GetIndent() + traceMessage, ConsoleColor);
         }

@@ -25,7 +25,7 @@ namespace XQ.DataMigration.MapConfig
         public MapConfig Read()
         {
             XmlAttributeOverrides aor = GetCustomAttributeOverrides();
-            Console.WriteLine("Deserializing Map config file");
+            TransitLogger.Log("Deserializing Map config file");
 
             using (var reader = new StreamReader(_fileName))
             {

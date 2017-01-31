@@ -44,10 +44,6 @@
       <HintPath>..\..\packages\ExpressionEvaluator.2.0.4.0\lib\net40\ExpressionEvaluator.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.4.4.1\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -74,7 +70,7 @@
     <Compile Include="Mapping\TransitionNodes\TransitionNode.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitResult.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />
-    <Compile Include="MappingLogger.cs" />
+    <Compile Include="TransitLogger.cs" />
     <Compile Include="MapConfig\MapAction.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceRule.cs" />

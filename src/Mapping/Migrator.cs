@@ -35,6 +35,8 @@ namespace XQ.DataMigration.Mapping
         /// </summary>
         public event EventHandler<ValueTransitErrorEventArgs> OnValueTransitError;
 
+        public Action<string> Log;
+
         internal static Migrator Current => _current;
         internal MapAction Action { get; private set; }
         internal ExpressionCompiler ExpressionCompiler { get; } = new ExpressionCompiler();
@@ -53,7 +55,7 @@ namespace XQ.DataMigration.Mapping
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            TransitLogger.LogInfo("====== Migration start ======");
+            TransitLogger.Log("====== Migration start ======");
 
             foreach (MapAction action in this._mapConfig.MapActions.Where(i => i.DoMapping))
             {
@@ -66,12 +68,12 @@ namespace XQ.DataMigration.Mapping
             }
 
             stopwatch.Stop();
-            TransitLogger.LogInfo($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
+            TransitLogger.Log($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
         }
 
         private void MapAction(MapAction action)
         {
-            TransitLogger.LogInfo($"====== Action: {action.MapDataBaseName} ========");
+            TransitLogger.Log($"====== Action: {action.MapDataBaseName} ========");
             var transGroup = action.MapConfig.TransitionGroups.FirstOrDefault();
             transGroup?.Run();
         }

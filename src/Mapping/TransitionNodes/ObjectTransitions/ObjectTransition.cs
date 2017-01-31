@@ -90,7 +90,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             var objectIndex = 1;
             var savedCount = 0;
 
-            TransitLogger.LogInfo($"=== Transitting all objects from  source DataSet '{Name}'  to target DataSet'{TargetDataSetId}'", ConsoleColor.DarkYellow);
+            TransitLogger.Log($"=== Transitting all objects from  source DataSet '{Name}'  to target DataSet'{TargetDataSetId}'", ConsoleColor.DarkYellow);
 
             var srcDataSet = GetSourceDataSet();
 
@@ -103,31 +103,31 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
                 if (!CanTransit(sourceObject, objectIndex)) continue;
 
-                TransitLogger.LogInfo($"Transition object ({Name}) №{++savedCount} SourceIndex: {objectIndex}");
+                TransitLogger.Log($"Transition object ({Name}) №{++savedCount} SourceIndex: {objectIndex}");
                 var targetObjects = TransitObject(sourceObject);
                 if (targetObjects == null)
                 {
-                    TransitLogger.LogInfo("Skipped", ConsoleColor.Yellow);
+                    TransitLogger.Log("Skipped", ConsoleColor.Yellow);
                     continue;
                 }
 
                 MarkObjectsAsTransitted(targetObjects);
 
-                TransitLogger.LogInfo("Object transitted", ConsoleColor.Green);
+                TransitLogger.Log("Object transitted", ConsoleColor.Green);
 
                 TrySaveTransittedObject();
             }
 
             SaveTransittedObjects();
 
-            TransitLogger.LogInfo($"=== Objects from source DataSet '{Name}' are transitted to target DataSet '{TargetDataSetId}'", ConsoleColor.DarkYellow);
+            TransitLogger.Log($"=== Objects from source DataSet '{Name}' are transitted to target DataSet '{TargetDataSetId}'", ConsoleColor.DarkYellow);
             srcDataSet.Dispose();
         }
 
         public virtual ICollection<IValuesObject> TransitObject(IValuesObject source)
         {
             var objectKey = GetKeyFromSource(source);
-            TransitLogger.LogInfo($"ObjectKey[{objectKey}]");
+            TransitLogger.Log($"ObjectKey[{objectKey}]");
 
             //don't transit objects with empty key
             if (objectKey.IsEmpty())
@@ -194,7 +194,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                 sourceObject.Key = transitResult.Value?.ToString();
             if (transitResult.Continuation == TransitContinuation.RaiseError)
             {
-                TransitLogger.LogInfo($"Transition stopped on { Name }");
+                TransitLogger.Log($"Transition stopped on { Name }");
                 throw new Exception("Can't transit source key ");
             }
 
@@ -278,24 +278,24 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             if (!Migrator.Current.Action.DoSave)
             {
-                TransitLogger.LogInfo("Не сохраняем объекты, т.к. MapAction.DoSave=false");
+                TransitLogger.Log("Don't save objects due of MapAction.DoSave = false");
                 return;
             }
 
             try
             {
                 var stopWath = new Stopwatch();
-                TransitLogger.LogInfo("\nSaving....");
+                TransitLogger.Log("\nSaving....");
 
                 stopWath.Start();
 
                 Migrator.Current.Action.TargetProvider.SaveObjects(_transittedObjects.Values);
                 stopWath.Stop();
-                TransitLogger.LogInfo($"\nSaved objects count: {_transittedObjects.Count()}, time: {stopWath.Elapsed.TotalMinutes} min");
+                TransitLogger.Log($"\nSaved objects count: {_transittedObjects.Count()}, time: {stopWath.Elapsed.TotalMinutes} min");
             }
             catch (Exception ex)
             {
-                TransitLogger.LogInfo("=====Error while saving transitted objects: " + ex);
+                TransitLogger.Log("=====Error while saving transitted objects: " + ex);
                 throw;
             }
 
@@ -362,13 +362,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             if (findedObject == null)
                 return false;
 
-            TransitLogger.LogInfo($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}");
+            TransitLogger.Log($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}");
             return true;
         }
 
         private void Trace(string traceMessage)
         {
-            TransitLogger.LogInfo(GetIndent() + traceMessage, ConsoleColor);
+            TransitLogger.Log(GetIndent() + traceMessage, ConsoleColor);
         }
 
         #endregion
