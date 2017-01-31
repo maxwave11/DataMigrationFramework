@@ -35,7 +35,10 @@ namespace XQ.DataMigration.Mapping
         /// </summary>
         public event EventHandler<ValueTransitErrorEventArgs> OnValueTransitError;
 
-        public Action<string> Log;
+        /// <summary>
+        /// Use this event to trace migration process
+        /// </summary>
+        public event EventHandler<string> Log;
 
         internal static Migrator Current => _current;
         internal MapAction Action { get; private set; }
@@ -78,17 +81,23 @@ namespace XQ.DataMigration.Mapping
             transGroup?.Run();
         }
 
-        public void RaiseTransitValueStarted(ValueTransitionBase valueTransition)
+        internal void RaiseTransitValueStarted(ValueTransitionBase valueTransition)
         {
             TransitValueStarted?.Invoke(valueTransition, null);
         }
 
-        public TransitContinuation RaiseOnTransitError(ValueTransitionBase valueTransition, ValueTransitContext ctx)
+        internal TransitContinuation InvokeOnTransitError(ValueTransitionBase valueTransition, ValueTransitContext ctx)
         {
             var args = new ValueTransitErrorEventArgs(valueTransition, ctx);
             OnValueTransitError?.Invoke(valueTransition, args);
             return args.Continuation;
         }
+
+        public void InvokeLog(string logMessage)
+        {
+            Log?.Invoke(this, logMessage);
+        }
+
     }
 }
 

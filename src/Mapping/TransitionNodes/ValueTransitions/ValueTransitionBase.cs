@@ -95,7 +95,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             {
                 message = $"Transition stopped on {transition.Name}, message: {message}, info: \n{transition.TreeInfo()}";
                 TransitLogger.Log(message);
-                continuation = Migrator.Current.RaiseOnTransitError(transition, ctx);
+                continuation = Migrator.Current.InvokeOnTransitError(transition, ctx);
             }
 
             return continuation;

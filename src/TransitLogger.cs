@@ -8,7 +8,7 @@ namespace XQ.DataMigration
     {
         public static void Log(string message, ConsoleColor color = ConsoleColor.White)
         {
-            Migrator.Current.Log?.Invoke(message);
+            Migrator.Current.InvokeLog(message);
             //NLog.GlobalDiagnosticsContext.Set("color", color);
             //NLog.LogManager.GetLogger("InfoLogger").Info(message);
         }
