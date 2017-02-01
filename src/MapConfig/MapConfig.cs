@@ -27,14 +27,11 @@ namespace XQ.DataMigration.MapConfig
         }
 
         internal void Initialize()
-        {
-            TransitLogger.Log("Initializing providers...");
+        { 
             MapProviders.ForEach(p=>p.Initialize());
 
-            TransitLogger.Log("Initializing actions...");
             MapActions.ForEach(act => act.MapConfig = this);
 
-            TransitLogger.Log("Initializing transition groups...");
             TransitionGroups?.ForEach(i => i.Initialize(null));
         }
 
