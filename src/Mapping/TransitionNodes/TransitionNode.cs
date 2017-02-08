@@ -19,12 +19,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public bool Enabled { get; set; } = true;
 
         [XmlAttribute]
-        public LogVerbosity LogVerbosity { get; set; }
+        public Verbosity Verbose { get; set; }
 
         [XmlAttribute]
         public ConsoleColor ConsoleColor { get; set; }  = ConsoleColor.White;
 
-        public LogVerbosity ActualLogVerbosity => LogVerbosity == LogVerbosity.Auto ? Parent?.ActualLogVerbosity ?? LogVerbosity : LogVerbosity;
+        internal Verbosity ActualVerbose => Verbose == Verbosity.Auto ? Parent?.ActualVerbose ?? Verbose : Verbose;
 
         [XmlIgnore]
         public TransitionNode Parent { get; private set; }

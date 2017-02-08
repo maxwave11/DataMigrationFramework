@@ -103,7 +103,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 
         protected void Trace(string traceMessage, ValueTransitContext ctx)
         {
-            if (ActualLogVerbosity == LogVerbosity.Values)
+            if (ActualVerbose == Verbosity.Verbose)
                 TransitLogger.Log(GetIndent() + traceMessage, ConsoleColor);
 
             ctx.AddTraceEntry(GetIndent() + traceMessage, ConsoleColor);
