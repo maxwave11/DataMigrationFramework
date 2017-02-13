@@ -52,7 +52,7 @@ namespace XQ.DataMigration.Mapping.Logic
 
         public  string GetInfo()
         {
-            return "==============SRC==============\n" + Source.GetInfo()
+            return "==============SRC==============\n" + Source?.GetInfo()
                    + "\n==============TARGET==============\n" + Target?.GetInfo()
                    + "\n==============TransitValue==============\n" + ((TransitValue as IValuesObject)?.GetInfo() ?? TransitValue)
                    + "\n==============ValueType: " + ValueType;

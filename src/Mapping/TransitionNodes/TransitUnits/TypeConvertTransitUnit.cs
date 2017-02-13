@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Utils;
@@ -37,10 +38,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         protected override object TransitValueInternal(ValueTransitContext ctx)
         {
             var value = base.TransitValueInternal(ctx);
-            return  GetTypedValue(_typeCode, value, DataTypeFormat);
+            return  GetTypedValue(_typeCode, value, DataTypeFormat.IsNotEmpty() ? new[] { DataTypeFormat}: null);
         }
 
-        public static  object GetTypedValue(TypeCode targetType, object value, string DataTypeFormat = null)
+        public static  object GetTypedValue(TypeCode targetType, object value, string[] DataTypeFormats = null)
         {
             if (value == null || value.ToString().IsEmpty()) return null;
 
@@ -48,13 +49,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             {
                 case TypeCode.Int32:
                     if (value.ToString().IndexOfAny(new[] { ',', '.' }) > 0)
-                        return Convert.ToInt32(GetTypedValue(TypeCode.Double, value, DataTypeFormat), CultureInfo.InvariantCulture);
+                        return Convert.ToInt32(GetTypedValue(TypeCode.Double, value, DataTypeFormats), CultureInfo.InvariantCulture);
 
                     return Convert.ToInt32(value, CultureInfo.InvariantCulture);
 
                 case TypeCode.Int64:
                     if (value.ToString().IndexOfAny(new[] { ',', '.' }) > 0)
-                        return Convert.ToInt64(GetTypedValue(TypeCode.Double, value, DataTypeFormat), CultureInfo.InvariantCulture);
+                        return Convert.ToInt64(GetTypedValue(TypeCode.Double, value, DataTypeFormats), CultureInfo.InvariantCulture);
 
                     return Convert.ToInt64(value, CultureInfo.InvariantCulture);
 
@@ -82,9 +83,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 case TypeCode.Boolean:
                     return ToBool(value);
                 case TypeCode.DateTime:
-                    if (value is string && DataTypeFormat.IsNotEmpty())
+                    if (value is string && DataTypeFormats?.Any() == true)
                     {
-                        return DateTime.ParseExact(value.ToString(), DataTypeFormat, new DateTimeFormatInfo());
+                        return DateTime.ParseExact(value.ToString(), DataTypeFormats, new DateTimeFormatInfo(), DateTimeStyles.None);
                     }
                     return Convert.ToDateTime(value);
             }
