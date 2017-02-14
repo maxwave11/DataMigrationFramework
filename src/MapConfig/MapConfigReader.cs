@@ -76,9 +76,8 @@ namespace XQ.DataMigration.MapConfig
             objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValueTransition), typeof(ValueTransition)));
             objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(LookupValueTransition), typeof(LookupValueTransition)));
             objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitUnit), typeof(TransitUnit)));
-            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(RuleUnit), typeof(RuleUnit)));
+            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValidationUnit), typeof(ValidationUnit)));
             objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TypeConvertTransitUnit), typeof(TypeConvertTransitUnit)));
-            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(LookupValueTransitUnit), typeof(LookupValueTransitUnit)));
             objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ReplaceTransitUnit), typeof(ReplaceTransitUnit)));
 
             foreach (var customTransitionType in _customElements)

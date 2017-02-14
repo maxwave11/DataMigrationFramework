@@ -19,16 +19,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public bool Enabled { get; set; } = true;
 
         [XmlAttribute]
-        public Verbosity Verbose { get; set; }
+        public TraceMode Trace { get; set; }
 
         [XmlAttribute]
         public ConsoleColor ConsoleColor { get; set; }  = ConsoleColor.White;
 
-        internal Verbosity ActualVerbose => Verbose == Verbosity.Auto ? Parent?.ActualVerbose ?? Verbose : Verbose;
+        internal TraceMode ActualTrace => Trace == TraceMode.Auto ? Parent?.ActualTrace ?? Trace : Trace;
 
         [XmlIgnore]
         public TransitionNode Parent { get; private set; }
 
+        private string _indent = null;
         public virtual void Initialize(TransitionNode parent)
         {
             Parent = parent;
@@ -42,25 +43,29 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             var childrenInfo = GetChildren() != null
                 ? "\n" + String.Join("\n", GetChildren().Select(i => i.TreeInfo()))
                 : "";
-            return GetIndent() + GetInfo() + childrenInfo;
+            return GetIndent() + this.ToString() + childrenInfo;
         }
 
         protected string GetIndent(int additionSpaceCount = 0)
         {
-            string indent = "";
-            TransitionNode nextParent = Parent;
-            while (nextParent != null)
+            if (_indent == null)
             {
-                nextParent = nextParent.Parent;
-                indent+="  ";
+                _indent = "";
+                TransitionNode nextParent = Parent;
+                while (nextParent != null)
+                {
+                    nextParent = nextParent.Parent;
+                    _indent += "  ";
+                }
             }
-            return indent + (additionSpaceCount>0 ? new string(' ', additionSpaceCount):"");
+
+            return _indent + (additionSpaceCount>0 ? new string(' ', additionSpaceCount):"");
         }
 
-        public virtual string GetInfo()
+        public override string ToString()
         {
-            return $"({this.GetType().Name})" + 
-                (Name.IsNotEmpty() ? $"\n{GetIndent(5)}Name: {Name}" : "");
+            return $"({this.GetType().Name})" +
+               (Name.IsNotEmpty() ? $"\n{GetIndent(5)}Name: {Name}" : "");
         }
     }
 }

@@ -90,7 +90,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             var objectIndex = 1;
             var savedCount = 0;
 
-            TransitLogger.Log($"=== Transitting all objects from  source DataSet '{Name}'  to target DataSet'{TargetDataSetId}'", ConsoleColor.DarkYellow);
+            Trace($">>>Transitting all objects from  source DataSet '{Name}'  to target DataSet'{TargetDataSetId}'");
 
             var srcDataSet = GetSourceDataSet();
 
@@ -103,31 +103,30 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
                 if (!CanTransit(sourceObject, objectIndex)) continue;
 
-                TransitLogger.Log($"Transition object ({Name}) №{++savedCount} SourceIndex: {objectIndex}");
+                Trace($"Transition object ({Name}) №{++savedCount} SourceIndex: {objectIndex}");
                 var targetObjects = TransitObject(sourceObject);
                 if (targetObjects == null)
                 {
-                    TransitLogger.Log("Skipped", ConsoleColor.Yellow);
+                    Trace("Skipped", ConsoleColor.Yellow);
                     continue;
                 }
 
                 MarkObjectsAsTransitted(targetObjects);
 
-                TransitLogger.Log("Object transitted", ConsoleColor.Green);
+                Trace("Object transitted", ConsoleColor.Green);
 
                 TrySaveTransittedObject();
             }
 
             SaveTransittedObjects();
-
-            TransitLogger.Log($"=== Objects from source DataSet '{Name}' are transitted to target DataSet '{TargetDataSetId}'", ConsoleColor.DarkYellow);
+            Trace($"<<< Objects from source DataSet '{Name}' are transitted to target DataSet '{TargetDataSetId}'\n", ConsoleColor.DarkYellow);
             srcDataSet.Dispose();
         }
 
         public virtual ICollection<IValuesObject> TransitObject(IValuesObject source)
         {
             var objectKey = GetKeyFromSource(source);
-            TransitLogger.Log($"ObjectKey[{objectKey}]");
+            Trace($"ObjectKey[{objectKey}]");
 
             //don't transit objects with empty key
             if (objectKey.IsEmpty())
@@ -142,7 +141,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             foreach (var valueTransition in ValueTransitions)
             {
                 var ctx = new ValueTransitContext(source, target, source, this);
-                var result = valueTransition.TransitValue(ctx);
+                var result = valueTransition.TransitValueInternal(ctx);
 
                 if (result.Continuation == TransitContinuation.SkipValue)
                 {
@@ -189,7 +188,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                 return sourceObject.Key;
 
             var ctx = new ValueTransitContext(sourceObject, null, sourceObject, this);
-            var transitResult = KeyDefinition.SourceKeyTransition.TransitValue(ctx);
+            var transitResult = KeyDefinition.SourceKeyTransition.TransitValueInternal(ctx);
             if (transitResult.Continuation == TransitContinuation.Continue)
                 sourceObject.Key = transitResult.Value?.ToString();
             if (transitResult.Continuation == TransitContinuation.RaiseError)
@@ -208,7 +207,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             var ctx = new ValueTransitContext(targetObject, null, targetObject, this);
 
-            var transitResult = KeyDefinition.TargetKeyTransition.TransitValue(ctx);
+            var transitResult = KeyDefinition.TargetKeyTransition.TransitValueInternal(ctx);
             targetObject.Key = transitResult.Value?.ToString();
 
             return targetObject.Key;
@@ -278,24 +277,25 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             if (!Migrator.Current.Action.DoSave)
             {
-                TransitLogger.Log("Don't save objects due of MapAction.DoSave = false");
+                Trace("Don't save objects due of MapAction.DoSave = false");
                 return;
             }
 
             try
             {
-                var stopWath = new Stopwatch();
-                TransitLogger.Log("\nSaving....");
+              
+                Trace("Saving....");
 
+                var stopWath = new Stopwatch();
                 stopWath.Start();
 
                 Migrator.Current.Action.TargetProvider.SaveObjects(_transittedObjects.Values);
                 stopWath.Stop();
-                TransitLogger.Log($"\nSaved objects count: {_transittedObjects.Count()}, time: {stopWath.Elapsed.TotalMinutes} min");
+                Trace($"Saved objects count: {_transittedObjects.Count()}, time: {stopWath.Elapsed.TotalMinutes} min");
             }
             catch (Exception ex)
             {
-                TransitLogger.Log("=====Error while saving transitted objects: " + ex);
+                Trace("=====Error while saving transitted objects: " + ex);
                 throw;
             }
 
@@ -362,14 +362,22 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             if (findedObject == null)
                 return false;
 
-            TransitLogger.Log($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}");
+            Trace($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}");
             return true;
         }
 
         private void Trace(string traceMessage)
         {
+            Debug.WriteLine(GetIndent() + traceMessage);
             TransitLogger.Log(GetIndent() + traceMessage, ConsoleColor);
         }
+
+        private void Trace(string traceMessage, ConsoleColor color)
+        {
+            Debug.WriteLine(GetIndent() + traceMessage);
+            TransitLogger.Log(GetIndent() + traceMessage, color);
+        }
+
 
         #endregion
     }

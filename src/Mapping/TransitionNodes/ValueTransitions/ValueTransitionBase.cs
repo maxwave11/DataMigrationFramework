@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
@@ -11,21 +13,37 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 {
     public abstract class ValueTransitionBase : TransitionNode
     {
+        /// <summary>
+        /// List of nested transitions. 
+        /// </summary>
         public List<ValueTransitionBase> ChildTransitions { get; set; }
 
+        /// <summary>
+        /// Specify what to do if some error occured while current transition processing
+        /// </summary>
         [XmlAttribute]
         public TransitContinuation OnError { get; set; } = TransitContinuation.RaiseError;
 
+        /// <summary>
+        /// Specify what to do if current transition returns empty string or null
+        /// </summary>
         [XmlAttribute]
         public TransitContinuation OnEmpty { get; set; } = TransitContinuation.Continue;
 
+        /// <summary>
+        /// Error message which end user should see when this transition returns empty string or null. It can be 
+        /// as Migration expression like  - "Asset with ID {SRC[asset_id]} was not found in target system"
+        /// </summary>
+        [XmlAttribute]
+        public string OnEmptyMessage { get; set; }
+
+        internal ObjectTransition ObjectTransition => (Parent as ObjectTransition) ?? (Parent as ValueTransitionBase)?.ObjectTransition;
+
         internal Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
 
-        public ObjectTransition ObjectTransition => (Parent as ObjectTransition) ?? (Parent as ValueTransitionBase)?.ObjectTransition;
-
-        protected virtual object TransitValueInternal(ValueTransitContext ctx)
+        public virtual TransitResult TransitValue(ValueTransitContext ctx)
         {
-            return ctx.TransitValue;
+            return new TransitResult(TransitContinuation.Continue, ctx.TransitValue);
         }
 
         public override List<TransitionNode> GetChildren()
@@ -33,11 +51,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             return ChildTransitions?.Cast<TransitionNode>().ToList();
         }
 
-        public virtual TransitResult TransitValue(ValueTransitContext ctx)
+        internal TransitResult TransitValueInternal(ValueTransitContext ctx)
         {
             TraceTransitionStart(ctx);
             Migrator.Current.RaiseTransitValueStarted(this);
             TransitContinuation continuation;
+            //at first start process child transitions
             if (ChildTransitions != null)
             {
                 foreach (var childTransition in ChildTransitions)
@@ -45,7 +64,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
                     //TODO
                     //if (!writeToTarget && transitUnit is WriteTransitUnit)
                     //    continue;
-                    continuation = HandleValueTransition(childTransition.TransitValue, childTransition, ctx);
+                    //continuation = HandleValueTransition(childTransition.TransitValue, childTransition, ctx);
+                    var result = childTransition.TransitValueInternal(ctx);
+                    continuation = result.Continuation;
 
                     if (continuation == TransitContinuation.SkipUnit)
                         return new TransitResult(TransitContinuation.Continue, ctx.TransitValue);
@@ -55,71 +76,81 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
                 }
             }
 
-            continuation = HandleValueTransition(ctx2 =>
-            {
-                return new TransitResult(TransitContinuation.Continue, TransitValueInternal(ctx2));
-            }, this, ctx);
+            //process own transition just after childrens
+            continuation = HandleValueTransition(ctx);
 
             TraceTransitionEnd(ctx);
             return new TransitResult(continuation, ctx.TransitValue);
         }
 
-        private static TransitContinuation HandleValueTransition(Func<ValueTransitContext, TransitResult> transitMethod, ValueTransitionBase transition, ValueTransitContext ctx)
+        private TransitContinuation HandleValueTransition(ValueTransitContext ctx)
         {
             object resultValue = null;
             TransitContinuation continuation;
             string message = "";
             try
             {
-                var result = transitMethod(ctx);
+                var result = TransitValue(ctx);
                 resultValue = result.Value;
                 continuation = result.Continuation;
-                ctx.SetCurrentValue(transition.Name, resultValue);
             }
             catch (Exception ex)
             {
-                continuation = transition.OnError;
-                message = $"Error occured while transitting: " + ex;
+                continuation = this.OnError;
+                TraceTransitionMessage(ex.ToString(), ctx);
             }
 
             if (resultValue == null || resultValue.ToString().IsEmpty())
             {
-                if (transition.OnEmpty != TransitContinuation.Continue)
+                if (this.OnEmpty != TransitContinuation.Continue)
                 {
-                    message = "Value transition interupped because of empty value of transition " + transition.Name;
-                    continuation = transition.OnEmpty;
+                    message = "Value transition interuppted because of empty value of transition " + this.Name;
+                    if (this.OnEmptyMessage.IsNotEmpty())
+                    {
+                        message = this.ExpressionEvaluator.EvaluateString(this.OnEmptyMessage + "{}", ctx);
+                    }
+                    continuation = this.OnEmpty;
                 }
             }
 
             if (continuation == TransitContinuation.RaiseError)
             {
-                message = $"Transition stopped on {transition.Name}, message: {message}, info: \n{transition.TreeInfo()}";
+                message = $"Transition stopped on {this.Name}, message: {message}, info: \n{this.TreeInfo()}";
                 TransitLogger.Log(message);
-                continuation = Migrator.Current.InvokeOnTransitError(transition, ctx);
+                continuation = Migrator.Current.InvokeOnTransitError(this, ctx);
             }
+
+            ctx.SetCurrentValue(this.Name, resultValue);
 
             return continuation;
         }
 
-        protected void Trace(string traceMessage, ValueTransitContext ctx)
+        protected void TraceTransitionMessage(string msg, ValueTransitContext ctx)
         {
-            if (ActualVerbose == Verbosity.Verbose)
-                TransitLogger.Log(GetIndent() + traceMessage, ConsoleColor);
+            TraceLine(GetIndent(5) + msg, ctx);
+        }
 
-            ctx.AddTraceEntry(GetIndent() + traceMessage, ConsoleColor);
+        private void TraceLine(string traceMessage, ValueTransitContext ctx)
+        {
+            if (ActualTrace == TraceMode.True)
+                TransitLogger.Log(GetIndent() + traceMessage, ConsoleColor);
+            
+            Debug.WriteLine(GetIndent() + traceMessage);
+
+            ctx.AddTraceEntry("\n" + GetIndent() + traceMessage, ConsoleColor);
         }
 
         private void TraceTransitionStart(ValueTransitContext ctx)
         {
             var traceMsg =
-                $"> {GetInfo()}\n{GetIndent(5)}Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            Trace(traceMsg, ctx);
+                $"> {this.ToString()}\n{GetIndent(5)}Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
+            TraceLine(traceMsg, ctx);
         }
 
         private void TraceTransitionEnd(ValueTransitContext ctx)
         {
             var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            Trace(traceMsg, ctx);
+            TraceLine(traceMsg, ctx);
         }
     }
 }

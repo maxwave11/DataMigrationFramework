@@ -4,7 +4,7 @@ using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class RuleUnit: TransitUnit
+    public class ValidationUnit: TransitUnit
     {
         [XmlAttribute]
         public string Message { get; set; }
@@ -14,25 +14,27 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override TransitResult TransitValue(ValueTransitContext ctx)
         {
-            var transitValue = ctx.TransitValue;
-            var transitResult = base.TransitValue(ctx);
+            throw new NotImplementedException();
+            //var transitValue = ctx.TransitValue;
+            //var transitResult = base.TransitValueInternal(ctx);
 
-            var boolValue = transitResult.Value as bool?;
-            if (!boolValue.HasValue)
-                throw new Exception("Result of Expression execution in RuleUnit must be bool");
+            //var boolValue = transitResult.Value as bool?;
+            //if (!boolValue.HasValue)
+            //    throw new Exception($"Result of Expression execution in {nameof(ValidationUnit)} must have Boolean type");
 
-            TransitContinuation continuation;
-            string ruleMessage = "";
-            if (boolValue.Value)
-            {
-                continuation = Continuation;
-                ruleMessage = $"The condition {Expression} is true for TransitValue={ctx.TransitValue}." + Message;
-            }
-            else
-            {
-                continuation = TransitContinuation.Continue;
-            }
-            return new TransitResult(continuation, transitValue);
+            //TransitContinuation continuation;
+            //string ruleMessage = "";
+            //if (boolValue.Value == false)
+            //{
+            //    continuation = Continuation;
+            //    var defaultMessage = $"The value={ctx.TransitValue} didn't pass validation expression {Expression}";
+            //    ruleMessage = Message ?? defaultMessage;
+            //}
+            //else
+            //{
+            //    continuation = TransitContinuation.Continue;
+            //}
+            //return new TransitResult(continuation, transitValue, ruleMessage);
         }
     }
 }

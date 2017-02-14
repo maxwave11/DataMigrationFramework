@@ -28,9 +28,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.Initialize(parent);
         }
 
-        public override string GetInfo()
+        public override string ToString()
         {
-            return base.GetInfo() + "ReplaceRules: " + ReplaceRules;
+            return base.ToString() + "ReplaceRules: " + ReplaceRules;
         }
     }
 }
