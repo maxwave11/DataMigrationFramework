@@ -10,7 +10,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     /// Transition unit which allows to get a value from some reference data set. For example, find asset and get his name by asset id or find
     /// city id by city name or by any other condition. Lookup condition determined by LookupExpr migration expression.
     /// </summary>
-    public class LookupValueTransitUnit: TransitUnit
+    internal class LookupValueTransitUnit: TransitUnit
     {
         [XmlAttribute]
         //DataSet id in which current transition will be search particular entry by expression determined in LookupExpr
@@ -28,7 +28,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public LookupValueTransitUnit()
         {
-            OnEmpty = TransitContinuation.RaiseError;
+           
         }
 
         public override void Initialize(TransitionNode parent)
@@ -46,15 +46,18 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.Initialize(parent);
         }
 
-        protected override object TransitValueInternal(ValueTransitContext ctx)
+        public override TransitResult TransitValue(ValueTransitContext ctx)
         {
-            var stringValue = base.TransitValueInternal(ctx)?.ToString();
-            if (stringValue.IsEmpty())
+            var key = base.TransitValue(ctx).Value?.ToString();
+            if (key.IsEmpty())
                 return null;
 
-            Trace(GetIndent(10)  +  "Lookup key = " + stringValue, ctx);
-            var lookupObject = GetLookupObjectByKey(stringValue);
-            return lookupObject;
+            var lookupObject = GetLookupObjectByKey(key);
+
+            if (lookupObject == null)
+                TraceTransitionMessage($"Warning: lookup object not found by key '{key}'", ctx);
+
+            return new TransitResult(TransitContinuation.Continue, lookupObject);
         }
 
         public virtual IValuesObject GetLookupObjectByKey(string key)
@@ -78,12 +81,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return ExpressionEvaluator.EvaluateString(LookupExpr, ctx);
         }
 
-        public override string GetInfo()
+        public override string ToString()
         {
-            return base.GetInfo()+ 
-                $"\n{GetIndent(5)}LookupDataSetId:{LookupDataSetId}"+
-                $"\n{GetIndent(5)}LookupExpr:{LookupExpr}"+ 
-                (ProviderName.IsNotEmpty() ?  $"\n{GetIndent(5)}ProviderName:{ProviderName}" :"");
+            return base.ToString()+ 
+                $"\n{GetIndent(5)}LookupDataSetId: {LookupDataSetId}"+
+                $"\n{GetIndent(5)}LookupExpr: {LookupExpr}"+ 
+                (ProviderName.IsNotEmpty() ?  $"\n{GetIndent(5)}ProviderName: {ProviderName}" :"");
         }
     }
 }

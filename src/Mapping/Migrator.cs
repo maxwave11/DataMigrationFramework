@@ -9,19 +9,6 @@ using ExpressionCompiler = XQ.DataMigration.Mapping.Expressions.ExpressionCompil
 
 namespace XQ.DataMigration.Mapping
 {
-    public class ValueTransitErrorEventArgs
-    {
-        public ValueTransitErrorEventArgs(ValueTransitionBase valueTransition, ValueTransitContext context)
-        {
-            ValueTransition = valueTransition;
-            Context = context;
-        }
-
-        public ValueTransitionBase ValueTransition { get; private set; }
-        public ValueTransitContext Context { get; private set; }
-        public TransitContinuation Continuation { get; set; } = TransitContinuation.Continue;
-    }
-
     public class Migrator
     {
         /// <summary>
@@ -90,7 +77,7 @@ namespace XQ.DataMigration.Mapping
         {
             var args = new ValueTransitErrorEventArgs(valueTransition, ctx);
             OnValueTransitError?.Invoke(valueTransition, args);
-            return args.Continuation;
+            return args.Continue ? TransitContinuation.Continue : TransitContinuation.Stop;
         }
 
         public void InvokeLog(string logMessage)

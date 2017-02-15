@@ -16,7 +16,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             ConsoleColor = ConsoleColor.Gray;
         }
 
-        protected override object TransitValueInternal(ValueTransitContext ctx)
+        public override TransitResult TransitValue(ValueTransitContext ctx)
         {
             var returnValue = ctx.TransitValue;
             if (Expression.IsNotEmpty())
@@ -24,12 +24,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 returnValue = ExpressionEvaluator.Evaluate(Expression, ctx);
             }
 
-            return returnValue;
+            return new TransitResult(TransitContinuation.Continue, returnValue);
         }
 
-        public override string GetInfo()
+        public override string ToString()
         {
-            return $"{base.GetInfo()}\n{GetIndent(5)}Expression: {Expression}";
+            return $"{base.ToString()}\n{GetIndent(5)}Expression: {Expression}";
         }
     }
 }

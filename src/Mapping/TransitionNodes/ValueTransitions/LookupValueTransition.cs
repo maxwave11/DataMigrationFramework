@@ -50,7 +50,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             {
                 LookupDataSetId = LookupDataSetId,
                 LookupExpr = LookupExpr,
-                OnEmpty = OnEmpty,
                 ProviderName = ProviderName,
             });
 
@@ -60,9 +59,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             base.InitializeEndTransitions();
         }
 
-        public override string GetInfo()
+        public override string ToString()
         {
-            return base.GetInfo() +
+            return base.ToString() +
                 $"\n{GetIndent(5)}LookupDataSetId: {LookupDataSetId}"+
                 $"\n{GetIndent(5)}LookupExpr: {LookupExpr}"+ 
                 (Return.IsNotEmpty() ? $"\n{GetIndent(5)}Return: {Return}": "");

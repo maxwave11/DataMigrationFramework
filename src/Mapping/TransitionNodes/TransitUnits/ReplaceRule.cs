@@ -12,9 +12,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     {
         [XmlAttribute]
         public string Rule { get; set; }
-
+        [XmlAttribute]
         public bool Important { get; set; }
+        [XmlAttribute]
         public string Condition { get; set; }
+        [XmlAttribute]
         public string ReplaceExpression { get; set; }
 
         public override void Initialize(TransitionNode parent)
@@ -38,24 +40,18 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override TransitResult TransitValue(ValueTransitContext ctx)
         {
-            TransitContinuation continuation = TransitContinuation.Continue;
-            if (IfConditionIsTrue(ctx))
+            var continuation = TransitContinuation.Continue;
+            var value = ctx.TransitValue?.ToString();
+
+            if (ConditionIsTrue(ctx))
             {
-                var result = base.TransitValue(ctx);
+                if (ConditionIsTrue(ctx))
+                    value = GetReplacedValue(ctx);
+
                 continuation = Important ? TransitContinuation.SkipUnit : TransitContinuation.Continue;
             }
 
-            return new TransitResult(continuation, ctx.TransitValue);
-        }
-
-        protected override object TransitValueInternal(ValueTransitContext ctx)
-        {
-            var value = ctx.TransitValue?.ToString();
-
-            if (IfConditionIsTrue(ctx))
-                value = GetReplacedValue(ctx);
-
-            return value;
+            return new TransitResult(continuation, value);
         }
 
         private string GetReplacedValue(ValueTransitContext ctx)
@@ -77,7 +73,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             return ctx.TransitValue?.ToString().Replace(Condition, ReplaceExpression);
         }
-        private bool IfConditionIsTrue(ValueTransitContext ctx)
+        private bool ConditionIsTrue(ValueTransitContext ctx)
         {
             string transitValue = ctx.TransitValue?.ToString();
 
@@ -103,9 +99,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return transitValue?.Contains(Condition) ?? false;
         }
 
-        public override string GetInfo()
+        public override string ToString()
         {
-            return base.GetInfo() + "Rule: " + Rule;
+            return base.ToString() + "Rule: " + Rule;
         }
     }
 }

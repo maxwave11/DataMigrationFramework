@@ -6,7 +6,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.MapConfig
 {
-    public enum LogVerbosity { Auto = 0, Minimal = 1, Objects = 2, Values = 3 }
+    public enum TraceMode { Auto = 0, True = 1, False = 2 }
 
 
     public class MapAction: IDisposable
@@ -33,9 +33,6 @@ namespace XQ.DataMigration.MapConfig
 
         [XmlAttribute]
         public string ForceMappingFrom { get; set; }
-
-        [XmlAttribute]
-        public LogVerbosity LogVerbosity { get; set; }
 
         [XmlAttribute]
         public string ExcludeFromMapping { get; set; }

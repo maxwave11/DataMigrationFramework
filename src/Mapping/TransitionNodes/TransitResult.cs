@@ -4,13 +4,15 @@
 
     public class TransitResult
     {
-        public TransitResult(TransitContinuation continuation, object value)
+        public TransitResult(TransitContinuation continuation, object value, string message ="")
         {
             Continuation = continuation;
             Value = value;
+            Message = message;
         }
 
         public TransitContinuation Continuation { get; }
         public object Value { get; }
+        public string Message { get; }
     }
 }

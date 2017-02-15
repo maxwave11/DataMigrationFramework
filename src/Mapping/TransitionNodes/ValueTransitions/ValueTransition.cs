@@ -78,13 +78,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             }
         }
 
-        public override string GetInfo()
+        public override string ToString()
         {
-            var info = base.GetInfo() +
-                $"\n{GetIndent(5)}From: {From}"+
-                $"\n{GetIndent(5)}To: { To}" + 
-                (Replace.IsNotEmpty() ? $"\n{GetIndent(5)}Replace: { Replace }" : "");
-            return info; 
+            var info = base.ToString() +
+               $"\n{GetIndent(5)}From: {From}" +
+               $"\n{GetIndent(5)}To: { To}" +
+               (Replace.IsNotEmpty() ? $"\n{GetIndent(5)}Replace: { Replace }" : "");
+            return info;
         }
     }
 }

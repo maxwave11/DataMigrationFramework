@@ -34,11 +34,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 throw new Exception($"Can't parse type name '{DataType}'");
             base.Initialize(parent);
         }
-        
-        protected override object TransitValueInternal(ValueTransitContext ctx)
+
+        public override TransitResult TransitValue(ValueTransitContext ctx)
         {
-            var value = base.TransitValueInternal(ctx);
-            return  GetTypedValue(_typeCode, value, DataTypeFormat.IsNotEmpty() ? new[] { DataTypeFormat}: null);
+            var value = base.TransitValue(ctx).Value;
+            var typedValue = GetTypedValue(_typeCode, value, DataTypeFormat.IsNotEmpty() ? new[] { DataTypeFormat } : null);
+            return new TransitResult(TransitContinuation.Continue, typedValue);
         }
 
         public static  object GetTypedValue(TypeCode targetType, object value, string[] DataTypeFormats = null)

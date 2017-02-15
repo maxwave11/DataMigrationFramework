@@ -71,6 +71,7 @@
     <Compile Include="Mapping\TransitionNodes\TransitionNode.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitResult.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />
+    <Compile Include="Mapping\ValueTransitErrorEventArgs.cs" />
     <Compile Include="TransitLogger.cs" />
     <Compile Include="MapConfig\MapAction.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\ObjectTransition.cs" />
