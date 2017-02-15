@@ -105,8 +105,10 @@ namespace XQ.DataMigration.Mapping.Expressions
             {
                 //build templated string
                 regexp = new Regex(@"{(.*?[^\\])}");
-                newExpression = regexp.Replace(newExpression, "$Str($1)$");
-                var reformatted = newExpression.Split('$').Where(i => i.IsNotEmpty()).Select(str => str.StartsWith("Str(") ? str.Trim() : $"\"{ str }\"");
+                newExpression = regexp.Replace(newExpression, "#splitStr($1)#split");
+                var reformatted = newExpression.Split(new [] { "#split"},StringSplitOptions.None)
+                                               .Where(i => i.IsNotEmpty())
+                                               .Select(str => str.StartsWith("Str(") ? str.Trim() : $"\"{ str }\"");
                 retVal = String.Join(" + ", reformatted);
             }
             retVal = retVal.Replace("#open", "{").Replace("#close", "}");
