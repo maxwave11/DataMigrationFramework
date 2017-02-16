@@ -25,7 +25,7 @@ namespace XQ.DataMigration.Mapping
         /// <summary>
         /// Use this event to trace migration process
         /// </summary>
-        public event EventHandler<string> Log;
+        public event EventHandler<MigratorTraceMessage> Trace;
 
         internal static Migrator Current => _current;
         internal MapAction Action { get; private set; }
@@ -45,7 +45,7 @@ namespace XQ.DataMigration.Mapping
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            TransitLogger.Log("====== Migration start ======");
+            InvokeTrace("====== Migration start ======");
 
             foreach (MapAction action in this._mapConfig.MapActions.Where(i => i.DoMapping))
             {
@@ -58,12 +58,11 @@ namespace XQ.DataMigration.Mapping
             }
 
             stopwatch.Stop();
-            TransitLogger.Log($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
+            InvokeTrace($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
         }
 
         private void MapAction(MapAction action)
         {
-            TransitLogger.Log($"====== Action: {action.MapDataBaseName} ========");
             var transGroup = action.MapConfig.TransitionGroups.FirstOrDefault();
             transGroup?.Run();
         }
@@ -80,11 +79,28 @@ namespace XQ.DataMigration.Mapping
             return args.Continue ? TransitContinuation.Continue : TransitContinuation.Stop;
         }
 
-        public void InvokeLog(string logMessage)
+        public void InvokeTrace(MigratorTraceMessage traceMsg)
         {
-            Log?.Invoke(this, logMessage);
+            Trace?.Invoke(this, traceMsg);
         }
 
+        public void InvokeTrace(string text, ConsoleColor color = ConsoleColor.White)
+        {
+            Trace?.Invoke(this, new MigratorTraceMessage(text, color));
+        }
+
+    }
+
+    public class MigratorTraceMessage
+    {
+        public MigratorTraceMessage(string text, ConsoleColor color)
+        {
+            Text = text;
+            Color = color;
+        }
+
+        public string Text { get; private set; }
+        public ConsoleColor Color { get; private set; }
     }
 }
 

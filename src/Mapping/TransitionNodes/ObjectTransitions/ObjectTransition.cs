@@ -77,7 +77,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
         public override void Initialize(TransitionNode parent)
         {
-            ConsoleColor = ConsoleColor.Cyan;
+            ConsoleColor = ConsoleColor.White;
             Validate();
             KeyDefinition?.Initialize(this);
             ParseRowsRange();
@@ -193,7 +193,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                 sourceObject.Key = transitResult.Value?.ToString();
             if (transitResult.Continuation == TransitContinuation.RaiseError)
             {
-                TransitLogger.Log($"Transition stopped on { Name }");
+                Trace($"Transition stopped on { Name }");
                 throw new Exception("Can't transit source key ");
             }
 
@@ -369,13 +369,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         private void Trace(string traceMessage)
         {
             Debug.WriteLine(GetIndent() + traceMessage);
-            TransitLogger.Log(GetIndent() + traceMessage, ConsoleColor);
+            Migrator.Current.InvokeTrace(GetIndent() + traceMessage, ConsoleColor);
         }
 
         private void Trace(string traceMessage, ConsoleColor color)
         {
             Debug.WriteLine(GetIndent() + traceMessage);
-            TransitLogger.Log(GetIndent() + traceMessage, color);
+            Migrator.Current.InvokeTrace(GetIndent() + traceMessage, color);
         }
 
 

@@ -72,7 +72,6 @@
     <Compile Include="Mapping\TransitionNodes\TransitResult.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />
     <Compile Include="Mapping\ValueTransitErrorEventArgs.cs" />
-    <Compile Include="TransitLogger.cs" />
     <Compile Include="MapConfig\MapAction.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceRule.cs" />
@@ -92,10 +91,6 @@
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="NLog.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

@@ -116,7 +116,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             if (continuation == TransitContinuation.RaiseError)
             {
                 message = $"Transition stopped on {this.Name}, message: {message}, info: \n{this.TreeInfo()}";
-                TransitLogger.Log(message);
+                TraceTransitionMessage(message, ctx);
                 continuation = Migrator.Current.InvokeOnTransitError(this, ctx);
             }
 
@@ -133,9 +133,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         private void TraceLine(string traceMessage, ValueTransitContext ctx)
         {
             if (ActualTrace == TraceMode.True)
-                TransitLogger.Log(GetIndent() + traceMessage, ConsoleColor);
+                Migrator.Current.InvokeTrace(GetIndent() + traceMessage, ConsoleColor);
             
-            Debug.WriteLine(GetIndent() + traceMessage);
+            //Debug.WriteLine(GetIndent() + traceMessage);
 
             ctx.AddTraceEntry("\n" + GetIndent() + traceMessage, ConsoleColor);
         }
