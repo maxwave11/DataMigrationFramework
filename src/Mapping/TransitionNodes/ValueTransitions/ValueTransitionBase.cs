@@ -97,7 +97,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             catch (Exception ex)
             {
                 continuation = this.OnError;
-                TraceTransitionMessage(ex.ToString(), ctx);
+                TraceTransitionMessage(ex.ToString(), ctx, ConsoleColor.Red);
             }
 
             if (resultValue == null || resultValue.ToString().IsEmpty())
@@ -116,7 +116,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             if (continuation == TransitContinuation.RaiseError)
             {
                 message = $"Transition stopped on {this.Name}, message: {message}, info: \n{this.TreeInfo()}";
-                TraceTransitionMessage(message, ctx);
+                TraceTransitionMessage(message, ctx, ConsoleColor.Magenta);
                 continuation = Migrator.Current.InvokeOnTransitError(this, ctx);
             }
 
@@ -125,32 +125,37 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             return continuation;
         }
 
-        protected void TraceTransitionMessage(string msg, ValueTransitContext ctx)
+        protected void TraceTransitionMessage(string msg, ValueTransitContext ctx, ConsoleColor color)
         {
-            TraceLine(GetIndent(5) + msg, ctx);
+            TraceLine(GetIndent(5) + msg, ctx, color);
         }
 
-        private void TraceLine(string traceMessage, ValueTransitContext ctx)
+        protected void TraceTransitionMessage(string msg, ValueTransitContext ctx)
+        {
+            TraceTransitionMessage(msg, ctx, ConsoleColor);
+        }
+
+        private void TraceLine(string traceMessage, ValueTransitContext ctx, ConsoleColor color)
         {
             if (ActualTrace == TraceMode.True)
-                Migrator.Current.InvokeTrace(GetIndent() + traceMessage, ConsoleColor);
-            
+                Migrator.Current.InvokeTrace(GetIndent() + traceMessage, color);
+
             //Debug.WriteLine(GetIndent() + traceMessage);
 
-            ctx.AddTraceEntry("\n" + GetIndent() + traceMessage, ConsoleColor);
+            ctx.AddTraceEntry("\n" + GetIndent() + traceMessage, color);
         }
 
         private void TraceTransitionStart(ValueTransitContext ctx)
         {
             var traceMsg =
                 $"> {this.ToString()}\n{GetIndent(5)}Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            TraceLine(traceMsg, ctx);
+            TraceLine(traceMsg, ctx, ConsoleColor);
         }
 
         private void TraceTransitionEnd(ValueTransitContext ctx)
         {
             var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            TraceLine(traceMsg, ctx);
+            TraceLine(traceMsg, ctx, ConsoleColor);
         }
     }
 }

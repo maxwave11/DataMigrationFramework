@@ -90,6 +90,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             var objectIndex = 1;
             var savedCount = 0;
 
+            if (TraceMessage.IsNotEmpty())
+                Trace(TraceMessage);
+
             Trace($">>>Transitting all objects from  source DataSet '{Name}'  to target DataSet'{TargetDataSetId}'");
 
             var srcDataSet = GetSourceDataSet();
@@ -376,6 +379,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         {
             Debug.WriteLine(GetIndent() + traceMessage);
             Migrator.Current.InvokeTrace(GetIndent() + traceMessage, color);
+        }
+
+        private void TraceUserMessage(string traceMessage, ConsoleColor color)
+        {
+            Debug.WriteLine(GetIndent() + traceMessage);
+            Migrator.Current.InvokeTrace(new MigratorTraceMessage(traceMessage, color, true));
         }
 
 

@@ -93,12 +93,13 @@ namespace XQ.DataMigration.Mapping
 
     public class MigratorTraceMessage
     {
-        public MigratorTraceMessage(string text, ConsoleColor color)
+        public MigratorTraceMessage(string text, ConsoleColor color, bool isUserMessage = false)
         {
             Text = text;
             Color = color;
         }
 
+        public bool IsUserMessage { get; set; }
         public string Text { get; private set; }
         public ConsoleColor Color { get; private set; }
     }
