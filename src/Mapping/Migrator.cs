@@ -97,6 +97,7 @@ namespace XQ.DataMigration.Mapping
         {
             Text = text;
             Color = color;
+            IsUserMessage = isUserMessage;
         }
 
         public bool IsUserMessage { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
@@ -64,10 +65,29 @@ namespace XQ.DataMigration.MapConfig
 
                 TargetKeyTransition = new ValueTransition { From = TargetKey};
             }
-            SourceKeyTransition.ConsoleColor = ConsoleColor.DarkGreen;
-            TargetKeyTransition.ConsoleColor = ConsoleColor.DarkGreen;
+            
             SourceKeyTransition.Initialize(parent);
             TargetKeyTransition.Initialize(parent);
+
+            SourceKeyTransition.Name = "SourceKeyTransition";
+            TargetKeyTransition.Name = "TargetKeyTransition";
+
+            //mark key transition by special colors
+            SetColorRecursive(SourceKeyTransition, ConsoleColor.Blue);
+            SetColorRecursive(TargetKeyTransition, ConsoleColor.Blue);
+        }
+
+        private void SetColorRecursive(TransitionNode node, ConsoleColor color)
+        {
+            node.ConsoleColor = color;
+            var children = node.GetChildren();
+            if (children?.Any()  != true)
+                return;
+
+            foreach (var childNode in children)
+            {
+                SetColorRecursive(childNode, color);
+            }
         }
 
         public override List<TransitionNode> GetChildren()

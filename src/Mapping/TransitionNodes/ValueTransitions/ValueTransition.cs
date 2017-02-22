@@ -29,7 +29,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 
         public ValueTransition()
         {
-            ConsoleColor = ConsoleColor.Green;
         }
 
         public override void Initialize(TransitionNode parent)

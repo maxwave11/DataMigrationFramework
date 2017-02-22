@@ -13,7 +13,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public TransitUnit()
         {
-            ConsoleColor = ConsoleColor.Gray;
         }
 
         public override TransitResult TransitValue(ValueTransitContext ctx)

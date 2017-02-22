@@ -6,11 +6,6 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.Logic
 {
-    public class TraceEntry
-    {
-        public string Mesage { get; set; }
-        public ConsoleColor Color { get; set; }
-    }
     public class ValueTransitContext
     {
         public IValuesObject Source { get; }
@@ -18,14 +13,15 @@ namespace XQ.DataMigration.Mapping.Logic
         public object TransitValue { get; private set; }
         public ObjectTransition ObjectTransition { get; }
         public Type ValueType { get; }
-        public Dictionary<string, object> _valuesHistory = new Dictionary<string, object>();
-        public List<TraceEntry> TraceEntries = new List<TraceEntry>();
-        public ValueTransitContext(IValuesObject source, IValuesObject target, object transitValue, ObjectTransition objectTransition)
+        public readonly Dictionary<string, object> _valuesHistory = new Dictionary<string, object>();
+        public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
+
+        public ValueTransitContext(IValuesObject source, IValuesObject target, object transitValue, ObjectTransition objTransition)
         {
             Source = source;
             Target = target;
             TransitValue = transitValue;
-            ObjectTransition = objectTransition;
+            ObjectTransition = objTransition;
             ValueType = transitValue?.GetType();
         }
 
@@ -47,15 +43,8 @@ namespace XQ.DataMigration.Mapping.Logic
 
         internal void AddTraceEntry(string msg, ConsoleColor color)
         {
-            TraceEntries.Add(new TraceEntry() {Mesage = msg, Color = color});
-        }
-
-        public  string GetInfo()
-        {
-            return "==============SRC==============\n" + Source?.GetInfo()
-                   + "\n==============TARGET==============\n" + Target?.GetInfo()
-                   + "\n==============TransitValue==============\n" + ((TransitValue as IValuesObject)?.GetInfo() ?? TransitValue)
-                   + "\n==============ValueType: " + ValueType;
+            TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
+            ObjectTransition.AddTraceEntry(msg, color);
         }
     }
 }

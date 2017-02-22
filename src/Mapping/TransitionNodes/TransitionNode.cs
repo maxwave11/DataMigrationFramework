@@ -41,14 +41,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         public abstract List<TransitionNode> GetChildren();  
 
-        public string TreeInfo()
-        {
-            var childrenInfo = GetChildren() != null
-                ? "\n" + String.Join("\n", GetChildren().Select(i => i.TreeInfo()))
-                : "";
-            return GetIndent() + this.ToString() + childrenInfo;
-        }
-
         protected string GetIndent(int additionSpaceCount = 0)
         {
             if (_indent == null)
@@ -62,13 +54,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
                 }
             }
 
-            return _indent + (additionSpaceCount>0 ? new string(' ', additionSpaceCount):"");
+            return _indent + (additionSpaceCount > 0 ? new string(' ', additionSpaceCount):"");
         }
 
         public override string ToString()
         {
-            return $"({this.GetType().Name})" +
-               (Name.IsNotEmpty() ? $"\n{GetIndent(5)}Name: {Name}" : "");
+            return $"({Name ?? this.GetType().Name})";
         }
     }
 }

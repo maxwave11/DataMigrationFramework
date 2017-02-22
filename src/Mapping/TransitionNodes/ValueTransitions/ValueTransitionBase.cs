@@ -61,10 +61,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             {
                 foreach (var childTransition in ChildTransitions)
                 {
-                    //TODO
-                    //if (!writeToTarget && transitUnit is WriteTransitUnit)
-                    //    continue;
-                    //continuation = HandleValueTransition(childTransition.TransitValue, childTransition, ctx);
                     var result = childTransition.TransitValueInternal(ctx);
                     continuation = result.Continuation;
 
@@ -115,8 +111,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 
             if (continuation == TransitContinuation.RaiseError)
             {
-                message = $"Transition stopped on {this.Name}, message: {message}, info: \n{this.TreeInfo()}";
-                TraceTransitionMessage(message, ctx, ConsoleColor.Magenta);
+                message = $"Transition stopped, message: {message}";
+                TraceTransitionMessage(message, ctx, ConsoleColor.Red);
                 continuation = Migrator.Current.InvokeOnTransitError(this, ctx);
             }
 
@@ -135,16 +131,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             TraceTransitionMessage(msg, ctx, ConsoleColor);
         }
 
-        private void TraceLine(string traceMessage, ValueTransitContext ctx, ConsoleColor color)
-        {
-            if (ActualTrace == TraceMode.True)
-                Migrator.Current.InvokeTrace(GetIndent() + traceMessage, color);
-
-            //Debug.WriteLine(GetIndent() + traceMessage);
-
-            ctx.AddTraceEntry("\n" + GetIndent() + traceMessage, color);
-        }
-
         private void TraceTransitionStart(ValueTransitContext ctx)
         {
             var traceMsg =
@@ -156,6 +142,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         {
             var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
             TraceLine(traceMsg, ctx, ConsoleColor);
+        }
+
+        private void TraceLine(string traceMessage, ValueTransitContext ctx, ConsoleColor color)
+        {
+            if (ActualTrace == TraceMode.True)
+                Migrator.Current.InvokeTrace(GetIndent() + traceMessage, color);
+
+            //Debug.WriteLine(GetIndent() + traceMessage);
+
+            ctx.AddTraceEntry(GetIndent() + traceMessage, color);
         }
     }
 }

@@ -35,7 +35,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         public LookupValueTransition()
         {
             OnEmpty = TransitContinuation.RaiseError;
-            ConsoleColor = ConsoleColor.Cyan;
         }
 
         protected override void InitializeEndTransitions()
