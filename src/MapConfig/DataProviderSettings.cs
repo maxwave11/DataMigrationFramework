@@ -13,7 +13,7 @@ namespace XQ.DataMigration.MapConfig
 
         public void Initialize()
         {
-            (DataProvider as ITargetProvider)?.Initialize(null);
+            (DataProvider as ITargetProvider)?.Initialize();
         }
     }
 }

@@ -4,7 +4,7 @@ namespace XQ.DataMigration.Data
 {
     public interface ITargetProvider : IDataProvider
     {
-        void Initialize(string settings);
+        void Initialize();
         void SaveObjects(ICollection<IValuesObject> objects);
         IValuesObject CreateObject(string dataSetId);
         new CachedDataSet GetDataSet(string dataSetId);

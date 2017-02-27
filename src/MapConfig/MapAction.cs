@@ -70,6 +70,7 @@ namespace XQ.DataMigration.MapConfig
 
             SrcProvider = MapConfig.GetSourceProvider(SourceProviderName);
             TargetProvider = MapConfig.GetTargetProvider(TargetProviderName);
+            TargetProvider.Initialize();
         }
 
         public void Dispose()

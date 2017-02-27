@@ -20,7 +20,6 @@ namespace XQ.DataMigration.MapConfig
         [XmlArray(nameof(MapProviders))]
         public List<DataProviderSettings> MapProviders { get; set; }
 
-
         public MapConfig()
         {
             this.MapActions = new List<MapAction>();
