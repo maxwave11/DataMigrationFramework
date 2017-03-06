@@ -146,7 +146,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             foreach (var valueTransition in ValueTransitions)
             {
-                Trace("");
+                if (ActualTrace == TraceMode.True)
+                    Trace("");
 
                 var ctx = new ValueTransitContext(source, target, source, this);
                 var result = valueTransition.TransitValueInternal(ctx);
