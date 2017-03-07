@@ -25,7 +25,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public string TraceMessage { get; set; }
 
         [XmlAttribute]
-        public ConsoleColor ConsoleColor { get; set; }  = ConsoleColor.White;
+        public ConsoleColor Color { get; set; }  = ConsoleColor.White;
 
         internal TraceMode ActualTrace => Trace == TraceMode.Auto ? Parent?.ActualTrace ?? Trace : Trace;
 

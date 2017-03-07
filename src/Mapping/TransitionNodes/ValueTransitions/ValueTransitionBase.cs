@@ -128,20 +128,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 
         protected void TraceTransitionMessage(string msg, ValueTransitContext ctx)
         {
-            TraceTransitionMessage(msg, ctx, ConsoleColor);
+            TraceTransitionMessage(msg, ctx, Color);
         }
 
         private void TraceTransitionStart(ValueTransitContext ctx)
         {
             var traceMsg =
                 $"> {this.ToString()}\n{GetIndent(5)}Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            TraceLine(traceMsg, ctx, ConsoleColor);
+            TraceLine(traceMsg, ctx, Color);
         }
 
         private void TraceTransitionEnd(ValueTransitContext ctx)
         {
             var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            TraceLine(traceMsg, ctx, ConsoleColor);
+            TraceLine(traceMsg, ctx, Color);
         }
 
         private void TraceLine(string traceMessage, ValueTransitContext ctx, ConsoleColor color)

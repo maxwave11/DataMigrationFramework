@@ -79,7 +79,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
         public override void Initialize(TransitionNode parent)
         {
-            ConsoleColor = ConsoleColor.Magenta;
+            Color = ConsoleColor.Magenta;
             Validate();
             KeyDefinition?.Initialize(this);
             ParseRowsRange();
@@ -387,8 +387,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         {
             var msg = GetIndent() + traceMessage;
             Debug.WriteLine(msg);
-            AddTraceEntry(msg, ConsoleColor);
-            Migrator.Current.InvokeTrace(msg, ConsoleColor);
+            AddTraceEntry(msg, Color);
+            Migrator.Current.InvokeTrace(msg, Color);
         }
 
         private void Trace(string traceMessage, ConsoleColor color)
@@ -403,8 +403,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         {
             var msg = GetIndent() + traceMessage;
             Debug.WriteLine(msg);
-            AddTraceEntry(msg, ConsoleColor);
-            Migrator.Current.InvokeTrace(new MigratorTraceMessage(msg, ConsoleColor, true));
+            AddTraceEntry(msg, Color);
+            Migrator.Current.InvokeTrace(new MigratorTraceMessage(msg, Color, true));
         }
 
 

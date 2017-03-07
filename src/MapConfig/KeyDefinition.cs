@@ -79,7 +79,7 @@ namespace XQ.DataMigration.MapConfig
 
         private void SetColorRecursive(TransitionNode node, ConsoleColor color)
         {
-            node.ConsoleColor = color;
+            node.Color = color;
             var children = node.GetChildren();
             if (children?.Any()  != true)
                 return;
