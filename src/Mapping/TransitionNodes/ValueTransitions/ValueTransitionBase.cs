@@ -93,7 +93,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             catch (Exception ex)
             {
                 continuation = this.OnError;
-                TraceTransitionMessage(ex.ToString(), ctx, ConsoleColor.Red);
+                TraceErrorLine(ex.ToString(), ctx);
             }
 
             if (resultValue == null || resultValue.ToString().IsEmpty())
@@ -112,7 +112,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             if (continuation == TransitContinuation.RaiseError)
             {
                 message = $"Transition stopped, message: {message}";
-                TraceTransitionMessage(message, ctx, ConsoleColor.Red);
+                TraceErrorLine(message, ctx);
                 continuation = Migrator.Current.InvokeOnTransitError(this, ctx);
             }
 
@@ -150,8 +150,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
                 Migrator.Current.InvokeTrace(GetIndent() + traceMessage, color);
 
             //Debug.WriteLine(GetIndent() + traceMessage);
-
             ctx.AddTraceEntry(GetIndent() + traceMessage, color);
+        }
+
+        private void TraceErrorLine(string traceMessage, ValueTransitContext ctx)
+        {
+            Migrator.Current.InvokeTrace(GetIndent() + traceMessage, ConsoleColor.Red);
+            ctx.AddTraceEntry(GetIndent() + traceMessage, ConsoleColor.Red);
         }
     }
 }
