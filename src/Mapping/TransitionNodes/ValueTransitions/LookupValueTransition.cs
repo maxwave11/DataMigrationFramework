@@ -32,9 +32,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         //По умолчанию - Target
         public string ProviderName { get; set; }
 
+        /// <summary>
+        /// Specify what to do if lookup value not found
+        /// </summary>
+        [XmlAttribute]
+        public TransitContinuation OnNotFound { get; set; } = TransitContinuation.RaiseError;
+
         public LookupValueTransition()
         {
-            OnEmpty = TransitContinuation.RaiseError;
         }
 
         protected override void InitializeEndTransitions()
@@ -50,10 +55,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
                 LookupDataSetId = LookupDataSetId,
                 LookupExpr = LookupExpr,
                 ProviderName = ProviderName,
+                OnNotFound = OnNotFound
             });
 
             if (Return.IsNotEmpty())
-                ChildTransitions.Add(new TransitUnit { Expression = Return , OnEmpty = OnEmpty});
+                ChildTransitions.Add(new TransitUnit { Expression = Return});
 
             base.InitializeEndTransitions();
         }

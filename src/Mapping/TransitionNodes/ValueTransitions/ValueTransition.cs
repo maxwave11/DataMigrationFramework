@@ -73,7 +73,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 
             if (To.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new WriteTransitUnit() { Expression = To, OnEmpty = this.OnEmpty});
+                this.ChildTransitions.Add(new WriteTransitUnit() { Expression = To});
             }
         }
 

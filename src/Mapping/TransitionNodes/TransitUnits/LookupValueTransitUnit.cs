@@ -26,6 +26,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         //По умолчанию - Target
         public string ProviderName { get; set; }
 
+        /// <summary>
+        /// Specify what to do if lookup value not found
+        /// </summary>
+        [XmlAttribute]
+        public TransitContinuation OnNotFound { get; set; } = TransitContinuation.RaiseError;
+
         public LookupValueTransitUnit()
         {
            
@@ -49,15 +55,24 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public override TransitResult TransitValue(ValueTransitContext ctx)
         {
             var key = base.TransitValue(ctx).Value?.ToString();
-            if (key.IsEmpty())
-                return null;
+            IValuesObject lookupObject = null;
+            string message = "";
+            TransitContinuation continuation = TransitContinuation.Continue;
 
-            var lookupObject = GetLookupObjectByKey(key);
+            if (key.IsNotEmpty())
+            {
+                lookupObject = GetLookupObjectByKey(key);
 
-            if (lookupObject == null)
-                TraceTransitionMessage($"Warning: lookup object not found by key '{key}'", ctx);
+                if (lookupObject == null)
+                {
+                    TraceTransitionMessage($"Warning: lookup object not found by key '{key}'", ctx);
+                    continuation = this.OnNotFound;
+                    if (continuation != TransitContinuation.Continue)
+                        message = "Value transition interuppted because of empty value of transition " + this.Name;
+                }
+            }
 
-            return new TransitResult(TransitContinuation.Continue, lookupObject);
+            return new TransitResult(continuation, lookupObject, message);
         }
 
         public virtual IValuesObject GetLookupObjectByKey(string key)

@@ -8,11 +8,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         {
             TransitContinuation continuation = TransitContinuation.Continue;
 
-            if (string.IsNullOrEmpty(ctx.TransitValue?.ToString()))
-            {
-                continuation = OnEmpty;
-            }
-
             if (continuation == TransitContinuation.Continue)
             {
                 if (Expression.Contains("{"))

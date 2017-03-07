@@ -24,19 +24,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         [XmlAttribute]
         public TransitContinuation OnError { get; set; } = TransitContinuation.RaiseError;
 
-        /// <summary>
-        /// Specify what to do if current transition returns empty string or null
-        /// </summary>
-        [XmlAttribute]
-        public TransitContinuation OnEmpty { get; set; } = TransitContinuation.Continue;
-
-        /// <summary>
-        /// Error message which end user should see when this transition returns empty string or null. It can be 
-        /// as Migration expression like  - "Asset with ID {SRC[asset_id]} was not found in target system"
-        /// </summary>
-        [XmlAttribute]
-        public string OnEmptyMessage { get; set; }
-
         internal ObjectTransition ObjectTransition => (Parent as ObjectTransition) ?? (Parent as ValueTransitionBase)?.ObjectTransition;
 
         internal Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
@@ -89,24 +76,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
                 var result = TransitValue(ctx);
                 resultValue = result.Value;
                 continuation = result.Continuation;
+                message = result.Message;
             }
             catch (Exception ex)
             {
                 continuation = this.OnError;
                 TraceErrorLine(ex.ToString(), ctx);
-            }
-
-            if (resultValue == null || resultValue.ToString().IsEmpty())
-            {
-                if (this.OnEmpty != TransitContinuation.Continue)
-                {
-                    message = "Value transition interuppted because of empty value of transition " + this.Name;
-                    if (this.OnEmptyMessage.IsNotEmpty())
-                    {
-                        message = this.ExpressionEvaluator.EvaluateString(this.OnEmptyMessage + "{}", ctx);
-                    }
-                    continuation = this.OnEmpty;
-                }
             }
 
             if (continuation == TransitContinuation.RaiseError)
