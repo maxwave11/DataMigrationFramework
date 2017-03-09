@@ -1,31 +1,14 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
 using XQ.DataMigration.MapConfig;
-using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.TransitionNodes;
-using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
+using XQ.DataMigration.Mapping.Trace;
 using ExpressionCompiler = XQ.DataMigration.Mapping.Expressions.ExpressionCompiler;
 
 namespace XQ.DataMigration.Mapping
 {
     public class Migrator
     {
-        /// <summary>
-        /// Event fires each time when any value transition started. By use this event
-        /// you can control (for example stop/pause) migration flow.
-        /// </summary>
-        public event EventHandler TransitValueStarted;
-
-        /// <summary>
-        /// Event fires each time when any unhandled error occured while migration process
-        /// </summary>
-        public event EventHandler<ValueTransitErrorEventArgs> OnValueTransitError;
-
-        /// <summary>
-        /// Use this event to trace migration process
-        /// </summary>
-        public event EventHandler<MigratorTraceMessage> Trace;
+        public MigrationTracer Tracer { get; }
 
         internal static Migrator Current => _current;
         internal MapAction Action { get; private set; }
@@ -38,6 +21,7 @@ namespace XQ.DataMigration.Mapping
         {
             _mapConfig = mapConfig;
             _current = this;
+            Tracer = new MigrationTracer();
         }
 
         public void Run()
@@ -45,7 +29,7 @@ namespace XQ.DataMigration.Mapping
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            InvokeTrace("====== Migration start ======");
+            Tracer.TraceText("====== Migration start ======");
 
             foreach (MapAction action in this._mapConfig.MapActions.Where(i => i.DoMapping))
             {
@@ -58,7 +42,7 @@ namespace XQ.DataMigration.Mapping
             }
 
             stopwatch.Stop();
-            InvokeTrace($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
+            Tracer.TraceText($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
         }
 
         private void MapAction(MapAction action)
@@ -66,43 +50,6 @@ namespace XQ.DataMigration.Mapping
             var transGroup = action.MapConfig.TransitionGroups.FirstOrDefault();
             transGroup?.Run();
         }
-
-        internal void RaiseTransitValueStarted(ValueTransitionBase valueTransition)
-        {
-            TransitValueStarted?.Invoke(valueTransition, null);
-        }
-
-        internal TransitContinuation InvokeOnTransitError(ValueTransitionBase valueTransition, ValueTransitContext ctx)
-        {
-            var args = new ValueTransitErrorEventArgs(valueTransition, ctx);
-            OnValueTransitError?.Invoke(valueTransition, args);
-            return args.Continue ? TransitContinuation.Continue : TransitContinuation.Stop;
-        }
-
-        public void InvokeTrace(MigratorTraceMessage traceMsg)
-        {
-            Trace?.Invoke(this, traceMsg);
-        }
-
-        public void InvokeTrace(string text, ConsoleColor color = ConsoleColor.White)
-        {
-            Trace?.Invoke(this, new MigratorTraceMessage(text, color));
-        }
-
-    }
-
-    public class MigratorTraceMessage
-    {
-        public MigratorTraceMessage(string text, ConsoleColor color, bool isUserMessage = false)
-        {
-            Text = text;
-            Color = color;
-            IsUserMessage = isUserMessage;
-        }
-
-        public bool IsUserMessage { get; set; }
-        public string Text { get; private set; }
-        public ConsoleColor Color { get; private set; }
     }
 }
 

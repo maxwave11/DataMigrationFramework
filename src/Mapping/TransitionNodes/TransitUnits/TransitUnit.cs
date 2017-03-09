@@ -28,7 +28,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override string ToString()
         {
-            return $"{base.ToString()}\n{GetIndent(5)}Expression: {Expression}";
+            return $"{base.ToString()}\n\tExpression: {Expression}";
         }
     }
 }

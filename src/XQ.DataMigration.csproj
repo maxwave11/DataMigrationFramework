@@ -63,9 +63,11 @@
     <Compile Include="MapConfig\MapConfigReader.cs" />
     <Compile Include="Mapping\Expressions\ExpressionContext.cs" />
     <Compile Include="Mapping\Logic\TraceEntry.cs" />
+    <Compile Include="Mapping\Trace\MigrationTracer.cs" />
     <Compile Include="Mapping\Migrator.cs" />
     <Compile Include="Mapping\Expressions\ExpressionCompiler.cs" />
     <Compile Include="Mapping\Expressions\ExpressionEvaluator.cs" />
+    <Compile Include="Mapping\Trace\TraceMessage.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\GlobalObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\TransitMode.cs" />
     <Compile Include="Mapping\TransitionNodes\ValueTransitions\LookupValueTransition.cs" />
@@ -74,7 +76,7 @@
     <Compile Include="Mapping\TransitionNodes\TransitionNode.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitResult.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />
-    <Compile Include="Mapping\ValueTransitErrorEventArgs.cs" />
+    <Compile Include="Mapping\Trace\ValueTransitErrorEventArgs.cs" />
     <Compile Include="MapConfig\MapAction.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceRule.cs" />

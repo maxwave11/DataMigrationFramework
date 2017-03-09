@@ -80,9 +80,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         public override string ToString()
         {
             var info = base.ToString() +
-               $"\n{GetIndent(5)}From: {From}" +
-               $"\n{GetIndent(5)}To: { To}" +
-               (Replace.IsNotEmpty() ? $"\n{GetIndent(5)}Replace: { Replace }" : "");
+               $"\n\tFrom: { From }" +
+               $"\n\tTo: { To }" +
+               (Replace.IsNotEmpty() ? $"\n\tReplace: { Replace }" : "");
             return info;
         }
     }

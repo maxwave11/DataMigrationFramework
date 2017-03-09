@@ -65,7 +65,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
                 if (lookupObject == null)
                 {
-                    TraceTransitionMessage($"Warning: lookup object not found by key '{key}'", ctx);
+                    Migrator.Current.Tracer.TraceText($"Warning: lookup object not found by key '{key}'", this);
                     continuation = this.OnNotFound;
                     if (continuation != TransitContinuation.Continue)
                         message = "Value transition interuppted because of empty value of transition " + this.Name;
@@ -99,9 +99,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public override string ToString()
         {
             return base.ToString()+ 
-                $"\n{GetIndent(5)}LookupDataSetId: {LookupDataSetId}"+
-                $"\n{GetIndent(5)}LookupExpr: {LookupExpr}"+ 
-                (ProviderName.IsNotEmpty() ?  $"\n{GetIndent(5)}ProviderName: {ProviderName}" :"");
+                $"\n\tLookupDataSetId: {LookupDataSetId}"+
+                $"\n\tLookupExpr: {LookupExpr}"+ 
+                (ProviderName.IsNotEmpty() ?  $"\n\tProviderName: {ProviderName}" :"");
         }
     }
 }

@@ -7,6 +7,7 @@ using ExpressionEvaluator;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Mapping.Trace;
 using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
 using XQ.DataMigration.Utils;
 
@@ -73,6 +74,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
         public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
 
+        private MigrationTracer Tracer => Migrator.Current.Tracer;
+
         #endregion
 
         #region Methods
@@ -92,10 +95,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             var objectIndex = 1;
 
             if (TraceMessage.IsNotEmpty())
-                TraceUserMessage(TraceMessage);
+                Tracer.TraceUserMessage(TraceMessage, this);
 
-            Trace($">>>Transitting all objects from  source DataSet '{Name}'  to target DataSet'{TargetDataSetId}'", ConsoleColor.DarkYellow);
-
+            Tracer.TraceObjectSetTransitionStart(this);
             var srcDataSet = GetSourceDataSet();
 
             if (srcDataSet == null)
@@ -112,7 +114,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
                 if (targetObjects == null)
                 {
-                    Trace("Skipped", ConsoleColor.Yellow);
+                    Tracer.TraceSkipObject("Skipped", this);
                     continue;
                 }
 
@@ -121,7 +123,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             }
 
             SaveTransittedObjects();
-            Trace($"<<< Objects from source DataSet '{Name}' are transitted to target DataSet '{TargetDataSetId}'\n", ConsoleColor.DarkYellow);
+            Tracer.TraceObjectSetTransitionEnd(this);
             srcDataSet.Dispose();
         }
 
@@ -129,15 +131,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         {
             TraceEntries.Clear();
 
-            Trace($"(Object transition: {Name})");
-
             var objectKey = GetKeyFromSource(source);
-            Trace($"Object Key [{objectKey}]");
+
+            Tracer.TraceObjectTransitionStart(this, objectKey);
 
             //don't transit objects with empty key
             if (objectKey.IsEmpty())
             {
-                Trace("Source object key is empty. Skipping object.", ConsoleColor.Yellow);
+                Tracer.TraceText("Source object key is empty. Skipping object.", this, ConsoleColor.Yellow);
                 return null;
             }
             var target = GetTargetObject(objectKey);
@@ -147,7 +148,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             foreach (var valueTransition in ValueTransitions)
             {
                 if (ActualTrace == TraceMode.True)
-                    Trace("");
+                    Tracer.TraceText("", this);
 
                 var ctx = new ValueTransitContext(source, target, source, this);
                 var result = valueTransition.TransitValueInternal(ctx);
@@ -168,8 +169,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                 }
             }
 
-            Trace("(Object transition finished)");
-
+            Tracer.TraceObjectTransitionEnd(this);
             return new[] { target };
         }
 
@@ -196,7 +196,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             if (transitResult.Continuation == TransitContinuation.RaiseError)
             {
-                Trace($"Transition stopped on { Name }");
+                Tracer.TraceText($"Transition stopped on { Name }", this);
                 throw new Exception("Can't transit source key ");
             }
 
@@ -295,24 +295,24 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             if (!Migrator.Current.Action.DoSave)
             {
-                Trace("Don't save objects due of MapAction.DoSave = false");
+                Tracer.TraceText("Don't saving objects due of MapAction.DoSave = false", this);
                 return;
             }
 
             try
             {
-                Trace("Saving....", ConsoleColor.DarkYellow);
+                Tracer.TraceText("Saving....", this, ConsoleColor.DarkYellow);
 
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
                 Migrator.Current.Action.TargetProvider.SaveObjects(_transittedObjects.Values);
                 stopWath.Stop();
-                Trace($"Saved objects count: {_transittedObjects.Count()}, time: {stopWath.Elapsed.TotalMinutes} min", ConsoleColor.DarkYellow);
+                Tracer.TraceText($"Saved objects count: {_transittedObjects.Count()}, time: {stopWath.Elapsed.TotalMinutes} min",this, ConsoleColor.DarkYellow);
             }
             catch (Exception ex)
             {
-                Trace("=====Error while saving transitted objects: " + ex, ConsoleColor.Red);
+                Tracer.TraceText("=====Error while saving transitted objects: " + ex, this, ConsoleColor.Red);
                 throw;
             }
 
@@ -379,34 +379,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             if (findedObject == null)
                 return false;
 
-            Trace($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}");
+            Tracer.TraceText($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}", this);
             return true;
         }
-
-        private void Trace(string traceMessage)
-        {
-            var msg = GetIndent() + traceMessage;
-            Debug.WriteLine(msg);
-            AddTraceEntry(msg, Color);
-            Migrator.Current.InvokeTrace(msg, Color);
-        }
-
-        private void Trace(string traceMessage, ConsoleColor color)
-        {
-            var msg = GetIndent() + traceMessage;
-            Debug.WriteLine(msg);
-            AddTraceEntry(msg, color);
-            Migrator.Current.InvokeTrace(msg, color);
-        }
-
-        private void TraceUserMessage(string traceMessage)
-        {
-            var msg = GetIndent() + traceMessage;
-            Debug.WriteLine(msg);
-            AddTraceEntry(msg, Color);
-            Migrator.Current.InvokeTrace(new MigratorTraceMessage(msg, Color, true));
-        }
-
 
         #endregion
     }

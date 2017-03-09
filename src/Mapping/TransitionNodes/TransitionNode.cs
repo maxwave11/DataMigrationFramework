@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.MapConfig;
-using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes
 {
@@ -32,7 +30,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         [XmlIgnore]
         public TransitionNode Parent { get; private set; }
 
-        private string _indent = null;
         public virtual void Initialize(TransitionNode parent)
         {
             Parent = parent;
@@ -40,22 +37,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         }
 
         public abstract List<TransitionNode> GetChildren();  
-
-        protected string GetIndent(int additionSpaceCount = 0)
-        {
-            if (_indent == null)
-            {
-                _indent = "";
-                TransitionNode nextParent = Parent;
-                while (nextParent != null)
-                {
-                    nextParent = nextParent.Parent;
-                    _indent += "  ";
-                }
-            }
-
-            return _indent + (additionSpaceCount > 0 ? new string(' ', additionSpaceCount):"");
-        }
 
         public override string ToString()
         {

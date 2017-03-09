@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
-using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
-using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 {
@@ -40,8 +36,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 
         internal TransitResult TransitValueInternal(ValueTransitContext ctx)
         {
-            TraceTransitionStart(ctx);
-            Migrator.Current.RaiseTransitValueStarted(this);
+            Migrator.Current.Tracer.TraceValueTransitionStart(this,ctx);
             TransitContinuation continuation;
             //at first start process child transitions
             if (ChildTransitions != null)
@@ -62,7 +57,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             //process own transition just after childrens
             continuation = HandleValueTransition(ctx);
 
-            TraceTransitionEnd(ctx);
+            Migrator.Current.Tracer.TraceValueTransitionEnd(this, ctx);
             return new TransitResult(continuation, ctx.TransitValue);
         }
 
@@ -81,57 +76,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             catch (Exception ex)
             {
                 continuation = this.OnError;
-                TraceErrorLine(ex.ToString(), ctx);
+                Migrator.Current.Tracer.TraceText(ex.ToString(),this, ConsoleColor.Yellow);
             }
 
             if (continuation == TransitContinuation.RaiseError)
             {
                 message = $"Transition stopped, message: {message}";
-                TraceErrorLine(message, ctx);
-                continuation = Migrator.Current.InvokeOnTransitError(this, ctx);
+                continuation = Migrator.Current.Tracer.TraceError(message, this, ctx);
             }
 
             ctx.SetCurrentValue(this.Name, resultValue);
-
             return continuation;
-        }
-
-        protected void TraceTransitionMessage(string msg, ValueTransitContext ctx, ConsoleColor color)
-        {
-            TraceLine(GetIndent(5) + msg, ctx, color);
-        }
-
-        protected void TraceTransitionMessage(string msg, ValueTransitContext ctx)
-        {
-            TraceTransitionMessage(msg, ctx, Color);
-        }
-
-        private void TraceTransitionStart(ValueTransitContext ctx)
-        {
-            var traceMsg =
-                $"> {this.ToString()}\n{GetIndent(5)}Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            TraceLine(traceMsg, ctx, Color);
-        }
-
-        private void TraceTransitionEnd(ValueTransitContext ctx)
-        {
-            var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            TraceLine(traceMsg, ctx, Color);
-        }
-
-        private void TraceLine(string traceMessage, ValueTransitContext ctx, ConsoleColor color)
-        {
-            if (ActualTrace == TraceMode.True)
-                Migrator.Current.InvokeTrace(GetIndent() + traceMessage, color);
-
-            //Debug.WriteLine(GetIndent() + traceMessage);
-            ctx.AddTraceEntry(GetIndent() + traceMessage, color);
-        }
-
-        private void TraceErrorLine(string traceMessage, ValueTransitContext ctx)
-        {
-            Migrator.Current.InvokeTrace(GetIndent() + traceMessage, ConsoleColor.Red);
-            ctx.AddTraceEntry(GetIndent() + traceMessage, ConsoleColor.Red);
         }
     }
 }
