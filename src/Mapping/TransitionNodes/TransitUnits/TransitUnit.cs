@@ -28,7 +28,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override string ToString()
         {
-            return $"{base.ToString()}\n\tExpression: {Expression}";
+            return $"{base.ToString()}\n    Expression: {Expression}";
         }
     }
 }

@@ -67,9 +67,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         public override string ToString()
         {
             return base.ToString() +
-                $"\n\tLookupDataSetId: {LookupDataSetId}"+
-                $"\n\tLookupExpr: {LookupExpr}"+ 
-                (Return.IsNotEmpty() ? $"\n\tReturn: {Return}": "");
+                $"\n    LookupDataSetId: {LookupDataSetId}"+
+                $"\n    LookupExpr: {LookupExpr}"+ 
+                (Return.IsNotEmpty() ? $"\n    Return: {Return}": "");
         }
     }
 }

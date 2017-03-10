@@ -99,9 +99,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public override string ToString()
         {
             return base.ToString()+ 
-                $"\n\tLookupDataSetId: {LookupDataSetId}"+
-                $"\n\tLookupExpr: {LookupExpr}"+ 
-                (ProviderName.IsNotEmpty() ?  $"\n\tProviderName: {ProviderName}" :"");
+                $"\n    LookupDataSetId: {LookupDataSetId}"+
+                $"\n    LookupExpr: {LookupExpr}"+ 
+                (ProviderName.IsNotEmpty() ?  $"\n    ProviderName: {ProviderName}" :"");
         }
     }
 }

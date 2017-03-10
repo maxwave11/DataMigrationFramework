@@ -114,7 +114,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
                 if (targetObjects == null)
                 {
-                    Tracer.TraceSkipObject("Skipped", this);
+                    Tracer.TraceSkipObject("Skipped", this, sourceObject);
                     continue;
                 }
 
@@ -242,17 +242,25 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             if (SourceDataSetId.IsEmpty())
                 return null;
 
-            ISourceProvider sourceProvider;
-            if (SourceProviderName.IsNotEmpty())
+            try
             {
-                sourceProvider = Migrator.Current.Action.MapConfig.GetSourceProvider(SourceProviderName);
-            }
-            else
-            {
-                sourceProvider = Migrator.Current.Action.SrcProvider;
-            }
+                ISourceProvider sourceProvider;
+                if (SourceProviderName.IsNotEmpty())
+                {
+                    sourceProvider = Migrator.Current.Action.MapConfig.GetSourceProvider(SourceProviderName);
+                }
+                else
+                {
+                    sourceProvider = Migrator.Current.Action.SrcProvider;
+                }
 
-            return sourceProvider.GetDataSet(SourceDataSetId);
+                return sourceProvider.GetDataSet(SourceDataSetId);
+            }
+            catch (Exception ex)
+            {
+                Tracer.TraceText("Error while trying to get source datat set." + ex);
+                return null;
+            }
         }
 
         private void MarkObjectsAsTransitted(IEnumerable<IValuesObject> targetObjects)

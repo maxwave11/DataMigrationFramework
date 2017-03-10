@@ -37,7 +37,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         internal TransitResult TransitValueInternal(ValueTransitContext ctx)
         {
             Migrator.Current.Tracer.TraceValueTransitionStart(this,ctx);
-            TransitContinuation continuation;
+            TransitContinuation continuation = TransitContinuation.Continue;
             //at first start process child transitions
             if (ChildTransitions != null)
             {
@@ -47,15 +47,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
                     continuation = result.Continuation;
 
                     if (continuation == TransitContinuation.SkipUnit)
-                        return new TransitResult(TransitContinuation.Continue, ctx.TransitValue);
+                    {
+                        continuation = TransitContinuation.Continue;
+                        break;
+                    }
 
                     if (continuation != TransitContinuation.Continue)
-                        return new TransitResult(continuation, ctx.TransitValue);
+                        break;
                 }
             }
 
             //process own transition just after childrens
-            continuation = HandleValueTransition(ctx);
+            if (continuation == TransitContinuation.Continue)
+                continuation = HandleValueTransition(ctx);
 
             Migrator.Current.Tracer.TraceValueTransitionEnd(this, ctx);
             return new TransitResult(continuation, ctx.TransitValue);

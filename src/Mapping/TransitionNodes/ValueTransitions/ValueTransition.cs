@@ -68,7 +68,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 
             if (DataType.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new TypeConvertTransitUnit { DataType = DataType, DataTypeFormat = DataTypeFormat });
+                this.ChildTransitions.Add(new TypeConvertTransitUnit { DataType = DataType, DataTypeFormats = DataTypeFormat });
             }
 
             if (To.IsNotEmpty())
@@ -80,9 +80,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         public override string ToString()
         {
             var info = base.ToString() +
-               $"\n\tFrom: { From }" +
-               $"\n\tTo: { To }" +
-               (Replace.IsNotEmpty() ? $"\n\tReplace: { Replace }" : "");
+               $"\n    From: { From }" +
+               $"\n    To: { To }" +
+               (Replace.IsNotEmpty() ? $"\n    Replace: { Replace }" : "");
             return info;
         }
     }

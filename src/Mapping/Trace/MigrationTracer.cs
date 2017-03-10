@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using XQ.DataMigration.Data;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
@@ -26,6 +28,11 @@ namespace XQ.DataMigration.Mapping.Trace
         /// </summary>
         public event EventHandler<ValueTransitErrorEventArgs> OnValueTransitError;
 
+        /// <summary>
+        /// Event fires each time when any unhandled error occured while migration process
+        /// </summary>
+        public event EventHandler<IValuesObject> OnObjectSkipped;
+
         public void TraceText(string message)
         {
             Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.White));
@@ -38,7 +45,7 @@ namespace XQ.DataMigration.Mapping.Trace
 
         public void TraceText(string message, TransitionNode node, ConsoleColor color)
         {
-            var msg = GetIndent(node) + message;
+            var msg =  message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
             AddTraceEntry(node, msg, color);
             Trace?.Invoke(this, new TraceMessage(msg, color));
         }
@@ -74,7 +81,7 @@ namespace XQ.DataMigration.Mapping.Trace
                 return;
 
             var traceMsg =
-                $"> {valueTransition.ToString()}\n\tInput: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
+                $"> {valueTransition.ToString()}\n    Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
 
             TraceText(traceMsg, valueTransition);
         }
@@ -88,9 +95,10 @@ namespace XQ.DataMigration.Mapping.Trace
             TraceText(traceMsg, valueTransition);
         }
 
-        public void TraceSkipObject(string text, TransitionNode node)
+        public void TraceSkipObject(string text, TransitionNode node, IValuesObject sourceObject)
         {
             TraceText(text, node, ConsoleColor.Yellow);
+            OnObjectSkipped?.Invoke(this, sourceObject);
         }
 
         public TransitContinuation TraceError(string message, ValueTransitionBase valueTransition, ValueTransitContext ctx)
@@ -117,10 +125,10 @@ namespace XQ.DataMigration.Mapping.Trace
         private void AddTraceEntry(TransitionNode node, string message, ConsoleColor color)
         {
             if (node is ValueTransitionBase)
-                ((ValueTransitionBase)node).ObjectTransition.AddTraceEntry(GetIndent(node) + message, color);
+                ((ValueTransitionBase)node).ObjectTransition.AddTraceEntry(message, color);
 
             if (node is ObjectTransition)
-                ((ObjectTransition)node).AddTraceEntry(GetIndent(node) + message, color);
+                ((ObjectTransition)node).AddTraceEntry(message, color);
         }
     }
 }
