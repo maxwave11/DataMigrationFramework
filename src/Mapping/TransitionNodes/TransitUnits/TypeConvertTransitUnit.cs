@@ -10,7 +10,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     public class TypeConvertTransitUnit : TransitUnit
     {
         [XmlAttribute]
-        public string DataTypeFormat { get; set; }
+        public string DataTypeFormats { get; set; }
 
         [XmlAttribute]
         public string DataType { get; set; }
@@ -38,7 +38,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public override TransitResult TransitValue(ValueTransitContext ctx)
         {
             var value = base.TransitValue(ctx).Value;
-            var typedValue = GetTypedValue(_typeCode, value, DataTypeFormat.IsNotEmpty() ? new[] { DataTypeFormat } : null);
+            var typedValue = GetTypedValue(_typeCode, value, DataTypeFormats.IsNotEmpty() ? DataTypeFormats.Split(',') : null);
             return new TransitResult(TransitContinuation.Continue, typedValue);
         }
 
