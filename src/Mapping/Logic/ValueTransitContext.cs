@@ -40,11 +40,5 @@ namespace XQ.DataMigration.Mapping.Logic
                 throw new Exception($"There are no value from transition { transitionName }");
             return _valuesHistory[transitionName];
         }
-
-        internal void AddTraceEntry(string msg, ConsoleColor color)
-        {
-            TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
-            ObjectTransition.AddTraceEntry(msg, color);
-        }
     }
 }

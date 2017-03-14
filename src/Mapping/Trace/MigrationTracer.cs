@@ -47,7 +47,9 @@ namespace XQ.DataMigration.Mapping.Trace
         {
             var msg =  message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
             AddTraceEntry(node, msg, color);
-            Trace?.Invoke(this, new TraceMessage(msg, color));
+
+            if (node.ActualTrace == TraceMode.True || (node.ActualTrace == TraceMode.Auto && node is ObjectTransition))
+                Trace?.Invoke(this, new TraceMessage(msg, color));
         }
 
         public void TraceUserMessage(string message, TransitionNode node)
@@ -77,9 +79,6 @@ namespace XQ.DataMigration.Mapping.Trace
 
         public void TraceValueTransitionStart(ValueTransitionBase valueTransition, ValueTransitContext ctx)
         {
-            if (valueTransition.ActualTrace != TraceMode.True)
-                return;
-
             var traceMsg =
                 $"> {valueTransition.ToString()}\n    Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
 
@@ -88,9 +87,6 @@ namespace XQ.DataMigration.Mapping.Trace
 
         public void TraceValueTransitionEnd(ValueTransitionBase valueTransition, ValueTransitContext ctx)
         {
-            if (valueTransition.ActualTrace != TraceMode.True)
-                return;
-
             var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
             TraceText(traceMsg, valueTransition);
         }
