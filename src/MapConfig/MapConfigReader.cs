@@ -13,20 +13,25 @@ namespace XQ.DataMigration.MapConfig
 {
     public class MapConfigReader
     {
-        private readonly string _fileName;
+        private readonly Stream _fileStream;
         private readonly Dictionary<string, Type> _customElements = new Dictionary<string, Type>();
         private readonly Dictionary<string, Type> _customProviders = new Dictionary<string, Type>();
 
         public MapConfigReader(string fileName)
         {
-            _fileName = fileName;
+            _fileStream = new FileStream(fileName, FileMode.Open);
+        }
+
+        public MapConfigReader(Stream fileStream)
+        {
+            _fileStream = fileStream;
         }
 
         public MapConfig Read()
         {
             XmlAttributeOverrides aor = GetCustomAttributeOverrides();
 
-            using (var reader = new StreamReader(_fileName))
+            using (var reader = new StreamReader(_fileStream))
             {
                 var serializer = new XmlSerializer(typeof(MapConfig), aor);
                 serializer.UnknownElement += Serializer_UnknownElement;
