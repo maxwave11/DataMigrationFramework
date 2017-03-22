@@ -78,20 +78,6 @@ namespace XQ.DataMigration.Mapping.Trace
             TraceText($"<<< Objects from source DataSet '{transition.Name}' are transitted to target DataSet '{transition.TargetDataSetId}'\n", transition, ConsoleColor.DarkYellow);
         }
 
-        public void TraceTransitionNodeStart(TransitionNode transitionNode, ValueTransitContext ctx)
-        {
-            var traceMsg =
-                $"> {transitionNode.ToString()}\n    Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-
-            TraceText(traceMsg, transitionNode);
-        }
-
-        public void TraceTransitionNodeEnd(TransitionNode transitionNode, ValueTransitContext ctx)
-        {
-            var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            TraceText(traceMsg, transitionNode);
-        }
-
         public void TraceSkipObject(string text, TransitionNode node, IValuesObject sourceObject)
         {
             TraceText(text, node, ConsoleColor.Yellow);

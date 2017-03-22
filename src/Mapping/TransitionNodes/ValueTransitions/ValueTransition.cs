@@ -27,10 +27,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         [XmlAttribute]
         public string Format { get; set; }
 
-        public ValueTransition()
-        {
-        }
-
         public override void Initialize(TransitionNode parent)
         {
 

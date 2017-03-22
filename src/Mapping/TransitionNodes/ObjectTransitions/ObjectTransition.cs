@@ -148,7 +148,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                     Tracer.TraceText("", this);
 
                 var ctx = new ValueTransitContext(source, target, source, this);
-                var result = valueTransition.Transit(ctx);
+                var result = valueTransition.TransitInternal(ctx);
 
                 if (result.Continuation == TransitContinuation.SkipValue)
                 {
@@ -217,7 +217,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             var ctx = new ValueTransitContext(targetObject, null, targetObject, this);
             var transitResult = KeyDefinition.TargetKeyTransition.TransitInternal(ctx);
-
             targetObject.Key = transitResult.Value?.ToString();
 
             return targetObject.Key;

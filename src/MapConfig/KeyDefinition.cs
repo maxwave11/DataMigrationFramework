@@ -77,17 +77,17 @@ namespace XQ.DataMigration.MapConfig
             SetColorRecursive(TargetKeyTransition, ConsoleColor.Blue);
         }
 
-        private void SetColorRecursive(ComplexTransition node, ConsoleColor color)
+        private void SetColorRecursive(TransitionNode node, ConsoleColor color)
         {
             node.Color = color;
-            var children = node.ChildTransitions;
+            var children = (node as ComplexTransition)?.ChildTransitions;
             if (children?.Any()  != true)
                 return;
 
-            //foreach (var childNode in children)
-            //{
-            //    SetColorRecursive(childNode, color);
-            //}
+            foreach (var childNode in children)
+            {
+                SetColorRecursive(childNode, color);
+            }
         }
     }
 }

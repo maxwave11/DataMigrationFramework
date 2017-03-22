@@ -2,6 +2,7 @@ using System;
 using System.Xml.Serialization;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes
 {
@@ -43,9 +44,22 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         public abstract TransitResult Transit(ValueTransitContext ctx);
 
+        protected virtual void TraceStart(ValueTransitContext ctx)
+        {
+            var traceMsg =
+              $"> {this.ToString()}\n    Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
+            Migrator.Current.Tracer.TraceText(traceMsg, this);
+        }
+
+        protected virtual void TraceEnd(ValueTransitContext ctx)
+        {
+            var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
+            Migrator.Current.Tracer.TraceText(traceMsg, this);
+        }
+
         internal TransitResult TransitInternal(ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.TraceTransitionNodeStart(this, ctx);
+            TraceStart(ctx);
 
             object resultValue = null;
             TransitContinuation continuation;
@@ -71,7 +85,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
             ctx.SetCurrentValue(this.Name, resultValue);
 
-            Migrator.Current.Tracer.TraceTransitionNodeEnd(this, ctx);
+            TraceEnd(ctx);
 
             return new TransitResult(continuation, ctx.TransitValue);
         }
