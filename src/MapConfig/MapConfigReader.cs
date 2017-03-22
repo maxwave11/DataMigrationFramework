@@ -46,8 +46,8 @@ namespace XQ.DataMigration.MapConfig
 
         public void RegisterTransitElement(Type type)
         {
-            if (!type.IsSubclassOf(typeof(ComplexTransition)) && !type.IsSubclassOf(typeof(ObjectTransition)))
-                throw new Exception($"Types for register must be derived from {nameof(ComplexTransition)} or {nameof(ObjectTransition)}");
+            if (!type.IsSubclassOf(typeof(TransitUnit)) && !type.IsSubclassOf(typeof(ObjectTransition)))
+                throw new Exception($"Types for register must be derived from {nameof(TransitUnit)} or {nameof(ObjectTransition)}");
 
             _customElements[type.Name] = type;
         }
@@ -97,7 +97,7 @@ namespace XQ.DataMigration.MapConfig
                     continue;
                 }
 
-                if (typeof(ComplexTransition).IsAssignableFrom(customTransitionType.Value))
+                if (typeof(TransitUnit).IsAssignableFrom(customTransitionType.Value))
                     complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
             }
 
