@@ -1,95 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Serialization;
+﻿using System.Collections.Generic;
 using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 {
-    public abstract class ValueTransitionBase : TransitionNode
+    public abstract class ComplexTransition : TransitionNode
     {
         /// <summary>
         /// List of nested transitions. 
         /// </summary>
-        public List<ValueTransitionBase> ChildTransitions { get; set; }
+        public List<TransitionNode> ChildTransitions { get; set; }
 
-        /// <summary>
-        /// Specify what to do if some error occured while current transition processing
-        /// </summary>
-        [XmlAttribute]
-        public TransitContinuation OnError { get; set; } = TransitContinuation.RaiseError;
-
-        internal ObjectTransition ObjectTransition => (Parent as ObjectTransition) ?? (Parent as ValueTransitionBase)?.ObjectTransition;
-
-        internal Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
-
-        public virtual TransitResult TransitValue(ValueTransitContext ctx)
+        public override void Initialize(TransitionNode parent)
         {
-            return new TransitResult(TransitContinuation.Continue, ctx.TransitValue);
+            ChildTransitions?.ForEach(i => i.Initialize(this));
+            base.Initialize(parent);
         }
 
-        public override List<TransitionNode> GetChildren()
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
-            return ChildTransitions?.Cast<TransitionNode>().ToList();
-        }
-
-        internal TransitResult TransitValueInternal(ValueTransitContext ctx)
-        {
-            Migrator.Current.Tracer.TraceValueTransitionStart(this,ctx);
-            TransitContinuation continuation = TransitContinuation.Continue;
-            //at first start process child transitions
-            if (ChildTransitions != null)
-            {
-                foreach (var childTransition in ChildTransitions)
-                {
-                    var result = childTransition.TransitValueInternal(ctx);
-                    continuation = result.Continuation;
-
-                    if (continuation == TransitContinuation.SkipUnit)
-                    {
-                        continuation = TransitContinuation.Continue;
-                        break;
-                    }
-
-                    if (continuation != TransitContinuation.Continue)
-                        break;
-                }
-            }
-
-            //process own transition just after childrens
-            if (continuation == TransitContinuation.Continue)
-                continuation = HandleValueTransition(ctx);
-
-            Migrator.Current.Tracer.TraceValueTransitionEnd(this, ctx);
+            var continuation = TransitChildren(ctx);
             return new TransitResult(continuation, ctx.TransitValue);
         }
 
-        private TransitContinuation HandleValueTransition(ValueTransitContext ctx)
+        private TransitContinuation TransitChildren(ValueTransitContext ctx)
         {
-            object resultValue = null;
-            TransitContinuation continuation;
-            string message = "";
-            try
+            var continuation = TransitContinuation.Continue;
+
+            if (ChildTransitions == null)
+                return continuation;
+
+            foreach (var childTransition in ChildTransitions)
             {
-                var result = TransitValue(ctx);
-                resultValue = result.Value;
+                var result = childTransition.TransitInternal(ctx);
                 continuation = result.Continuation;
-                message = result.Message;
-            }
-            catch (Exception ex)
-            {
-                continuation = this.OnError;
-                Migrator.Current.Tracer.TraceText(ex.ToString(),this, ConsoleColor.Yellow);
+
+                if (continuation == TransitContinuation.SkipUnit)
+                {
+                    continuation = TransitContinuation.Continue;
+                    break;
+                }
+
+                if (continuation != TransitContinuation.Continue)
+                    break;
             }
 
-            if (continuation == TransitContinuation.RaiseError)
-            {
-                message = $"Transition stopped, message: {message}";
-                continuation = Migrator.Current.Tracer.TraceError(message, this, ctx);
-            }
-
-            ctx.SetCurrentValue(this.Name, resultValue);
             return continuation;
         }
     }

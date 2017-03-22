@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 using XQ.DataMigration.MapConfig;
+using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes
 {
@@ -30,13 +30,51 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         [XmlIgnore]
         public TransitionNode Parent { get; private set; }
 
+        /// <summary>
+        /// Specify what to do if some error occured while current transition processing
+        /// </summary>
+        [XmlAttribute]
+        public TransitContinuation OnError { get; set; } = TransitContinuation.RaiseError;
+
         public virtual void Initialize(TransitionNode parent)
         {
             Parent = parent;
-            GetChildren()?.ForEach(i => i.Initialize(this));
         }
 
-        public abstract List<TransitionNode> GetChildren();  
+        public abstract TransitResult Transit(ValueTransitContext ctx);
+
+        internal TransitResult TransitInternal(ValueTransitContext ctx)
+        {
+            Migrator.Current.Tracer.TraceTransitionNodeStart(this, ctx);
+
+            object resultValue = null;
+            TransitContinuation continuation;
+            string message = "";
+            try
+            {
+                var result = Transit(ctx);
+                resultValue = result.Value;
+                continuation = result.Continuation;
+                message = result.Message;
+            }
+            catch (Exception ex)
+            {
+                continuation = this.OnError;
+                Migrator.Current.Tracer.TraceText(ex.ToString(), this, ConsoleColor.Yellow);
+            }
+
+            if (continuation == TransitContinuation.RaiseError)
+            {
+                message = $"Transition stopped, message: {message}";
+                continuation = Migrator.Current.Tracer.TraceError(message, this, ctx);
+            }
+
+            ctx.SetCurrentValue(this.Name, resultValue);
+
+            Migrator.Current.Tracer.TraceTransitionNodeEnd(this, ctx);
+
+            return new TransitResult(continuation, ctx.TransitValue);
+        }
 
         public override string ToString()
         {

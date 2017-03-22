@@ -46,8 +46,8 @@ namespace XQ.DataMigration.MapConfig
 
         public void RegisterTransitElement(Type type)
         {
-            if (!type.IsSubclassOf(typeof(ValueTransitionBase)) && !type.IsSubclassOf(typeof(ObjectTransition)))
-                throw new Exception($"Types for register must be derived from {nameof(ValueTransitionBase)} or {nameof(ObjectTransition)}");
+            if (!type.IsSubclassOf(typeof(ComplexTransition)) && !type.IsSubclassOf(typeof(ObjectTransition)))
+                throw new Exception($"Types for register must be derived from {nameof(ComplexTransition)} or {nameof(ObjectTransition)}");
 
             _customElements[type.Name] = type;
         }
@@ -71,30 +71,33 @@ namespace XQ.DataMigration.MapConfig
         private XmlAttributeOverrides GetCustomAttributeOverrides()
         {
             //register default object transitions
-            var groupElementChildren = new XmlAttributes();
-            groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
-            groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(PivotObjectTransition), typeof(PivotObjectTransition)));
-            groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
+            //var groupElementChildren = new XmlAttributes();
+            //groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
+            //groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(PivotObjectTransition), typeof(PivotObjectTransition)));
+            //groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
 
             //register default object transitions
-            var objectElementChildren = new XmlAttributes();
-            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValueTransition), typeof(ValueTransition)));
-            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(LookupValueTransition), typeof(LookupValueTransition)));
-            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitUnit), typeof(TransitUnit)));
-            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValidationUnit), typeof(ValidationUnit)));
-            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TypeConvertTransitUnit), typeof(TypeConvertTransitUnit)));
-            objectElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ReplaceTransitUnit), typeof(ReplaceTransitUnit)));
+            var complexElementChildren = new XmlAttributes();
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValueTransition), typeof(ValueTransition)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(LookupValueTransition), typeof(LookupValueTransition)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitUnit), typeof(TransitUnit)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValidationUnit), typeof(ValidationUnit)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TypeConvertTransitUnit), typeof(TypeConvertTransitUnit)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ReplaceTransitUnit), typeof(ReplaceTransitUnit)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(PivotObjectTransition), typeof(PivotObjectTransition)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
 
             foreach (var customTransitionType in _customElements)
             {
                 if (typeof(ObjectTransition).IsAssignableFrom(customTransitionType.Value))
                 {
-                    groupElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
+                    //groupElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
                     continue;
                 }
 
-                if (typeof(ValueTransitionBase).IsAssignableFrom(customTransitionType.Value))
-                    objectElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
+                if (typeof(ComplexTransition).IsAssignableFrom(customTransitionType.Value))
+                    complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
             }
 
             var providerTypes = new XmlAttributes();
@@ -104,9 +107,9 @@ namespace XQ.DataMigration.MapConfig
             }
 
             var attribOverrides = new XmlAttributeOverrides();
-            attribOverrides.Add(typeof(TransitionGroup), nameof(TransitionGroup.ObjectTransitions), groupElementChildren);
-            attribOverrides.Add(typeof(ValueTransitionBase), nameof(ValueTransitionBase.ChildTransitions), objectElementChildren);
-            attribOverrides.Add(typeof(ObjectTransition), nameof(ObjectTransition.ValueTransitions), objectElementChildren);
+            //attribOverrides.Add(typeof(TransitionGroup), nameof(TransitionGroup.ChildTransitions), groupElementChildren);
+            attribOverrides.Add(typeof(ComplexTransition), nameof(ComplexTransition.ChildTransitions), complexElementChildren);
+            //attribOverrides.Add(typeof(ObjectTransition), nameof(ObjectTransition.ValueTransitions), objectElementChildren);
             attribOverrides.Add(typeof(DataProviderSettings), nameof(DataProviderSettings.DataProvider), providerTypes);
             return attribOverrides;
         }

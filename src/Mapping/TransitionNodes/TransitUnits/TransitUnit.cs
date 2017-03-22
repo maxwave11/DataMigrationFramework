@@ -6,16 +6,14 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class TransitUnit: ValueTransitionBase
+    public class TransitUnit: TransitionNode
     {
         [XmlAttribute]
         public string Expression { get; set; }
 
-        public TransitUnit()
-        {
-        }
+        internal Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
 
-        public override TransitResult TransitValue(ValueTransitContext ctx)
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
             var returnValue = ctx.TransitValue;
             if (Expression.IsNotEmpty())

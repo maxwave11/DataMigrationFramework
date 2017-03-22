@@ -48,7 +48,7 @@ namespace XQ.DataMigration.Mapping
         private void MapAction(MapAction action)
         {
             var transGroup = action.MapConfig.TransitionGroups.FirstOrDefault();
-            transGroup?.Run();
+            transGroup?.Transit(null);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace XQ.DataMigration.Mapping.Trace
         /// <summary>
         /// Event fires each time when any unhandled error occured while migration process
         /// </summary>
-        public event EventHandler<ValueTransitErrorEventArgs> OnValueTransitError;
+        public event EventHandler<TransitErrorEventArgs> OnValueTransitError;
 
         /// <summary>
         /// Event fires each time when any unhandled error occured while migration process
@@ -54,7 +54,8 @@ namespace XQ.DataMigration.Mapping.Trace
 
         public void TraceUserMessage(string message, TransitionNode node)
         {
-            TraceText(message, node);
+            AddTraceEntry(node, message, node.Color);
+            Trace?.Invoke(this, new TraceMessage(message, node.Color, true));
         }
 
         public void TraceObjectTransitionStart(ObjectTransition objectTransition, string objectKey)
@@ -77,18 +78,18 @@ namespace XQ.DataMigration.Mapping.Trace
             TraceText($"<<< Objects from source DataSet '{transition.Name}' are transitted to target DataSet '{transition.TargetDataSetId}'\n", transition, ConsoleColor.DarkYellow);
         }
 
-        public void TraceValueTransitionStart(ValueTransitionBase valueTransition, ValueTransitContext ctx)
+        public void TraceTransitionNodeStart(TransitionNode transitionNode, ValueTransitContext ctx)
         {
             var traceMsg =
-                $"> {valueTransition.ToString()}\n    Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
+                $"> {transitionNode.ToString()}\n    Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
 
-            TraceText(traceMsg, valueTransition);
+            TraceText(traceMsg, transitionNode);
         }
 
-        public void TraceValueTransitionEnd(ValueTransitionBase valueTransition, ValueTransitContext ctx)
+        public void TraceTransitionNodeEnd(TransitionNode transitionNode, ValueTransitContext ctx)
         {
             var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            TraceText(traceMsg, valueTransition);
+            TraceText(traceMsg, transitionNode);
         }
 
         public void TraceSkipObject(string text, TransitionNode node, IValuesObject sourceObject)
@@ -97,10 +98,10 @@ namespace XQ.DataMigration.Mapping.Trace
             OnObjectSkipped?.Invoke(this, sourceObject);
         }
 
-        public TransitContinuation TraceError(string message, ValueTransitionBase valueTransition, ValueTransitContext ctx)
+        public TransitContinuation TraceError(string message, TransitionNode valueTransition, ValueTransitContext ctx)
         {
             TraceText(message, valueTransition, ConsoleColor.Red);
-            var args = new ValueTransitErrorEventArgs(valueTransition, ctx);
+            var args = new TransitErrorEventArgs(valueTransition, ctx);
             OnValueTransitError?.Invoke(valueTransition, args);
             return args.Continue ? TransitContinuation.Continue : TransitContinuation.Stop;
         }
@@ -120,11 +121,13 @@ namespace XQ.DataMigration.Mapping.Trace
 
         private void AddTraceEntry(TransitionNode node, string message, ConsoleColor color)
         {
-            if (node is ValueTransitionBase)
-                ((ValueTransitionBase)node).ObjectTransition.AddTraceEntry(message, color);
+            var objectTransition = FindObjectTransition(node);
+            objectTransition.AddTraceEntry(message, color);
+        }
 
-            if (node is ObjectTransition)
-                ((ObjectTransition)node).AddTraceEntry(message, color);
+        private ObjectTransition FindObjectTransition(TransitionNode transitionNode)
+        {
+            return  (transitionNode as ObjectTransition) ?? FindObjectTransition(transitionNode.Parent);
         }
     }
 }

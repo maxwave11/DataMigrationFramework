@@ -4,7 +4,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
     public class WriteTransitUnit : TransitUnit
     {
-        public override TransitResult TransitValue(ValueTransitContext ctx)
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
             TransitContinuation continuation = TransitContinuation.Continue;
 

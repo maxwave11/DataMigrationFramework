@@ -12,10 +12,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         [XmlAttribute]
         public TransitContinuation OnInvalid { get; set; }
 
-        public override TransitResult TransitValue(ValueTransitContext ctx)
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
             var transitValue = ctx.TransitValue;
-            var transitResult = base.TransitValue(ctx);
+            var transitResult = base.Transit(ctx);
 
             var boolValue = transitResult.Value as bool?;
             if (!boolValue.HasValue)

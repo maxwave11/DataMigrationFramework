@@ -8,6 +8,7 @@ using XQ.DataMigration.Data;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
+using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
 using XQ.DataMigration.Utils;
 
@@ -16,7 +17,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
     /// <summary>
     /// Transition which transit objects data from DataSet of source system to DataSet of target system
     /// </summary>
-    public class ObjectTransition : TransitionNode
+    public class ObjectTransition : ComplexTransition
     {
         #region XmlAttributes
         /// <summary>
@@ -66,8 +67,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
         #region Members
 
-        public List<ValueTransitionBase> ValueTransitions { get; set; }
-
         private readonly Dictionary<string, IValuesObject> _transittedObjects = new Dictionary<string, IValuesObject>();
 
         private Dictionary<int, int> _allowedRanges;
@@ -86,22 +85,18 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             Validate();
             KeyDefinition?.Initialize(this);
             ParseRowsRange();
-
             base.Initialize(parent);
         }
 
-        public virtual void TransitAllObjects()
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
             var objectIndex = 1;
-
-            if (TraceMessage.IsNotEmpty())
-                Tracer.TraceUserMessage(TraceMessage, this);
 
             Tracer.TraceObjectSetTransitionStart(this);
             var srcDataSet = GetSourceDataSet();
 
             if (srcDataSet == null)
-                return;
+                return new TransitResult(TransitContinuation.Continue, null);
 
             foreach (var sourceObject in srcDataSet)
             {
@@ -125,6 +120,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             SaveTransittedObjects();
             Tracer.TraceObjectSetTransitionEnd(this);
             srcDataSet.Dispose();
+
+            return new TransitResult(TransitContinuation.Continue, null);
         }
 
         public virtual ICollection<IValuesObject> TransitObject(IValuesObject source)
@@ -145,13 +142,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             if (target == null)
                 return null;
 
-            foreach (var valueTransition in ValueTransitions)
+            foreach (var valueTransition in ChildTransitions)
             {
                 if (ActualTrace == TraceMode.True)
                     Tracer.TraceText("", this);
 
                 var ctx = new ValueTransitContext(source, target, source, this);
-                var result = valueTransition.TransitValueInternal(ctx);
+                var result = valueTransition.Transit(ctx);
 
                 if (result.Continuation == TransitContinuation.SkipValue)
                 {
@@ -178,18 +175,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
         }
 
-        public override List<TransitionNode> GetChildren()
-        {
-            return ValueTransitions.Cast<TransitionNode>().ToList();
-        }
-
         protected virtual string GetKeyFromSource(IValuesObject sourceObject)
         {
             if (!sourceObject.Key.IsEmpty())
                 return sourceObject.Key;
 
             var ctx = new ValueTransitContext(sourceObject,null, sourceObject, this);
-            var transitResult = KeyDefinition.SourceKeyTransition.TransitValueInternal(ctx);
+            var transitResult = KeyDefinition.SourceKeyTransition.TransitInternal(ctx);
 
             if (transitResult.Continuation == TransitContinuation.Continue)
                 sourceObject.Key = transitResult.Value?.ToString();
@@ -224,7 +216,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                 return targetObject.Key;
 
             var ctx = new ValueTransitContext(targetObject, null, targetObject, this);
-            var transitResult = KeyDefinition.TargetKeyTransition.TransitValueInternal(ctx);
+            var transitResult = KeyDefinition.TargetKeyTransition.TransitInternal(ctx);
 
             targetObject.Key = transitResult.Value?.ToString();
 

@@ -35,9 +35,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.Initialize(parent);
         }
 
-        public override TransitResult TransitValue(ValueTransitContext ctx)
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var value = base.TransitValue(ctx).Value;
+            var value = base.Transit(ctx).Value;
             var typedValue = GetTypedValue(_typeCode, value, DataTypeFormats.IsNotEmpty() ? DataTypeFormats.Split(',') : null);
             return new TransitResult(TransitContinuation.Continue, typedValue);
         }

@@ -7,7 +7,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
 {
-    public class ValueTransition : ValueTransitionBase
+    public class ValueTransition : ComplexTransition
     {
         [XmlAttribute]
         public string From { get; set; }
@@ -35,7 +35,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
         {
 
             if (ChildTransitions == null)
-                ChildTransitions = new List<ValueTransitionBase>();
+                ChildTransitions = new List<TransitionNode>();
 
             var userDefinedTransitions = ChildTransitions.ToList();
             ChildTransitions?.Clear();
@@ -54,7 +54,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
             }
         }
 
-        protected virtual void InitializeUserDefinedTransitions(IEnumerable<ValueTransitionBase> userDefinedTransitions)
+        protected virtual void InitializeUserDefinedTransitions(IEnumerable<TransitionNode> userDefinedTransitions)
         {
             this.ChildTransitions.AddRange(userDefinedTransitions);
         }

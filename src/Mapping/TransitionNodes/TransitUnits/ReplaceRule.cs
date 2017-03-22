@@ -8,7 +8,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class ReplaceRule : ValueTransitionBase
+    public class ReplaceRule : TransitUnit
     {
         [XmlAttribute]
         public string Rule { get; set; }
@@ -38,7 +38,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.Initialize(parent);
         }
 
-        public override TransitResult TransitValue(ValueTransitContext ctx)
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
             var continuation = TransitContinuation.Continue;
             var value = ctx.TransitValue?.ToString();

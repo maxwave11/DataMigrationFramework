@@ -15,7 +15,7 @@ namespace XQ.DataMigration.MapConfig
     /// almost always you have to define key evaluation logic for source object and for target object respectively. 
     /// Migration key evaluated for source and target objects must be equal!
     /// </summary>
-    public class KeyDefinition: TransitionNode
+    public class KeyDefinition: ComplexTransition
     {
         /// <summary>
         /// Defines an expression which must evaluate a unique migration key for source object of transition
@@ -77,24 +77,17 @@ namespace XQ.DataMigration.MapConfig
             SetColorRecursive(TargetKeyTransition, ConsoleColor.Blue);
         }
 
-        private void SetColorRecursive(TransitionNode node, ConsoleColor color)
+        private void SetColorRecursive(ComplexTransition node, ConsoleColor color)
         {
             node.Color = color;
-            var children = node.GetChildren();
+            var children = node.ChildTransitions;
             if (children?.Any()  != true)
                 return;
 
-            foreach (var childNode in children)
-            {
-                SetColorRecursive(childNode, color);
-            }
-        }
-
-        public override List<TransitionNode> GetChildren()
-        {
-            return null;
+            //foreach (var childNode in children)
+            //{
+            //    SetColorRecursive(childNode, color);
+            //}
         }
     }
-
-  
 }

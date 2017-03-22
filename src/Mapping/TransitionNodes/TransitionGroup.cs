@@ -1,34 +1,31 @@
 using System.Collections.Generic;
 using System.Linq;
+using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes
 {
-    public class TransitionGroup : TransitionNode
+    public class TransitionGroup : ComplexTransition
     {
-        public List<ObjectTransition> ObjectTransitions { get; set; }
-
-        public void Run()
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
-            foreach (var objTransition in ObjectTransitions)
+            foreach (var objTransition in ChildTransitions)
             {
                 if (!objTransition.Enabled)
                     continue;
 
                 if (objTransition is GlobalObjectTransition)
                 {
-                    objTransition.TransitObject(null);
+                    objTransition.Transit(null);
                 }
                 else
                 {
-                    objTransition.TransitAllObjects();
+                    objTransition.Transit(null);
                 }
             }
-        }
 
-        public override List<TransitionNode> GetChildren()
-        {
-            return ObjectTransitions.Cast<TransitionNode>().ToList();
+            return new TransitResult();
         }
     }
 }

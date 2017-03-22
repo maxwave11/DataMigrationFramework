@@ -7,7 +7,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class ReplaceTransitUnit : ValueTransitionBase
+    public class ReplaceTransitUnit : ComplexTransition
     {
         [XmlAttribute]
         public string ReplaceRules { get; set; }
@@ -21,7 +21,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
                 var rules = ReplaceRules.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                ChildTransitions = new List<ValueTransitionBase>();
+                ChildTransitions = new List<TransitionNode>();
                 ChildTransitions.AddRange(rules.Select(i => new ReplaceRule { Rule = i}));
             }
 

@@ -2,6 +2,7 @@
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
@@ -32,10 +33,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         [XmlAttribute]
         public TransitContinuation OnNotFound { get; set; } = TransitContinuation.RaiseError;
 
-        public LookupValueTransitUnit()
-        {
-           
-        }
+        private ObjectTransition _currentObjectTransition;
 
         public override void Initialize(TransitionNode parent)
         {
@@ -52,13 +50,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.Initialize(parent);
         }
 
-        public override TransitResult TransitValue(ValueTransitContext ctx)
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var key = base.TransitValue(ctx).Value?.ToString();
+            var key = base.Transit(ctx).Value?.ToString();
             IValuesObject lookupObject = null;
             string message = "";
             TransitContinuation continuation = TransitContinuation.Continue;
-
+            _currentObjectTransition = ctx.ObjectTransition;
             if (key.IsNotEmpty())
             {
                 lookupObject = GetLookupObjectByKey(key);
@@ -75,7 +73,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return new TransitResult(continuation, lookupObject, message);
         }
 
-        public virtual IValuesObject GetLookupObjectByKey(string key)
+        private IValuesObject GetLookupObjectByKey(string key)
         {
             IDataProvider provider;
             if (ProviderName.IsEmpty())
@@ -90,9 +88,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return dataSet.GetObjectByKey(key, GetLookupExpressionValue);
         }
 
-        public virtual string GetLookupExpressionValue(IValuesObject lookupObject)
+        private string GetLookupExpressionValue(IValuesObject lookupObject)
         {
-            var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, ObjectTransition);
+            var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, _currentObjectTransition);
             return ExpressionEvaluator.EvaluateString(LookupExpr, ctx);
         }
 

@@ -4,6 +4,11 @@
 
     public class TransitResult
     {
+        public TransitResult()
+        {
+            Continuation = TransitContinuation.Continue;
+        }
+
         public TransitResult(TransitContinuation continuation, object value, string message ="")
         {
             Continuation = continuation;
