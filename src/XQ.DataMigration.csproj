@@ -70,6 +70,7 @@
     <Compile Include="Mapping\Trace\TraceMessage.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\GlobalObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\TransitMode.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteMessageUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ValueTransitions\LookupValueTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitionGroup.cs" />
     <Compile Include="Mapping\TransitionNodes\ObjectTransitions\PivotObjectTransition.cs" />

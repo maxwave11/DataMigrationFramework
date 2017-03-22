@@ -1,4 +1,5 @@
 using System;
+using XQ.DataMigration.Mapping.TransitionNodes;
 
 namespace XQ.DataMigration.Mapping.Trace
 {
@@ -6,13 +7,12 @@ namespace XQ.DataMigration.Mapping.Trace
     {
         public string Text { get; private set; }
         public ConsoleColor Color { get; private set; }
-        public bool IsUserMessage { get; private set; }
-
-        public TraceMessage(string text, ConsoleColor color, bool isUserMessage = false)
+        public TransitionNode TransitionNode { get; }
+        public TraceMessage(string text, ConsoleColor color, TransitionNode node)
         {
             Text = text;
             Color = color;
-            IsUserMessage = isUserMessage;
+            TransitionNode = node;
         }
     }
 }

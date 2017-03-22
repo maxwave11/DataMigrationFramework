@@ -35,7 +35,7 @@ namespace XQ.DataMigration.Mapping.Trace
 
         public void TraceText(string message)
         {
-            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.White));
+            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.White, null));
         }
 
         public void TraceText(string message, TransitionNode node)
@@ -49,13 +49,13 @@ namespace XQ.DataMigration.Mapping.Trace
             AddTraceEntry(node, msg, color);
 
             if (node.ActualTrace == TraceMode.True || (node.ActualTrace == TraceMode.Auto && node is ObjectTransition))
-                Trace?.Invoke(this, new TraceMessage(msg, color));
+                Trace?.Invoke(this, new TraceMessage(msg, color, node));
         }
 
         public void TraceUserMessage(string message, TransitionNode node)
         {
             AddTraceEntry(node, message, node.Color);
-            Trace?.Invoke(this, new TraceMessage(message, node.Color, true));
+            Trace?.Invoke(this, new TraceMessage(message, node.Color, node));
         }
 
         public void TraceObjectTransitionStart(ObjectTransition objectTransition, string objectKey)

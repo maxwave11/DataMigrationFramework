@@ -84,6 +84,7 @@ namespace XQ.DataMigration.MapConfig
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValidationUnit), typeof(ValidationUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TypeConvertTransitUnit), typeof(TypeConvertTransitUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ReplaceTransitUnit), typeof(ReplaceTransitUnit)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(WriteMessageUnit), typeof(WriteMessageUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(PivotObjectTransition), typeof(PivotObjectTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
@@ -107,9 +108,7 @@ namespace XQ.DataMigration.MapConfig
             }
 
             var attribOverrides = new XmlAttributeOverrides();
-            //attribOverrides.Add(typeof(TransitionGroup), nameof(TransitionGroup.ChildTransitions), groupElementChildren);
             attribOverrides.Add(typeof(ComplexTransition), nameof(ComplexTransition.ChildTransitions), complexElementChildren);
-            //attribOverrides.Add(typeof(ObjectTransition), nameof(ObjectTransition.ValueTransitions), objectElementChildren);
             attribOverrides.Add(typeof(DataProviderSettings), nameof(DataProviderSettings.DataProvider), providerTypes);
             return attribOverrides;
         }
