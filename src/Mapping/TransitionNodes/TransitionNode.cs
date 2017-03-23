@@ -48,13 +48,18 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         {
             var traceMsg =
               $"> {this.ToString()}\n    Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            Migrator.Current.Tracer.TraceText(traceMsg, this);
+            TraceLine(traceMsg);
         }
 
         protected virtual void TraceEnd(ValueTransitContext ctx)
         {
             var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
-            Migrator.Current.Tracer.TraceText(traceMsg, this);
+            TraceLine(traceMsg);
+        }
+
+        protected virtual void TraceLine(string message)
+        {
+            Migrator.Current.Tracer.TraceText(message, this);
         }
 
         internal TransitResult TransitInternal(ValueTransitContext ctx)

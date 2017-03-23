@@ -5,7 +5,6 @@ using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
-using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.Trace
@@ -50,22 +49,6 @@ namespace XQ.DataMigration.Mapping.Trace
 
             if (node.ActualTrace == TraceMode.True || (node.ActualTrace == TraceMode.Auto && node is ObjectTransition))
                 Trace?.Invoke(this, new TraceMessage(msg, color, node));
-        }
-
-        public void TraceUserMessage(string message, TransitionNode node)
-        {
-            AddTraceEntry(node, message, node.Color);
-            Trace?.Invoke(this, new TraceMessage(message, node.Color, node));
-        }
-
-        public void TraceObjectTransitionStart(ObjectTransition objectTransition, string objectKey)
-        {
-            TraceText($"(Start object transition ({objectTransition.Name}) [{ objectKey }]", objectTransition);
-        }
-
-        public void TraceObjectTransitionEnd(ObjectTransition objectTransition)
-        {
-            TraceText("(End object transition)", objectTransition);
         }
 
         public void TraceObjectSetTransitionStart(ObjectTransition transition)

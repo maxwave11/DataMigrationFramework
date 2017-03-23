@@ -124,13 +124,23 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             return new TransitResult(TransitContinuation.Continue, null);
         }
 
+        public void TraceObjectTransitionStart(ObjectTransition objectTransition, string objectKey)
+        {
+            TraceLine($"(Start object transition ({objectTransition.Name}) [{ objectKey }]");
+        }
+
+        public void TraceObjectTransitionEnd(ObjectTransition objectTransition)
+        {
+            TraceLine("(End object transition)");
+        }
+
         public virtual ICollection<IValuesObject> TransitObject(IValuesObject source)
         {
             TraceEntries.Clear();
 
             var objectKey = GetKeyFromSource(source);
 
-            Tracer.TraceObjectTransitionStart(this, objectKey);
+            TraceObjectTransitionStart(this, objectKey);
 
             //don't transit objects with empty key
             if (objectKey.IsEmpty())
@@ -145,7 +155,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             foreach (var valueTransition in ChildTransitions)
             {
                 if (ActualTrace == TraceMode.True)
-                    Tracer.TraceText("", this);
+                    TraceLine("");
 
                 var ctx = new ValueTransitContext(source, target, source, this);
                 var result = valueTransition.TransitInternal(ctx);
@@ -166,7 +176,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                 }
             }
 
-            Tracer.TraceObjectTransitionEnd(this);
+            TraceObjectTransitionEnd(this);
             return new[] { target };
         }
 
@@ -188,7 +198,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             if (transitResult.Continuation == TransitContinuation.RaiseError)
             {
-                Tracer.TraceText($"Transition stopped on { Name }", this);
+                TraceLine($"Transition stopped on { Name }");
                 throw new Exception("Can't transit source key ");
             }
 
@@ -205,7 +215,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                 return existedObject;
 
             if (TransitMode == TransitMode.OnlyNewObjects && existedObject != null)
+            {
+                TraceLine($"Object already exist, skipping, because TransitMode = TransitMode.OnlyNewObjects");
                 return null;
+            }
 
             return existedObject ?? provider.CreateObject(TargetDataSetId);
         }
@@ -294,7 +307,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             if (!Migrator.Current.Action.DoSave)
             {
-                Tracer.TraceText("Don't saving objects due of MapAction.DoSave = false", this);
+                TraceLine("Don't saving objects due of MapAction.DoSave = false");
                 return;
             }
 
@@ -378,7 +391,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             if (findedObject == null)
                 return false;
 
-            Tracer.TraceText($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}", this);
+            TraceLine($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}");
             return true;
         }
 

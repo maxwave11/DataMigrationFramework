@@ -63,7 +63,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
                 if (lookupObject == null)
                 {
-                    Migrator.Current.Tracer.TraceText($"Warning: lookup object not found by key '{key}'", this);
+                    TraceLine($"Warning: lookup object not found by key '{key}'");
                     continuation = this.OnNotFound;
                     if (continuation != TransitContinuation.Continue)
                         message = "Value transition interuppted because of empty value of transition " + this.Name;

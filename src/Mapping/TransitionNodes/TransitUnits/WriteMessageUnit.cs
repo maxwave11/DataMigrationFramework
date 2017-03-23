@@ -23,7 +23,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         {
             var result =  base.Transit(ctx);
             if (result.Continuation == TransitContinuation.Continue)
-                Migrator.Current.Tracer.TraceText(result.Value?.ToString(), this);
+                TraceLine(result.Value?.ToString());
             return result;
         }
     }

@@ -23,7 +23,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             TransitContinuation continuation;
             string ruleMessage = "";
-            Migrator.Current.Tracer.TraceText($"Is valid: {boolValue.Value}", this);
+            TraceLine($"Is valid: {boolValue.Value}");
             if (boolValue.Value == false)
             {
                 continuation = OnInvalid;
