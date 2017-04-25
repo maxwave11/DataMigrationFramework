@@ -19,7 +19,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     public class ObjectSetTransition : TransitionNode
     {
     
-        [XmlAttribute]
+        [XmlElement]
         public ObjectTransition ObjectTransition { get; set; }
 
         #region XmlAttributes
@@ -75,6 +75,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             if (ObjectTransition == null)
                 throw new Exception($"{nameof(ObjectTransition)} can't be empty");
+
+            ObjectTransition.Initialize(this);
+
             base.Initialize(parent);
         }
 
@@ -153,13 +156,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 if (targetKey.IsEmpty())
                     continue;
 
-                if (!_transittedObjects.ContainsKey(targetKey))
-                    continue;
-
-                _transittedObjects.Add(targetKey, targetObject);
-                //var provider = Migrator.Current.Action.TargetProvider;
-
-                //provider.GetDataSet(TargetDataSetId).PutObjectToCache(targetObject, targetKey);
+                _transittedObjects[targetKey] = targetObject;
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 
@@ -17,13 +18,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             base.Initialize(parent);
         }
 
-        public override TransitResult Transit(ValueTransitContext ctx)
+        public override TransitResult Transit(ValueTransitContext transitContext)
         {
-            var continuation = TransitChildren(ctx);
-            return new TransitResult(continuation, ctx.TransitValue);
+            if (transitContext == null)
+                throw new ArgumentNullException($"{nameof(transitContext)} can't be null in {nameof(ComplexTransition)}");
+
+            var continuation = TransitChildren(transitContext);
+            return new TransitResult(continuation, transitContext.TransitValue);
         }
 
-        private TransitContinuation TransitChildren(ValueTransitContext ctx)
+        protected TransitContinuation TransitChildren(ValueTransitContext ctx)
         {
             var continuation = TransitContinuation.Continue;
 

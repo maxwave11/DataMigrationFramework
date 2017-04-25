@@ -46,7 +46,7 @@ namespace XQ.DataMigration.Mapping.Trace
         public void TraceText(string message, TransitionNode node, ConsoleColor color)
         {
             var msg =  message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
-            AddTraceEntry(node, msg, color);
+            AddTraceEntryToObjectTransition(node, msg, color);
 
             if (node.ActualTrace == TraceMode.True || (node.ActualTrace == TraceMode.Auto && node is ObjectTransition))
                 Trace?.Invoke(this, new TraceMessage(msg, color, node));
@@ -89,14 +89,17 @@ namespace XQ.DataMigration.Mapping.Trace
             return _indent;
         }
 
-        private void AddTraceEntry(TransitionNode node, string message, ConsoleColor color)
+        private void AddTraceEntryToObjectTransition(TransitionNode node, string message, ConsoleColor color)
         {
             var objectTransition = FindObjectTransition(node);
-            objectTransition.AddTraceEntry(message, color);
+            objectTransition?.AddTraceEntry(message, color);
         }
 
         private ObjectTransition FindObjectTransition(TransitionNode transitionNode)
         {
+            if (transitionNode == null)
+                return null;
+
             return  (transitionNode as ObjectTransition) ?? FindObjectTransition(transitionNode.Parent);
         }
     }

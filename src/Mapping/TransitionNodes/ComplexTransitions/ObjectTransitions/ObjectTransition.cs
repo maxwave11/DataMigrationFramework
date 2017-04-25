@@ -38,12 +38,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public override void Initialize(TransitionNode parent)
         {
             Color = ConsoleColor.Magenta;
+            Validate();
+            KeyDefinition?.Initialize(parent);
+            base.Initialize(parent);
+        }
 
+        protected virtual void Validate()
+        {
             if (KeyDefinition == null)
                 throw new Exception($"{nameof(KeyDefinition)} is required for {nameof(ObjectTransition)} element");
-
-            KeyDefinition.Initialize(this);
-            base.Initialize(this);
         }
 
         public void TraceObjectTransitionStart(ObjectTransition objectTransition, string objectKey)

@@ -1,4 +1,5 @@
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
@@ -14,6 +15,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         protected override IValuesObject GetTargetObject(string key)
         {
             return GlobalObject;
+        }
+
+        public override TransitResult Transit(ValueTransitContext transitContext)
+        {
+            var ctx = new ValueTransitContext(null, GlobalObject, null, this);
+            var continuation = TransitChildren(ctx);
+            return new TransitResult(continuation, ctx.TransitValue);
+        }
+
+        protected override void Validate()
+        {
         }
     }
 }

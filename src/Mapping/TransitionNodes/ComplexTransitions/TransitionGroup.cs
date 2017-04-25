@@ -12,14 +12,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
                 if (!objTransition.Enabled)
                     continue;
 
-                if (objTransition is GlobalObjectTransition)
-                {
-                    objTransition.Transit(null);
-                }
-                else
-                {
-                    objTransition.Transit(null);
-                }
+                objTransition.Transit(null);
             }
 
             return new TransitResult();
