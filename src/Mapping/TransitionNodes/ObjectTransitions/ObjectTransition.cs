@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using ExpressionEvaluator;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
@@ -57,7 +58,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         /// <seealso cref="TransitMode"/>
         /// </summary>
         [XmlAttribute]
-        public TransitMode TransitMode { get; set; }
+        public ObjectTransitMode TransitMode { get; set; }
         /// <summary>
         /// The name of provider from which should be fetched source objects
         /// </summary>
@@ -211,10 +212,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
             var existedObject = provider.GetDataSet(TargetDataSetId).GetObjectByKey(key, GetKeyFromTarget);
 
-            if (TransitMode == TransitMode.OnlyExistedObjects)
+            if (TransitMode == ObjectTransitMode.OnlyExistedObjects)
                 return existedObject;
 
-            if (TransitMode == TransitMode.OnlyNewObjects && existedObject != null)
+            if (TransitMode == ObjectTransitMode.OnlyNewObjects && existedObject != null)
             {
                 TraceLine($"Object already exist, skipping, because TransitMode = TransitMode.OnlyNewObjects");
                 return null;

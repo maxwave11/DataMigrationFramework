@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Serialization;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 

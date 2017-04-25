@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions

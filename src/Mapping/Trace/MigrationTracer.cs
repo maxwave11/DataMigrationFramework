@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;

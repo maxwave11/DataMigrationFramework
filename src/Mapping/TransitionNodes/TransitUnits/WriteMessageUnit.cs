@@ -1,4 +1,5 @@
-﻿using XQ.DataMigration.Mapping.Logic;
+﻿using XQ.DataMigration.Enums;
+using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
