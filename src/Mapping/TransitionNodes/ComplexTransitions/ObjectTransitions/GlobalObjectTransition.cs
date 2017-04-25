@@ -1,6 +1,6 @@
 using XQ.DataMigration.Data;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
+namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
     public class GlobalObjectTransition: ObjectTransition
     {

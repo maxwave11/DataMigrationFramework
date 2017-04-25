@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Mapping.TransitionNodes;
-using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.MapConfig

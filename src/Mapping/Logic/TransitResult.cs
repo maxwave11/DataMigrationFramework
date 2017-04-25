@@ -1,6 +1,6 @@
 ﻿using XQ.DataMigration.Enums;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes
+namespace XQ.DataMigration.Mapping.Logic
 {
     public class TransitResult
     {

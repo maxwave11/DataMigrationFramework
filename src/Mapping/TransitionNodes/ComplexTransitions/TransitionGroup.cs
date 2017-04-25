@@ -1,10 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
-using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes
+namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
     public class TransitionGroup : ComplexTransition
     {

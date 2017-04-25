@@ -9,11 +9,9 @@ using XQ.DataMigration.Enums;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
-using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
-using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
 using XQ.DataMigration.Utils;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
+namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
     /// <summary>
     /// Transition which transit objects data from DataSet of source system to DataSet of target system

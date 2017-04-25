@@ -2,7 +2,7 @@
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
+namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
     public abstract class ComplexTransition : TransitionNode
     {

@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Utils;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
+namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
     public class PivotColumnDefinition
     {

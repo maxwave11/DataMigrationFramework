@@ -5,9 +5,10 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping.TransitionNodes;
-using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
-using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
 
 namespace XQ.DataMigration.MapConfig
 {

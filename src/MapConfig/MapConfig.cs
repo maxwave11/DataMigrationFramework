@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping.TransitionNodes;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
 
 namespace XQ.DataMigration.MapConfig
 {
