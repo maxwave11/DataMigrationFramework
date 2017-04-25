@@ -15,9 +15,5 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         {
             return GlobalObject;
         }
-
-        protected override void Validate()
-        {
-        }
     }
 }

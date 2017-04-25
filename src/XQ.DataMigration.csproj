@@ -72,6 +72,7 @@
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\GlobalObjectTransition.cs" />
     <Compile Include="Enums\ObjectTransitMode.cs" />
     <Compile Include="Enums\TransitContinuation.cs" />
+    <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteMessageUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ValueTransitions\LookupValueTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\TransitionGroup.cs" />
@@ -81,7 +82,7 @@
     <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />
     <Compile Include="Mapping\Trace\ValueTransitErrorEventArgs.cs" />
     <Compile Include="MapConfig\MapAction.cs" />
-    <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectSetTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceRule.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceTransitUnit.cs" />
     <Compile Include="Mapping\Logic\ValueTransitContext.cs" />

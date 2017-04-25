@@ -52,14 +52,14 @@ namespace XQ.DataMigration.Mapping.Trace
                 Trace?.Invoke(this, new TraceMessage(msg, color, node));
         }
 
-        public void TraceObjectSetTransitionStart(ObjectTransition transition)
+        public void TraceObjectSetTransitionStart(ObjectSetTransition transition)
         {
-            TraceText($">>>Transitting all objects from  source DataSet '{transition.Name}' to target DataSet'{transition.TargetDataSetId}'", transition, ConsoleColor.DarkYellow);
+            TraceText($">>>Transitting all objects from  source DataSet '{transition.Name}'", transition, ConsoleColor.DarkYellow);
         }
 
-        public void TraceObjectSetTransitionEnd(ObjectTransition transition)
+        public void TraceObjectSetTransitionEnd(ObjectSetTransition transition)
         {
-            TraceText($"<<< Objects from source DataSet '{transition.Name}' are transitted to target DataSet '{transition.TargetDataSetId}'\n", transition, ConsoleColor.DarkYellow);
+            TraceText($"<<< Objects from source DataSet '{transition.Name}' are transitted'\n", transition, ConsoleColor.DarkYellow);
         }
 
         public void TraceSkipObject(string text, TransitionNode node, IValuesObject sourceObject)

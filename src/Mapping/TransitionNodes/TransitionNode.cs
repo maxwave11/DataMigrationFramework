@@ -8,7 +8,7 @@ using XQ.DataMigration.Utils;
 namespace XQ.DataMigration.Mapping.TransitionNodes
 {
     /// <summary>
-    /// Base class for any transition element in Map configuration
+    /// Base class for all transition elements in Map configuration
     /// </summary>
     public abstract class TransitionNode
     {
