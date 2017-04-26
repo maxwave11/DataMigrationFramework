@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
@@ -38,34 +39,35 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             base.Initialize(parent);
         }
 
-        public override ICollection<IValuesObject> TransitObject(IValuesObject source)
+        public override TransitResult Transit(ValueTransitContext transitContext)
         {
-            var retVal = new List<IValuesObject>();
-            var pivotColumnsSet = GetPivotColumnSet(source);
-            ValidatePivotColumns(pivotColumnsSet);
-            var allPivotColumns = pivotColumnsSet.SelectMany(i => i.Value).ToArray();
+            throw new NotImplementedException();
+            //var retVal = new List<IValuesObject>();
+            //var pivotColumnsSet = GetPivotColumnSet(source);
+            //ValidatePivotColumns(pivotColumnsSet);
+            //var allPivotColumns = pivotColumnsSet.SelectMany(i => i.Value).ToArray();
 
-            //go through all pivoted column set 
-            for (int columnSetIndex = 0; columnSetIndex < pivotColumnsSet.First().Value.Count(); columnSetIndex++)
-            {
-                var valuesObject = new ValuesObject();
-                var unpivotedColumnNames = source.FieldNames.Where(f => !allPivotColumns.Contains(f)).ToList();
-                //copy all unpivoted (scalar, not involved in pivoting logic) columns to new values object
-                unpivotedColumnNames.ForEach(colName => valuesObject.SetValue(colName, source[colName]));
+            ////go through all pivoted column set 
+            //for (int columnSetIndex = 0; columnSetIndex < pivotColumnsSet.First().Value.Count(); columnSetIndex++)
+            //{
+            //    var valuesObject = new ValuesObject();
+            //    var unpivotedColumnNames = source.FieldNames.Where(f => !allPivotColumns.Contains(f)).ToList();
+            //    //copy all unpivoted (scalar, not involved in pivoting logic) columns to new values object
+            //    unpivotedColumnNames.ForEach(colName => valuesObject.SetValue(colName, source[colName]));
 
 
-                //add pivoted column header values
-                PivotColumnDefinitions.Where(i => i.IsHeaderValue).ToList()
-                    .ForEach(def => valuesObject.SetValue(def.Name, pivotColumnsSet[def][columnSetIndex]));
+            //    //add pivoted column header values
+            //    PivotColumnDefinitions.Where(i => i.IsHeaderValue).ToList()
+            //        .ForEach(def => valuesObject.SetValue(def.Name, pivotColumnsSet[def][columnSetIndex]));
 
-                //add pivoted columns with values
-                PivotColumnDefinitions.Where(i=>!i.IsHeaderValue).ToList().ForEach(def => valuesObject.SetValue(def.Name, source[pivotColumnsSet[def][columnSetIndex]]));
-                var objects = base.TransitObject(valuesObject);
-                if (objects !=null)
-                    retVal.AddRange(objects);
-            }
+            //    //add pivoted columns with values
+            //    PivotColumnDefinitions.Where(i => !i.IsHeaderValue).ToList().ForEach(def => valuesObject.SetValue(def.Name, source[pivotColumnsSet[def][columnSetIndex]]));
+            //    var objects = base.Transit(valuesObject);
+            //    if (objects != null)
+            //        retVal.AddRange(objects);
+            //}
 
-            return retVal;
+            //return retVal;
         }
 
         private void ValidatePivotColumns(Dictionary<PivotColumnDefinition,string[]> pivotColumnsSet)

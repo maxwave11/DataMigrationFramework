@@ -10,6 +10,16 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
+    public class NestedObjectTransition: ObjectTransition
+    {
+        public override TransitResult Transit(ValueTransitContext transitContext)
+        {
+            var nestedSource =  new ValuesObject(transitContext.Source);
+            var ctx = new ValueTransitContext(nestedSource, null, null, null);
+            return base.Transit(ctx);
+        }
+    }
+
     public class ObjectTransition: ComplexTransition
     {
         /// <summary>
@@ -31,6 +41,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         [XmlAttribute]
         public ObjectTransitMode TransitMode { get; set; }
 
+        /// <summary>
+        /// Migration expression to define context for current ObjectTransition
+        /// </summary>
+        [XmlAttribute]
+        public string From { get; set; }
 
         public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
         private MigrationTracer Tracer => Migrator.Current.Tracer;
@@ -59,9 +74,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             TraceLine("(End object transition)");
         }
 
-        public virtual ICollection<IValuesObject> TransitObject(IValuesObject source)
+        public override TransitResult Transit(ValueTransitContext transitContext)
         {
             TraceEntries.Clear();
+
+            var source = transitContext.Source;
 
             var objectKey = GetKeyFromSource(source);
 
@@ -102,8 +119,55 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             }
 
             TraceObjectTransitionEnd(this);
-            return new[] { target };
+
+            return new TransitResult(TransitContinuation.Continue, target);
         }
+
+        //public virtual ICollection<IValuesObject> TransitObject(IValuesObject source)
+        //{
+        //    TraceEntries.Clear();
+
+        //    var objectKey = GetKeyFromSource(source);
+
+        //    TraceObjectTransitionStart(this, objectKey);
+
+        //    //don't transit objects with empty key
+        //    if (objectKey.IsEmpty())
+        //    {
+        //        Tracer.TraceText("Source object key is empty. Skipping object.", this, ConsoleColor.Yellow);
+        //        return null;
+        //    }
+        //    var target = GetTargetObject(objectKey);
+        //    if (target == null)
+        //        return null;
+
+        //    foreach (var valueTransition in ChildTransitions)
+        //    {
+        //        if (ActualTrace == TraceMode.True)
+        //            TraceLine("");
+
+        //        var ctx = new ValueTransitContext(source, target, source, this);
+        //        var result = valueTransition.TransitInternal(ctx);
+
+        //        if (result.Continuation == TransitContinuation.SkipValue)
+        //        {
+        //            continue;
+        //        }
+
+        //        if (result.Continuation == TransitContinuation.SkipObject)
+        //        {
+        //            return null;
+        //        }
+
+        //        if (result.Continuation == TransitContinuation.Stop)
+        //        {
+        //            throw new Exception("Object transition stopped");
+        //        }
+        //    }
+
+        //    TraceObjectTransitionEnd(this);
+        //    return new[] { target };
+        //}
 
         protected virtual string GetKeyFromSource(IValuesObject sourceObject)
         {

@@ -98,10 +98,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 if (!CanTransit(sourceObject, objectIndex))
                     continue;
 
+                ctx = new ValueTransitContext(sourceObject,null, sourceObject, ObjectTransition);
+                var result = ObjectTransition.TransitInternal(ctx);
+                var targetObjects = new List<IValuesObject>();
 
-                var targetObjects = ObjectTransition.TransitObject(sourceObject);
+                if (result.Value is IEnumerable<IValuesObject>)
+                {
+                    targetObjects.AddRange((IEnumerable<IValuesObject>)result.Value);
+                }
+                else
+                {
+                    targetObjects.Add((IValuesObject)result.Value);
+                }
 
-                if (targetObjects == null)
+                if (!targetObjects.Any())
                 {
                     Tracer.TraceSkipObject("Skipped", this, sourceObject);
                     continue;
