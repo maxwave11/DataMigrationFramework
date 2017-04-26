@@ -100,6 +100,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 ctx = new ValueTransitContext(sourceObject,null, sourceObject, ObjectTransition);
                 var result = ObjectTransition.TransitInternal(ctx);
+
+                if (result.Continuation == TransitContinuation.SkipObject)
+                    continue;
+
                 var targetObjects = new List<IValuesObject>();
 
                 if (result.Value is IEnumerable<IValuesObject>)

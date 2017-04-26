@@ -88,11 +88,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             if (objectKey.IsEmpty())
             {
                 Tracer.TraceText("Source object key is empty. Skipping object.", this, ConsoleColor.Yellow);
-                return null;
+                return new TransitResult(TransitContinuation.SkipObject, null);
             }
             var target = GetTargetObject(objectKey);
             if (target == null)
-                return null;
+                return new TransitResult(TransitContinuation.SkipObject, null);
 
             foreach (var valueTransition in ChildTransitions)
             {
@@ -109,7 +109,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 if (result.Continuation == TransitContinuation.SkipObject)
                 {
-                    return null;
+                    return new TransitResult(TransitContinuation.SkipObject, null);
                 }
 
                 if (result.Continuation == TransitContinuation.Stop)
