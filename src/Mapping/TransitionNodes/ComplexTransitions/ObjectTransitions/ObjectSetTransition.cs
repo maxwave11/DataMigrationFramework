@@ -5,20 +5,23 @@ using System.Linq;
 using System.Xml.Serialization;
 using ExpressionEvaluator;
 using XQ.DataMigration.Data;
-using XQ.DataMigration.MapConfig;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
-using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
 using XQ.DataMigration.Utils;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
+namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
     /// <summary>
     /// Transition which transit objects data from DataSet of source system to DataSet of target system
     /// </summary>
-    public class ObjectTransition : ComplexTransition
+    public class ObjectSetTransition : TransitionNode
     {
+    
+        [XmlElement]
+        public ObjectTransition ObjectTransition { get; set; }
+
         #region XmlAttributes
         /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value
@@ -32,11 +35,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         [XmlAttribute]
         public string SourceDataSetId { get; set; }
 
-        /// <summary>
-        /// The unique DataSet id of target system
-        /// </summary>
-        [XmlAttribute]
-        public string TargetDataSetId { get; set; }
+      
 
         /// <summary>
         /// Set this value if you want to transit concrete range of DataSet objects from source system
@@ -46,18 +45,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         [XmlAttribute]
         public string RowsRange { get; set; }
 
-        /// <summary>
-        /// Key definition element which describes how to get keys for source and for target objects respectively
-        /// </summary>
-        [XmlElement]
-        public KeyDefinition KeyDefinition { get; set; }
-
-        /// <summary>
-        /// Indicates which objects will be transitted depend from their existence in target system. 
-        /// <seealso cref="TransitMode"/>
-        /// </summary>
-        [XmlAttribute]
-        public TransitMode TransitMode { get; set; }
+       
+     
         /// <summary>
         /// The name of provider from which should be fetched source objects
         /// </summary>
@@ -71,7 +60,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
         private Dictionary<int, int> _allowedRanges;
 
-        public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 
@@ -82,9 +70,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
         public override void Initialize(TransitionNode parent)
         {
             Color = ConsoleColor.Magenta;
-            Validate();
-            KeyDefinition?.Initialize(this);
+            
             ParseRowsRange();
+
+            if (ObjectTransition == null)
+                throw new Exception($"{nameof(ObjectTransition)} can't be empty");
+
+            ObjectTransition.Initialize(this);
+
             base.Initialize(parent);
         }
 
@@ -105,9 +98,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                 if (!CanTransit(sourceObject, objectIndex))
                     continue;
 
-                var targetObjects = TransitObject(sourceObject);
+                ctx = new ValueTransitContext(sourceObject,null, sourceObject, ObjectTransition);
+                var result = ObjectTransition.TransitInternal(ctx);
+                var targetObjects = new List<IValuesObject>();
 
-                if (targetObjects == null)
+                if (result.Value is IEnumerable<IValuesObject>)
+                {
+                    targetObjects.AddRange((IEnumerable<IValuesObject>)result.Value);
+                }
+                else
+                {
+                    targetObjects.Add((IValuesObject)result.Value);
+                }
+
+                if (!targetObjects.Any())
                 {
                     Tracer.TraceSkipObject("Skipped", this, sourceObject);
                     continue;
@@ -122,123 +126,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
             srcDataSet.Dispose();
 
             return new TransitResult(TransitContinuation.Continue, null);
-        }
-
-        public void TraceObjectTransitionStart(ObjectTransition objectTransition, string objectKey)
-        {
-            TraceLine($"(Start object transition ({objectTransition.Name}) [{ objectKey }]");
-        }
-
-        public void TraceObjectTransitionEnd(ObjectTransition objectTransition)
-        {
-            TraceLine("(End object transition)");
-        }
-
-        public virtual ICollection<IValuesObject> TransitObject(IValuesObject source)
-        {
-            TraceEntries.Clear();
-
-            var objectKey = GetKeyFromSource(source);
-
-            TraceObjectTransitionStart(this, objectKey);
-
-            //don't transit objects with empty key
-            if (objectKey.IsEmpty())
-            {
-                Tracer.TraceText("Source object key is empty. Skipping object.", this, ConsoleColor.Yellow);
-                return null;
-            }
-            var target = GetTargetObject(objectKey);
-            if (target == null)
-                return null;
-
-            foreach (var valueTransition in ChildTransitions)
-            {
-                if (ActualTrace == TraceMode.True)
-                    TraceLine("");
-
-                var ctx = new ValueTransitContext(source, target, source, this);
-                var result = valueTransition.TransitInternal(ctx);
-
-                if (result.Continuation == TransitContinuation.SkipValue)
-                {
-                    continue;
-                }
-
-                if (result.Continuation == TransitContinuation.SkipObject)
-                {
-                    return null;
-                }
-
-                if (result.Continuation == TransitContinuation.Stop)
-                {
-                    throw new Exception("Object transition stopped");
-                }
-            }
-
-            TraceObjectTransitionEnd(this);
-            return new[] { target };
-        }
-
-        internal void AddTraceEntry(string msg, ConsoleColor color)
-        {
-            TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
-        }
-
-        protected virtual string GetKeyFromSource(IValuesObject sourceObject)
-        {
-            if (!sourceObject.Key.IsEmpty())
-                return sourceObject.Key;
-
-            var ctx = new ValueTransitContext(sourceObject,null, sourceObject, this);
-            var transitResult = KeyDefinition.SourceKeyTransition.TransitInternal(ctx);
-
-            if (transitResult.Continuation == TransitContinuation.Continue)
-                sourceObject.Key = transitResult.Value?.ToString();
-
-            if (transitResult.Continuation == TransitContinuation.RaiseError)
-            {
-                TraceLine($"Transition stopped on { Name }");
-                throw new Exception("Can't transit source key ");
-            }
-
-            return sourceObject.Key;
-        }
-
-        protected virtual IValuesObject GetTargetObject(string key)
-        {
-            var provider = Migrator.Current.Action.TargetProvider;
-
-            var existedObject = provider.GetDataSet(TargetDataSetId).GetObjectByKey(key, GetKeyFromTarget);
-
-            if (TransitMode == TransitMode.OnlyExistedObjects)
-                return existedObject;
-
-            if (TransitMode == TransitMode.OnlyNewObjects && existedObject != null)
-            {
-                TraceLine($"Object already exist, skipping, because TransitMode = TransitMode.OnlyNewObjects");
-                return null;
-            }
-
-            return existedObject ?? provider.CreateObject(TargetDataSetId);
-        }
-
-        protected virtual string GetKeyFromTarget(IValuesObject targetObject)
-        {
-            if (!targetObject.Key.IsEmpty())
-                return targetObject.Key;
-
-            var ctx = new ValueTransitContext(targetObject, null, targetObject, this);
-            var transitResult = KeyDefinition.TargetKeyTransition.TransitInternal(ctx);
-            targetObject.Key = transitResult.Value?.ToString();
-
-            return targetObject.Key;
-        }
-
-        protected virtual void Validate()
-        {
-            if (KeyDefinition == null)
-                throw new Exception($"{nameof(KeyDefinition)} is required for {nameof(ObjectTransition)} element");
         }
 
         private IDataSet GetSourceDataSet()
@@ -269,26 +156,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
 
         private void MarkObjectsAsTransitted(IEnumerable<IValuesObject> targetObjects)
         {
-            foreach (IValuesObject t in targetObjects)
+            foreach (IValuesObject targetObject in targetObjects)
             {
-                if (t.IsEmpty())
+                if (targetObject.IsEmpty())
                     continue;
 
-                if (IsDuplicate(t))
-                    continue;
-
-                var targetKey = GetKeyFromTarget(t);
+                var targetKey = targetObject.Key;
 
                 if (targetKey.IsEmpty())
                     continue;
 
-                if (!t.IsNew && _transittedObjects.ContainsKey(targetKey))
-                    continue;
-
-                _transittedObjects.Add(targetKey, t);
-                var provider = Migrator.Current.Action.TargetProvider;
-
-                provider.GetDataSet(TargetDataSetId).PutObjectToCache(t, GetKeyFromTarget);
+                _transittedObjects[targetKey] = targetObject;
             }
         }
 
@@ -374,25 +252,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
                         this._allowedRanges.Add(Convert.ToInt32(strRange), Convert.ToInt32(strRange));
                 }
             }
-        }
-
-        private bool IsDuplicate(IValuesObject targetObject)
-        {
-            if (!targetObject.IsNew)
-                return false;
-
-            var keyValue = GetKeyFromTarget(targetObject);
-
-            if (keyValue.IsEmpty())
-                return false;
-
-            var findedObject = _transittedObjects.ContainsKey(keyValue) ? _transittedObjects[keyValue] : null;
-
-            if (findedObject == null)
-                return false;
-
-            TraceLine($"Finded object duplicate by key = {GetKeyFromTarget(targetObject)}");
-            return true;
         }
 
         #endregion

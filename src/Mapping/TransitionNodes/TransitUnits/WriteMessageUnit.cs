@@ -1,22 +1,23 @@
-﻿using XQ.DataMigration.Mapping.Logic;
+﻿using XQ.DataMigration.Enums;
+using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
     /// <summary>
-    /// Transition which allows to add custom messages to migration trace
+    /// Transition which allows to write custom messages to migration trace
     /// </summary>
     public class WriteMessageUnit: TransitUnit
     {
         protected override void TraceStart(ValueTransitContext ctx)
         {
             //don't do anything because this Unit should only show message from Expression
-            //and don't trace start and end of this transtit unit    
+            //don't trace start and end of this TranstitUnit    
         }
 
         protected override void TraceEnd(ValueTransitContext ctx)
         {
             //don't do anything because this Unit should only show message from Expression
-            //and don't trace start and end of this transtit unit    
+            //don't trace start and end of this TranstitUnit    
         }
 
         public override TransitResult Transit(ValueTransitContext ctx)

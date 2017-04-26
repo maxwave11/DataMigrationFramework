@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Xml.Serialization;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions
+namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions
 {
     /// <summary>
     /// Transition which allows to get a value from some reference data set. For example, find asset and get his name by asset id or find

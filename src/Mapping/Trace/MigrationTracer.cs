@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
-using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.Trace
@@ -45,20 +46,20 @@ namespace XQ.DataMigration.Mapping.Trace
         public void TraceText(string message, TransitionNode node, ConsoleColor color)
         {
             var msg =  message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
-            AddTraceEntry(node, msg, color);
+            AddTraceEntryToObjectTransition(node, msg, color);
 
             if (node.ActualTrace == TraceMode.True || (node.ActualTrace == TraceMode.Auto && node is ObjectTransition))
                 Trace?.Invoke(this, new TraceMessage(msg, color, node));
         }
 
-        public void TraceObjectSetTransitionStart(ObjectTransition transition)
+        public void TraceObjectSetTransitionStart(ObjectSetTransition transition)
         {
-            TraceText($">>>Transitting all objects from  source DataSet '{transition.Name}' to target DataSet'{transition.TargetDataSetId}'", transition, ConsoleColor.DarkYellow);
+            TraceText($">>>Transitting all objects from  source DataSet '{transition.Name}'", transition, ConsoleColor.DarkYellow);
         }
 
-        public void TraceObjectSetTransitionEnd(ObjectTransition transition)
+        public void TraceObjectSetTransitionEnd(ObjectSetTransition transition)
         {
-            TraceText($"<<< Objects from source DataSet '{transition.Name}' are transitted to target DataSet '{transition.TargetDataSetId}'\n", transition, ConsoleColor.DarkYellow);
+            TraceText($"<<< Objects from source DataSet '{transition.Name}' are transitted'\n", transition, ConsoleColor.DarkYellow);
         }
 
         public void TraceSkipObject(string text, TransitionNode node, IValuesObject sourceObject)
@@ -88,14 +89,17 @@ namespace XQ.DataMigration.Mapping.Trace
             return _indent;
         }
 
-        private void AddTraceEntry(TransitionNode node, string message, ConsoleColor color)
+        private void AddTraceEntryToObjectTransition(TransitionNode node, string message, ConsoleColor color)
         {
             var objectTransition = FindObjectTransition(node);
-            objectTransition.AddTraceEntry(message, color);
+            objectTransition?.AddTraceEntry(message, color);
         }
 
         private ObjectTransition FindObjectTransition(TransitionNode transitionNode)
         {
+            if (transitionNode == null)
+                return null;
+
             return  (transitionNode as ObjectTransition) ?? FindObjectTransition(transitionNode.Parent);
         }
     }

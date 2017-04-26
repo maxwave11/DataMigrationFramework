@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Xml.Serialization;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Utils;
@@ -7,7 +9,7 @@ using XQ.DataMigration.Utils;
 namespace XQ.DataMigration.Mapping.TransitionNodes
 {
     /// <summary>
-    /// Base class for any transition element in Map configuration
+    /// Base class for all transition elements in Map configuration
     /// </summary>
     public abstract class TransitionNode
     {
@@ -25,6 +27,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         [XmlAttribute]
         public ConsoleColor Color { get; set; }  = ConsoleColor.White;
+
+        /// <summary>
+        /// Mark element by this attribute to fast debug particular TransitionNode
+        /// </summary>
+        [XmlAttribute]
+        public bool Break { get; set; }
 
         internal TraceMode ActualTrace => Trace == TraceMode.Auto ? Parent?.ActualTrace ?? Trace : Trace;
 
@@ -65,6 +73,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         internal TransitResult TransitInternal(ValueTransitContext ctx)
         {
             TraceStart(ctx);
+
+            if (Break)
+                Debugger.Break();
 
             object resultValue = null;
             TransitContinuation continuation;

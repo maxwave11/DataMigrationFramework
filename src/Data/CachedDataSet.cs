@@ -37,9 +37,13 @@ namespace XQ.DataMigration.Data
 
         public void PutObjectToCache(IValuesObject tObject, Func<IValuesObject, string> evaluateKey)
         {
-            var tObjectKey = evaluateKey(tObject);
-            if (tObjectKey.IsNotEmpty())
-                _objectsCache[tObjectKey.ToUpper().Trim()] = tObject;
+            PutObjectToCache(tObject, evaluateKey(tObject));
+        }
+
+        public void PutObjectToCache(IValuesObject tObject, string objectkey)
+        {
+            if (objectkey.IsNotEmpty())
+                _objectsCache[objectkey.ToUpper().Trim()] = tObject;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

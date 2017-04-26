@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using XQ.DataMigration.Data;
-using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.Logic

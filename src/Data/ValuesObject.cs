@@ -15,6 +15,18 @@ namespace XQ.DataMigration.Data
 
         private readonly Dictionary<string, object> _dataContainer = new Dictionary<string, object>();
 
+        public ValuesObject()
+        {
+        }
+
+        public ValuesObject(IValuesObject copy)
+        {
+            foreach (var fieldName in copy.FieldNames)
+            {
+                SetValue(fieldName, copy[fieldName]);
+            }
+        }
+
         public object GetValue(string name)
         {
             object result = null;

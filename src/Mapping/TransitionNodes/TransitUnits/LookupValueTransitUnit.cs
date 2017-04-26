@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits

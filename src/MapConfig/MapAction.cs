@@ -6,9 +6,6 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.MapConfig
 {
-    public enum TraceMode { Auto = 0, True = 1, False = 2 }
-
-
     public class MapAction: IDisposable
     {
         [XmlIgnore]

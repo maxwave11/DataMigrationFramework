@@ -1,8 +1,8 @@
 using XQ.DataMigration.MapConfig;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes.ObjectTransitions
+namespace XQ.DataMigration.Enums
 {
-    public enum TransitMode
+    public enum ObjectTransitMode
     {
         /// <summary>
         /// Transit both kind of objects (no matter whether they exist in target system)

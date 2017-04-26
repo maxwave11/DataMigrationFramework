@@ -1,7 +1,7 @@
-﻿namespace XQ.DataMigration.Mapping.TransitionNodes
-{
-    public enum TransitContinuation { Continue, SkipUnit, SkipValue, SkipObject, Stop, RaiseError }
+﻿using XQ.DataMigration.Enums;
 
+namespace XQ.DataMigration.Mapping.Logic
+{
     public class TransitResult
     {
         public TransitResult()

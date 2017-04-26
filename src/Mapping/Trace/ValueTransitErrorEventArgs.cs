@@ -3,7 +3,6 @@ using System.Linq;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
-using XQ.DataMigration.Mapping.TransitionNodes.ValueTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.Trace

@@ -1,7 +1,13 @@
-﻿using XQ.DataMigration.Mapping.Logic;
+﻿using XQ.DataMigration.Enums;
+using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
+    /// <summary>
+    /// Transit unit which writes value from ValueTransitContext to target object
+    /// If Expression is just a property name -> unit writes value to appropriate property of target object
+    /// If Expression is Migration expression -> unit exeuctes this expression
+    /// </summary>
     public class WriteTransitUnit : TransitUnit
     {
         public override TransitResult Transit(ValueTransitContext ctx)
