@@ -72,10 +72,10 @@ namespace XQ.DataMigration.MapConfig
         private XmlAttributeOverrides GetCustomAttributeOverrides()
         {
             //register default object transitions
-            //var groupElementChildren = new XmlAttributes();
-            //groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
-            //groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(PivotObjectTransition), typeof(PivotObjectTransition)));
-            //groupElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
+            var objectSetElementChildren = new XmlAttributes();
+            objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
+            objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(PivotObjectTransition), typeof(PivotObjectTransition)));
+            objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
 
             //register default object transitions
             var complexElementChildren = new XmlAttributes();
@@ -97,6 +97,7 @@ namespace XQ.DataMigration.MapConfig
                 if (typeof(ObjectTransition).IsAssignableFrom(customTransitionType.Value))
                 {
                     complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
+                    objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
                     continue;
                 }
 
@@ -112,6 +113,7 @@ namespace XQ.DataMigration.MapConfig
 
             var attribOverrides = new XmlAttributeOverrides();
             attribOverrides.Add(typeof(ComplexTransition), nameof(ComplexTransition.ChildTransitions), complexElementChildren);
+            attribOverrides.Add(typeof(ObjectSetTransition), nameof(ObjectSetTransition.ObjectTransition), objectSetElementChildren);
             attribOverrides.Add(typeof(DataProviderSettings), nameof(DataProviderSettings.DataProvider), providerTypes);
             return attribOverrides;
         }
