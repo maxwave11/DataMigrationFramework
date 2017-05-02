@@ -48,8 +48,16 @@ namespace XQ.DataMigration.Mapping.Trace
             var msg =  message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
             AddTraceEntryToObjectTransition(node, msg, color);
 
-            if (node.ActualTrace == TraceMode.True || (node.ActualTrace == TraceMode.Auto && node is ObjectTransition))
+            if (node.ActualTrace == TraceMode.True || (node.ActualTrace == TraceMode.Auto && (node is ObjectTransition || node is ObjectSetTransition) ))
                 Trace?.Invoke(this, new TraceMessage(msg, color, node));
+        }
+
+        public void TraceWarning(string message, TransitionNode node)
+        {
+            var msg = message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
+            AddTraceEntryToObjectTransition(node, msg, ConsoleColor.Yellow);
+
+            Trace?.Invoke(this, new TraceMessage(msg, ConsoleColor.Yellow, node));
         }
 
         public void TraceObjectSetTransitionStart(ObjectSetTransition transition)
