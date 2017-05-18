@@ -90,7 +90,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             catch (Exception ex)
             {
                 continuation = this.OnError;
-                Migrator.Current.Tracer.TraceText(ex.ToString(), this, ConsoleColor.Yellow);
+                Migrator.Current.Tracer.TraceWarning(ex.ToString(), this);
             }
 
             if (continuation == TransitContinuation.RaiseError)

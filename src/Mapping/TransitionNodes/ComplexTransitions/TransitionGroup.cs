@@ -1,3 +1,4 @@
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 
@@ -12,7 +13,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
                 if (!objTransition.Enabled)
                     continue;
 
-                objTransition.Transit(null);
+                var result = objTransition.Transit(null);
+                if (result.Continuation != TransitContinuation.Continue)
+                    break;
             }
 
             return new TransitResult();

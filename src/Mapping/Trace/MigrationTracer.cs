@@ -76,11 +76,15 @@ namespace XQ.DataMigration.Mapping.Trace
             OnObjectSkipped?.Invoke(this, sourceObject);
         }
 
-        public TransitContinuation TraceError(string message, TransitionNode valueTransition, ValueTransitContext ctx)
+        public TransitContinuation TraceError(string message, TransitionNode node, ValueTransitContext ctx)
         {
-            TraceText(message, valueTransition, ConsoleColor.Red);
-            var args = new TransitErrorEventArgs(valueTransition, ctx);
-            OnValueTransitError?.Invoke(valueTransition, args);
+            var msg = message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
+            AddTraceEntryToObjectTransition(node, msg, ConsoleColor.Yellow);
+
+            Trace?.Invoke(this, new TraceMessage(msg, ConsoleColor.Red, node));
+
+            var args = new TransitErrorEventArgs(node, ctx);
+            OnValueTransitError?.Invoke(node, args);
             return args.Continue ? TransitContinuation.Continue : TransitContinuation.Stop;
         }
 

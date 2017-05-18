@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Xml.Serialization;
 using ExpressionEvaluator;
 using XQ.DataMigration.Data;
@@ -103,6 +104,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 if (result.Continuation == TransitContinuation.SkipObject)
                     continue;
+                if (result.Continuation == TransitContinuation.Stop)
+                    return new TransitResult(TransitContinuation.Stop, null);
 
                 var targetObjects = new List<IValuesObject>();
 
@@ -112,7 +115,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 }
                 else
                 {
-                    targetObjects.Add((IValuesObject)result.Value);
+                    if (result.Value!=null)
+                        targetObjects.Add((IValuesObject)result.Value);
                 }
 
                 if (!targetObjects.Any())

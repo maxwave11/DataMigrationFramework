@@ -179,8 +179,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             if (transitResult.Continuation == TransitContinuation.Continue)
                 sourceObject.Key = transitResult.Value?.ToString();
-
-            if (transitResult.Continuation == TransitContinuation.RaiseError)
+            
+            if (transitResult.Continuation == TransitContinuation.RaiseError || transitResult.Continuation == TransitContinuation.Stop)
             {
                 TraceLine($"Transition stopped on { Name }");
                 throw new Exception("Can't transit source key ");
