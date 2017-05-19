@@ -5,13 +5,13 @@ using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class ValidationUnit: TransitUnit
+    public class ConditionUnit: TransitUnit
     {
         [XmlAttribute]
         public string Message { get; set; }
 
         [XmlAttribute]
-        public TransitContinuation OnInvalid { get; set; }
+        public TransitContinuation OnTrue { get; set; }
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
@@ -20,15 +20,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             var boolValue = transitResult.Value as bool?;
             if (!boolValue.HasValue)
-                throw new Exception($"Result of Expression execution in {nameof(ValidationUnit)} must have Boolean type");
+                throw new Exception($"Result of Expression execution in {nameof(ConditionUnit)} must have Boolean type");
 
             TransitContinuation continuation;
             string ruleMessage = "";
             TraceLine($"Is valid: {boolValue.Value}");
-            if (boolValue.Value == false)
+            if (boolValue.Value == true)
             {
-                continuation = OnInvalid;
-                var defaultMessage = $"The value={ctx.TransitValue} didn't pass validation expression {Expression}";
+                continuation = OnTrue;
+                var defaultMessage = $"The value={ctx.TransitValue} didn't pass condition expression {Expression}";
                 ruleMessage = Message ?? defaultMessage;
             }
             else
