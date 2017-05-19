@@ -136,7 +136,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             return new TransitResult(TransitContinuation.Continue, null);
         }
 
-        private IDataSet GetSourceDataSet()
+        protected IDataSet GetSourceDataSet()
         {
             if (SourceDataSetId.IsEmpty())
                 return null;
