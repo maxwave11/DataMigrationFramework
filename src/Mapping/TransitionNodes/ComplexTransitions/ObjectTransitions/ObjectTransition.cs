@@ -69,6 +69,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             TraceLine($"(Start object transition ({objectTransition.Name}) [{ objectKey }]");
         }
 
+        protected override void TraceStart(ValueTransitContext ctx)
+        {
+            
+        }
+
+        protected override void TraceEnd(ValueTransitContext ctx)
+        {
+            
+        }
+
         public void TraceObjectTransitionEnd(ObjectTransition objectTransition)
         {
             TraceLine("(End object transition)");
