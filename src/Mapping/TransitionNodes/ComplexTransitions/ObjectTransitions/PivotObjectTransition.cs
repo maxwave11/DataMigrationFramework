@@ -42,7 +42,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         public override TransitResult Transit(ValueTransitContext transitContext)
         {
-            //throw new NotImplementedException();
             var retVal = new List<IValuesObject>();
             var source = transitContext.Source;
             var pivotColumnsSet = GetPivotColumnSet(source);
@@ -57,20 +56,25 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 //copy all unpivoted (scalar, not involved in pivoting logic) columns to new values object
                 unpivotedColumnNames.ForEach(colName => valuesObject.SetValue(colName, source[colName]));
 
-
                 //add pivoted column header values
                 PivotColumnDefinitions.Where(i => i.IsHeaderValue).ToList()
                     .ForEach(def => valuesObject.SetValue(def.Name, pivotColumnsSet[def][columnSetIndex]));
 
                 //add pivoted columns with values
                 PivotColumnDefinitions.Where(i => !i.IsHeaderValue).ToList().ForEach(def => valuesObject.SetValue(def.Name, source[pivotColumnsSet[def][columnSetIndex]]));
-                var ctx = new ValueTransitContext(valuesObject,null,valuesObject,this);
-                var result = base.Transit(ctx);
-                if (result.Value != null)
-                    retVal.Add((IValuesObject)result.Value);
+
+                var cellResult = TransitCell(valuesObject);
+                if (cellResult.Value != null)
+                    retVal.Add((IValuesObject)cellResult.Value);
             }
 
-            return new TransitResult(TransitContinuation.Continue, retVal);
+            return new TransitResult(TransitContinuation.Continue, retVal.Distinct().ToList());
+        }
+
+        protected virtual TransitResult TransitCell(IValuesObject cellObject)
+        {
+            var ctx = new ValueTransitContext(cellObject, null, cellObject, this);
+            return base.Transit(ctx);
         }
 
         private void ValidatePivotColumns(Dictionary<PivotColumnDefinition,string[]> pivotColumnsSet)
