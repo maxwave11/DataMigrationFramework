@@ -12,7 +12,7 @@ namespace XQ.DataMigration.Mapping
 
         internal static Migrator Current => _current;
         internal MapAction Action { get; private set; }
-        internal ExpressionCompiler ExpressionCompiler { get; } = new ExpressionCompiler();
+        public ExpressionCompiler ExpressionCompiler { get; } = new ExpressionCompiler();
 
         private static Migrator _current;
         private readonly MapConfig.MapConfig _mapConfig;
