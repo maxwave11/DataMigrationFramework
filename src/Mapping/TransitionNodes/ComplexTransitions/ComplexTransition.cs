@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
@@ -23,33 +25,49 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             if (transitContext == null)
                 throw new ArgumentNullException($"{nameof(transitContext)} can't be null in {nameof(ComplexTransition)}");
 
-            var continuation = TransitChildren(transitContext);
-            return new TransitResult(continuation, transitContext.TransitValue);
+            return TransitChildren(transitContext);
         }
 
-        protected TransitContinuation TransitChildren(ValueTransitContext ctx)
+        protected TransitResult TransitChildren(ValueTransitContext ctx)
         {
-            var continuation = TransitContinuation.Continue;
-
             if (ChildTransitions == null)
-                return continuation;
+                return new TransitResult(TransitContinuation.Continue,"Transition is Empty");
 
             foreach (var childTransition in ChildTransitions)
             {
-                var result = childTransition.TransitInternal(ctx);
-                continuation = result.Continuation;
+                if (!CanTransitChild(childTransition))
+                    continue;
+                
+                var result = TransitChild(childTransition, ctx);
 
-                if (continuation == TransitContinuation.SkipUnit)
+                if (result.Continuation != TransitContinuation.Continue)
                 {
-                    continuation = TransitContinuation.Continue;
-                    break;
+                    if (result.Continuation == TransitContinuation.SkipUnit)
+                        continue;
+                    
+                    TraceLine($"Breaking {this.GetType().Name}");
+                    return new TransitResult(GetContinuationOnSkip(result), ctx.TransitValue);
                 }
-
-                if (continuation != TransitContinuation.Continue)
-                    break;
             }
 
-            return continuation;
+            return new TransitResult(ctx.TransitValue);
         }
+
+        protected virtual bool CanTransitChild(TransitionNode childNode)
+        {
+            return childNode.Enabled;
+        }
+
+        protected virtual TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+        {
+            return childNode.TransitInternal(ctx);
+        }
+
+        protected virtual TransitContinuation GetContinuationOnSkip(TransitResult result)
+        {
+            return result.Continuation;
+        }
+
+
     }
 }

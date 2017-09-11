@@ -1,10 +1,13 @@
 using System;
+using System.CodeDom;
 using System.Diagnostics;
 using System.Xml.Serialization;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Mapping.Trace;
 using XQ.DataMigration.Utils;
+using TraceLevel = XQ.DataMigration.Enums.TraceLevel;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes
 {
@@ -20,7 +23,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public bool Enabled { get; set; } = true;
 
         [XmlAttribute]
-        public TraceMode Trace { get; set; }
+        public TraceLevel TraceLevel { get; set; }
+
+        [XmlAttribute]
+        public bool TraceWarnings { get; set; } = true;
 
         [XmlAttribute]
         public string TraceMessage { get; set; }
@@ -34,7 +40,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         [XmlAttribute]
         public bool Break { get; set; }
 
-        internal TraceMode ActualTrace => Trace == TraceMode.Auto ? Parent?.ActualTrace ?? Trace : Trace;
+        internal TraceLevel ActualTrace => TraceLevel == TraceLevel.Auto ? Parent?.ActualTrace ?? TraceLevel : TraceLevel;
 
         [XmlIgnore]
         public TransitionNode Parent { get; private set; }
@@ -52,26 +58,51 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         public abstract TransitResult Transit(ValueTransitContext ctx);
 
-        protected virtual void TraceStart(ValueTransitContext ctx)
+        protected virtual void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            var traceMsg =
-              $"> {this.ToString()}\n    Input: ({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
+            var tagName = this.GetType().Name;
+            var incomingValueType = ctx.TransitValue?.GetType().Name;
+            var incomingValue = ctx.TransitValue?.ToString();
+
+            if (!string.IsNullOrEmpty(attributes))
+                attributes = " " + attributes;
+
+            var traceMsg = $"<{tagName}{attributes}>";
             TraceLine(traceMsg);
+
+            //traceMsg = $"{MigrationTracer.IndentUnit}<Input Value=\"({incomingValueType.Truncate(30)}){incomingValue.Truncate(40)}\"/>";
+            //TraceLine(traceMsg);
         }
 
         protected virtual void TraceEnd(ValueTransitContext ctx)
         {
-            var traceMsg = $"< =({ctx.TransitValue?.GetType().Name.Truncate(30)}){ctx.TransitValue?.ToString().Truncate(40)}";
+            var tagName = this.GetType().Name;
+            var returnValue = ctx.TransitValue?.ToString();
+            var returnValueType = ctx.TransitValue?.GetType().Name;
+
+            var traceMsg = $"{MigrationTracer.IndentUnit}<Output Value=\"({returnValueType.Truncate(30)}){returnValue}\"/>";
             TraceLine(traceMsg);
+
+            traceMsg = $"</{tagName}>";
+            TraceLine(traceMsg);
+        }
+
+        protected virtual void Trace(string message)
+        {
+            Migrator.Current.Tracer.TraceText(message, this);
         }
 
         protected virtual void TraceLine(string message)
         {
             Migrator.Current.Tracer.TraceText(message, this);
+            Migrator.Current.Tracer.TraceText("\n", this);
         }
 
         internal TransitResult TransitInternal(ValueTransitContext ctx)
         {
+            if (ctx == null)
+                throw new ArgumentNullException(nameof(ctx));
+            
             TraceStart(ctx);
 
             if (Break)
@@ -103,12 +134,28 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
             TraceEnd(ctx);
 
-            return new TransitResult(continuation, ctx.TransitValue);
+            return new TransitResult(continuation, ctx.TransitValue, message);
+        }
+
+        public bool HasParent(TransitionNode node)
+        {
+            if (Parent == node)
+                return true;
+
+            return Parent?.HasParent(node) ?? false;
+        }
+
+        public bool HasParentOfType<T>()
+        {
+            if (Parent is T)
+                return true;
+
+            return Parent?.HasParentOfType<T>() ?? false;
         }
 
         public override string ToString()
         {
-            return $"({Name ?? this.GetType().Name})";
+            return $"{Name ?? this.GetType().Name}";
         }
     }
 }

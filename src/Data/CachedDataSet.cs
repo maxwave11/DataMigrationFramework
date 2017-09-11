@@ -52,7 +52,6 @@ namespace XQ.DataMigration.Data
         }
 
         public abstract IEnumerator<IValuesObject> GetEnumerator();
-        public abstract void Dispose();
         public abstract IValuesObject CreateObject();
     }
 }

@@ -1,7 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using XQ.DataMigration.MapConfig;
+using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
+using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using ExpressionCompiler = XQ.DataMigration.Mapping.Expressions.ExpressionCompiler;
 
 namespace XQ.DataMigration.Mapping
@@ -48,7 +51,8 @@ namespace XQ.DataMigration.Mapping
         private void MapAction(MapAction action)
         {
             var transGroup = action.MapConfig.TransitionGroups.FirstOrDefault();
-            transGroup?.Transit(null);
+            var ctx = new ValueTransitContext(null,null,null,null);
+            transGroup?.TransitInternal(ctx);
         }
     }
 }

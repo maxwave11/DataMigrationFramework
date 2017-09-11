@@ -9,9 +9,9 @@ namespace XQ.DataMigration.MapConfig
     public class MapAction: IDisposable
     {
         [XmlIgnore]
-        public ISourceProvider SrcProvider { get; private set; }
+        public ISourceProvider DefaultSourceProvider { get; private set; }
         [XmlIgnore]
-        public ITargetProvider TargetProvider { get; private set; }
+        public ITargetProvider DefaultTargetProvider { get; private set; }
 
         public MapAction()
         {
@@ -41,10 +41,10 @@ namespace XQ.DataMigration.MapConfig
         public string MapDataBaseName { get; set; }
 
         [XmlAttribute]
-        public string SourceProviderName { get; set; }
+        public string DefaultSourceProviderName { get; set; }
 
         [XmlAttribute]
-        public string TargetProviderName { get; set; }
+        public string DefaultTargetProviderName { get; set; }
 
         public string TransitionGroupName { get; set; }
    
@@ -59,20 +59,20 @@ namespace XQ.DataMigration.MapConfig
 
         public void Initialize()
         {
-            if (this.SourceProviderName.IsEmpty())
-                throw new Exception($"{ nameof(SourceProviderName)} is required");
+            if (this.DefaultSourceProviderName.IsEmpty())
+                throw new Exception($"{ nameof(DefaultSourceProviderName)} is required");
 
-            if (this.TargetProviderName.IsEmpty())
-                throw new Exception($"{ nameof(TargetProviderName)} is required");
+            if (this.DefaultTargetProviderName.IsEmpty())
+                throw new Exception($"{ nameof(DefaultTargetProviderName)} is required");
 
-            SrcProvider = MapConfig.GetSourceProvider(SourceProviderName);
-            TargetProvider = MapConfig.GetTargetProvider(TargetProviderName);
-            TargetProvider.Initialize();
+            DefaultSourceProvider = MapConfig.GetSourceProvider(DefaultSourceProviderName);
+            DefaultTargetProvider = MapConfig.GetTargetProvider(DefaultTargetProviderName);
+            DefaultTargetProvider.Initialize();
         }
 
         public void Dispose()
         {
-            TargetProvider.Dispose();
+            DefaultTargetProvider.Dispose();
         }
     }
 }

@@ -6,19 +6,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
     public class TransitionGroup : ComplexTransition
     {
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
-            foreach (var objTransition in ChildTransitions)
-            {
-                if (!objTransition.Enabled)
-                    continue;
-
-                var result = objTransition.Transit(null);
-                if (result.Continuation != TransitContinuation.Continue)
-                    break;
-            }
-
-            return new TransitResult();
+            return base.TransitChild(childNode, new ValueTransitContext(null,null,null,null));
         }
     }
 }

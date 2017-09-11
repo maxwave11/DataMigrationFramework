@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace XQ.DataMigration.Data
 {
     public interface IValuesObject

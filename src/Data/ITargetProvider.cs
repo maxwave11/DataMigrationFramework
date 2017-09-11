@@ -7,6 +7,6 @@ namespace XQ.DataMigration.Data
         void Initialize();
         void SaveObjects(ICollection<IValuesObject> objects);
         IValuesObject CreateObject(string dataSetId);
-        new CachedDataSet GetDataSet(string dataSetId);
+        new CachedDataSet GetDataSet(string providerQuery);
     }
 }

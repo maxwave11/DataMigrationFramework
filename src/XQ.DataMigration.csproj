@@ -58,7 +58,7 @@
     <Compile Include="Data\IValuesObject.cs" />
     <Compile Include="Data\ITargetProvider.cs" />
     <Compile Include="Data\ValuesObject.cs" />
-    <Compile Include="MapConfig\KeyDefinition.cs" />
+    <Compile Include="MapConfig\KeyTransition.cs" />
     <Compile Include="MapConfig\MapConfig.cs" />
     <Compile Include="MapConfig\MapConfigReader.cs" />
     <Compile Include="Enums\TraceMode.cs" />
@@ -84,13 +84,14 @@
     <Compile Include="MapConfig\MapAction.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectSetTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceRule.cs" />
-    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceTransitUnit.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceTransition.cs" />
     <Compile Include="Mapping\Logic\ValueTransitContext.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\TransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ComplexTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ValueTransitions\ValueTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ValidationUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteTransitUnit.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReadTransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\TypeConvertTransitUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\IDataSet.cs" />

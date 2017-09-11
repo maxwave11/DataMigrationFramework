@@ -10,7 +10,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
     /// Transition which allows to get a value from some reference data set. For example, find asset and get his name by asset id or find
     /// city id by city name or by any other condition. Lookup condition determined by LookupExpr migration expression. This transition 
     /// based on LookupValueTransitUnit
-    /// </summary>
+    // </summary>
     public class LookupValueTransition : ValueTransition
     {
         [XmlAttribute]
@@ -46,7 +46,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         protected override void InitializeEndTransitions()
         {
             if (ReplaceBeforeLookup.IsNotEmpty())
-                ChildTransitions.Add(new ReplaceTransitUnit { ReplaceRules = ReplaceBeforeLookup });
+                ChildTransitions.Add(new ReplaceTransition { ReplaceRules = ReplaceBeforeLookup });
 
             if (LookupDataSetId.IsEmpty() || LookupExpr.IsEmpty())
                 throw new Exception($"{ nameof(LookupDataSetId)} and {nameof(LookupExpr)} fields of {nameof(LookupValueTransition)} is required");
@@ -60,17 +60,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             });
 
             if (Return.IsNotEmpty())
-                ChildTransitions.Add(new TransitUnit { Expression = Return});
+                ChildTransitions.Add(new TransitUnit { Expression = Return });
 
             base.InitializeEndTransitions();
-        }
-
-        public override string ToString()
-        {
-            return base.ToString() +
-                $"\n    LookupDataSetId: {LookupDataSetId}"+
-                $"\n    LookupExpr: {LookupExpr}"+ 
-                (Return.IsNotEmpty() ? $"\n    Return: {Return}": "");
         }
     }
 }

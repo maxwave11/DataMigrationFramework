@@ -27,11 +27,13 @@ namespace XQ.DataMigration.Mapping.Trace
         /// Event fires each time when any unhandled error occured while migration process
         /// </summary>
         public event EventHandler<TransitErrorEventArgs> OnValueTransitError;
-
+        
         /// <summary>
         /// Event fires each time when any unhandled error occured while migration process
         /// </summary>
         public event EventHandler<IValuesObject> OnObjectSkipped;
+
+        internal const string IndentUnit = "  ";
 
         public void TraceText(string message)
         {
@@ -45,29 +47,43 @@ namespace XQ.DataMigration.Mapping.Trace
 
         public void TraceText(string message, TransitionNode node, ConsoleColor color)
         {
-            var msg =  message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
-            AddTraceEntryToObjectTransition(node, msg, color);
+            if (!string.IsNullOrEmpty(message))
+                message =  message.Split('\n').Select(i => string.IsNullOrEmpty(i) ? String.Empty : GetIndent(node) + i).Join("\n");
 
-            if (node.ActualTrace == TraceMode.True || (node.ActualTrace == TraceMode.Auto && (node is ObjectTransition || node is ObjectSetTransition) ))
-                Trace?.Invoke(this, new TraceMessage(msg, color, node));
+            AddTraceEntryToObjectTransition(node, message, color);
+
+            var doTrace = true;
+
+            switch (node.ActualTrace)
+            {
+                case TraceLevel.ObjectSet:
+                    if (node.HasParentOfType<ObjectSetTransition>())
+                        doTrace = false;
+                    break;
+                case TraceLevel.Object:
+                    if (node.HasParentOfType<ObjectTransition>())
+                        doTrace = false;
+                    break;
+                default:
+                    break;
+            }
+            
+            if (doTrace)
+                Trace?.Invoke(this, new TraceMessage(message, color, node));
+
         }
 
         public void TraceWarning(string message, TransitionNode node)
         {
-            var msg = message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
-            AddTraceEntryToObjectTransition(node, msg, ConsoleColor.Yellow);
+            if (!node.TraceWarnings)
+                return;
+            
+            if (!string.IsNullOrEmpty(message))
+                message = message.Split('\n').Select(i => string.IsNullOrEmpty(i) ? String.Empty : GetIndent(node) + i).Join("\n");
 
-            Trace?.Invoke(this, new TraceMessage(msg, ConsoleColor.Yellow, node));
-        }
+            AddTraceEntryToObjectTransition(node, message, ConsoleColor.Yellow);
 
-        public void TraceObjectSetTransitionStart(ObjectSetTransition transition)
-        {
-            TraceText($">>>Transitting all objects from  source DataSet '{transition.Name}'", transition, ConsoleColor.DarkYellow);
-        }
-
-        public void TraceObjectSetTransitionEnd(ObjectSetTransition transition)
-        {
-            TraceText($"<<< Objects from source DataSet '{transition.Name}' are transitted'\n", transition, ConsoleColor.DarkYellow);
+            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.Yellow, node));
         }
 
         public void TraceSkipObject(string text, TransitionNode node, IValuesObject sourceObject)
@@ -95,7 +111,7 @@ namespace XQ.DataMigration.Mapping.Trace
             while (nextParent != null)
             {
                 nextParent = nextParent.Parent;
-                _indent += "  ";
+                _indent += IndentUnit;
             }
 
             return _indent;

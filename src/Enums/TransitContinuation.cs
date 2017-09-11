@@ -3,10 +3,11 @@
     public enum TransitContinuation
     {
         Continue,
+        Stop,
+        RaiseError,
         SkipUnit,
         SkipValue,
         SkipObject,
-        Stop,
-        RaiseError
+        SkipObjectSet,
     }
 }

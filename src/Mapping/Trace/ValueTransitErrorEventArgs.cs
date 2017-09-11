@@ -21,18 +21,24 @@ namespace XQ.DataMigration.Mapping.Trace
 
         public override string ToString()
         {
+            if (Context == null)
+                return $"NULL {nameof(ValueTransitContext)}";
             try
             {
                 string errorMsg = 
 $@"Error description:
 ============ TRACE ========== 
-{ Context.ObjectTransition.TraceEntries.Select(t=>t.Mesage).Join("\n") }
+{ Context.ObjectTransition?.TraceEntries.Select(t=>t.Mesage).Join("") }
+
 ==============SRC==============
 { Context.Source?.GetInfo().Truncate(1024) }
+
 ==============TARGET===========
 { Context.Target?.GetInfo() }
+
 ==============TransitValue=====
 { ((Context.TransitValue as IValuesObject)?.GetInfo().Truncate(1024) ?? Context.TransitValue) }
+
 ==============ValueType: {Context.ValueType}";
 
                 return errorMsg;

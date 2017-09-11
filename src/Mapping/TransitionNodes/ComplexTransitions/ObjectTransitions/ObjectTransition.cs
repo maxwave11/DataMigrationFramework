@@ -10,6 +10,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
+
     public class NestedObjectTransition: ObjectTransition
     {
         public override TransitResult Transit(ValueTransitContext transitContext)
@@ -32,7 +33,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         /// Key definition element which describes how to get keys for source and for target objects respectively
         /// </summary>
         [XmlElement]
-        public KeyDefinition KeyDefinition { get; set; }
+        public KeyTransition KeyTransition { get; set; }
 
         /// <summary>
         /// Indicates which objects will be transitted depend from their existence in target system. 
@@ -54,188 +55,91 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         {
             Color = ConsoleColor.Magenta;
             Validate();
-            KeyDefinition?.Initialize(parent);
+
+            if (KeyTransition != null)
+            {
+                ChildTransitions.Insert(0, KeyTransition);
+            }
+            
+            
             base.Initialize(parent);
         }
 
         protected virtual void Validate()
         {
-            if (KeyDefinition == null)
-                throw new Exception($"{nameof(KeyDefinition)} is required for {nameof(ObjectTransition)} element");
+            if (KeyTransition == null)
+                throw new Exception($"{nameof(KeyTransition)} is required for {nameof(ObjectTransition)} element");
         }
 
-        public void TraceObjectTransitionStart(ObjectTransition objectTransition, string objectKey)
+        //protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
+        //{
+        //    //var source = ctx.Source;
+        //    //var objectKey = source!=null ? GetKeyFromSource(source):"SOURCE NULL";
+        //    base.TraceStart(ctx, $"Key='{objectKey}'");
+        //}
+
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
-            TraceLine($"(Start object transition ({objectTransition.Name}) [{ objectKey }]");
+            TraceEntries.Clear();
+
+            if (ctx.Source == null)
+                throw new InvalidOperationException($"Can't transit NULL Source. Use {nameof(ObjectSetTransition)} to link to some source and use {nameof(ObjectTransition)} within parent {nameof(ObjectSetTransition)}");
+
+            //don't transit objects with empty key
+            //  var result =  KeyTransition.Transit(ctx);
+            // var objectKey = GetKeyFromSource(source);
+
+
+            //var target = GetTargetObject(objectKey);
+
+
+            //if (target == null)
+            //    return new TransitResult(TransitContinuation.SkipObject, null);
+
+            // var valueTransitContext = new ValueTransitContext(source, null, source, this);
+            ctx.ObjectTransition = this;
+            return base.Transit(ctx);
+            //foreach (var valueTransition in ChildTransitions)
+            //{
+            //    if (ActualTrace == TraceMode.True)
+            //        TraceLine("");
+
+            //    var valueTransitContext = new ValueTransitContext(source, target, source, this);
+            //    var result = valueTransition.TransitInternal(valueTransitContext);
+
+            //    if (result.Continuation == TransitContinuation.SkipValue)
+            //    {
+            //        continue;
+            //    }
+
+            //    if (result.Continuation == TransitContinuation.SkipObject)
+            //    {
+            //        return new TransitResult(TransitContinuation.SkipObject, null);
+            //    }
+
+            //    if (result.Continuation == TransitContinuation.Stop)
+            //    {
+            //        throw new Exception("Object transition stopped");
+            //    }
+            //}
+
+            ////TraceObjectTransitionEnd(this);
+
         }
 
-        protected override void TraceStart(ValueTransitContext ctx)
+        protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
-            
+            ctx.SetCurrentValue(childNode.Name, ctx.Source);
+            return base.TransitChild(childNode, ctx);
         }
 
         protected override void TraceEnd(ValueTransitContext ctx)
         {
-            
+            var tagName = this.GetType().Name;
+            var traceMsg = $"</{tagName}>";
+            TraceLine(traceMsg);
         }
 
-        public void TraceObjectTransitionEnd(ObjectTransition objectTransition)
-        {
-            TraceLine("(End object transition)");
-        }
-
-        public override TransitResult Transit(ValueTransitContext transitContext)
-        {
-            TraceEntries.Clear();
-
-            var source = transitContext.Source;
-
-            var objectKey = GetKeyFromSource(source);
-
-            TraceObjectTransitionStart(this, objectKey);
-
-            //don't transit objects with empty key
-            if (objectKey.IsEmpty())
-            {
-                Tracer.TraceText("Source object key is empty. Skipping object.", this, ConsoleColor.Yellow);
-                return new TransitResult(TransitContinuation.SkipObject, null);
-            }
-            var target = GetTargetObject(objectKey);
-            if (target == null)
-                return new TransitResult(TransitContinuation.SkipObject, null);
-
-            foreach (var valueTransition in ChildTransitions)
-            {
-                if (ActualTrace == TraceMode.True)
-                    TraceLine("");
-
-                var ctx = new ValueTransitContext(source, target, source, this);
-                var result = valueTransition.TransitInternal(ctx);
-
-                if (result.Continuation == TransitContinuation.SkipValue)
-                {
-                    continue;
-                }
-
-                if (result.Continuation == TransitContinuation.SkipObject)
-                {
-                    return new TransitResult(TransitContinuation.SkipObject, null);
-                }
-
-                if (result.Continuation == TransitContinuation.Stop)
-                {
-                    throw new Exception("Object transition stopped");
-                }
-            }
-
-            TraceObjectTransitionEnd(this);
-
-            return new TransitResult(TransitContinuation.Continue, target);
-        }
-
-        //public virtual ICollection<IValuesObject> TransitObject(IValuesObject source)
-        //{
-        //    TraceEntries.Clear();
-
-        //    var objectKey = GetKeyFromSource(source);
-
-        //    TraceObjectTransitionStart(this, objectKey);
-
-        //    //don't transit objects with empty key
-        //    if (objectKey.IsEmpty())
-        //    {
-        //        Tracer.TraceText("Source object key is empty. Skipping object.", this, ConsoleColor.Yellow);
-        //        return null;
-        //    }
-        //    var target = GetTargetObject(objectKey);
-        //    if (target == null)
-        //        return null;
-
-        //    foreach (var valueTransition in ChildTransitions)
-        //    {
-        //        if (ActualTrace == TraceMode.True)
-        //            TraceLine("");
-
-        //        var ctx = new ValueTransitContext(source, target, source, this);
-        //        var result = valueTransition.TransitInternal(ctx);
-
-        //        if (result.Continuation == TransitContinuation.SkipValue)
-        //        {
-        //            continue;
-        //        }
-
-        //        if (result.Continuation == TransitContinuation.SkipObject)
-        //        {
-        //            return null;
-        //        }
-
-        //        if (result.Continuation == TransitContinuation.Stop)
-        //        {
-        //            throw new Exception("Object transition stopped");
-        //        }
-        //    }
-
-        //    TraceObjectTransitionEnd(this);
-        //    return new[] { target };
-        //}
-
-        protected virtual string GetKeyFromSource(IValuesObject sourceObject)
-        {
-            if (!sourceObject.Key.IsEmpty())
-                return sourceObject.Key;
-
-            var ctx = new ValueTransitContext(sourceObject, null, sourceObject, this);
-            var transitResult = KeyDefinition.SourceKeyTransition.TransitInternal(ctx);
-
-            if (transitResult.Continuation == TransitContinuation.Continue)
-                sourceObject.Key = transitResult.Value?.ToString();
-            
-            if (transitResult.Continuation == TransitContinuation.RaiseError || transitResult.Continuation == TransitContinuation.Stop)
-            {
-                TraceLine($"Transition stopped on { Name }");
-                throw new Exception("Can't transit source key ");
-            }
-
-            return sourceObject.Key;
-        }
-
-        protected virtual IValuesObject GetTargetObject(string key)
-        {
-            var provider = Migrator.Current.Action.TargetProvider;
-
-            var existedObject = provider.GetDataSet(TargetDataSetId).GetObjectByKey(key, GetKeyFromTarget);
-
-            if (TransitMode == ObjectTransitMode.OnlyExistedObjects)
-                return existedObject;
-
-            if (TransitMode == ObjectTransitMode.OnlyNewObjects && existedObject != null)
-            {
-                TraceLine($"Object already exist, skipping, because TransitMode = TransitMode.OnlyNewObjects");
-                return null;
-            }
-
-            if (existedObject != null)
-                return existedObject;
-
-            var newObject = provider.CreateObject(TargetDataSetId);
-            newObject.Key = key;
-
-            provider.GetDataSet(TargetDataSetId).PutObjectToCache(newObject, key);
-
-            return newObject;
-        }
-
-        protected virtual string GetKeyFromTarget(IValuesObject targetObject)
-        {
-            if (!targetObject.Key.IsEmpty())
-                return targetObject.Key;
-
-            var ctx = new ValueTransitContext(targetObject, null, targetObject, this);
-            var transitResult = KeyDefinition.TargetKeyTransition.TransitInternal(ctx);
-            targetObject.Key = transitResult.Value?.ToString();
-
-            return targetObject.Key;
-        }
 
         internal void AddTraceEntry(string msg, ConsoleColor color)
         {

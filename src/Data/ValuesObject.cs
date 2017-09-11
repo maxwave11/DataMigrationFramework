@@ -1,11 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
+using System.Text.RegularExpressions;
+using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class ValuesObject : IValuesObject
+    public interface IValueObjectsCollecion
+    {
+        IEnumerable<IValuesObject> GetObjects(string query);
+    }
+
+    public class ValuesObject : IValuesObject, IValueObjectsCollecion
     {
         public object this[string name] => GetValue(name);
         public string[] FieldNames => _dataContainer.Keys.ToArray();
@@ -54,6 +62,67 @@ namespace XQ.DataMigration.Data
                 sb.AppendLine($"{fieldName}={this[fieldName]}");
             }
             return sb.ToString();
+        }
+
+        public IEnumerable<KeyValuePair<string, object>> GetValues()
+        {
+            return _dataContainer.Select(i=> new KeyValuePair<string, object>(i.Key, i.Value));
+        }
+
+        public override string ToString()
+        {
+            return GetType().Name.Truncate(30, "*");
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public IEnumerable<IValuesObject> GetObjects(string query)
+        {
+            List<ValuesObject> result = null;
+
+            if (query.StartsWith("Pivot"))
+            {
+                var pivotExpression = query.Replace("Pivot", "").Trim();
+
+                foreach (var pivotSubExpression in pivotExpression.Split(new[] {"and"}, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var chunks =  pivotSubExpression.Split(new[] {"as"}, StringSplitOptions.RemoveEmptyEntries);
+                    var pivotPattern = chunks[0].Trim();
+                    var pivotPatternName = chunks[1].Trim();
+
+                    var pivotColumns = FindPivotColumns(pivotPattern, this);
+
+                    if (result == null)
+                        result = pivotColumns.Select(i => new ValuesObject(this)).ToList();
+
+                    for (int i = 0; i < pivotColumns.Count(); i++)
+                    {
+                        var pivotedObject = result[i];
+                        var column = pivotColumns[i];
+                        pivotedObject.SetValue(pivotPatternName, _dataContainer[column]);
+                        pivotedObject.SetValue(pivotPatternName + "Column", column);
+                    }
+                }
+                return result;
+            }
+
+            throw new NotSupportedException();
+        }
+
+
+        private Dictionary<string, string[]> GetPivotColumnSet(IValuesObject source, string[] patterns)
+        {
+            return patterns
+                .Select(pattern => new { def = pattern, Columns = FindPivotColumns(pattern, source) })
+                .ToDictionary(i => i.def, i => i.Columns);
+        }
+
+        private string[] FindPivotColumns(string columnPattern, IValuesObject source)
+        {
+            var regex = new Regex(columnPattern);
+            return source.FieldNames.Where(f => regex.IsMatch(f)).ToArray();
         }
     }
 }

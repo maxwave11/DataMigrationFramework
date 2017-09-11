@@ -7,7 +7,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class ReplaceTransitUnit : ComplexTransition
+    public class ReplaceTransition : ComplexTransition
     {
         [XmlAttribute]
         public string ReplaceRules { get; set; }
@@ -17,7 +17,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             if (ReplaceRules.IsNotEmpty())
             {
                 if (ChildTransitions?.Any() == true)
-                    throw new Exception(nameof(ReplaceTransitUnit) + "not allows not empty Rules property while having child rules collection");
+                    throw new Exception(nameof(ReplaceTransition) + "not allows not empty Rules property while having child rules collection");
 
                 var rules = ReplaceRules.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 

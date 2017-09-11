@@ -1,4 +1,4 @@
 namespace XQ.DataMigration.Enums
 {
-    public enum TraceMode { Auto = 0, True = 1, False = 2 }
+    public enum TraceLevel { Auto = 0, ObjectSet = 1, Object = 2, Verbose = 3 }
 }

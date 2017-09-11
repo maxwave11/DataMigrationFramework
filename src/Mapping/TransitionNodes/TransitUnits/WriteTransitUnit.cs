@@ -1,5 +1,8 @@
-﻿using XQ.DataMigration.Enums;
+﻿using Antlr.Runtime.Tree;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Mapping.Trace;
+using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
@@ -10,23 +13,28 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     /// </summary>
     public class WriteTransitUnit : TransitUnit
     {
+        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
+        {
+            
+        }
+
+        protected override void TraceEnd(ValueTransitContext ctx)
+        {
+            var tagName = this.GetType().Name;
+            var returnValue = ctx.TransitValue?.ToString();
+            var returnValueType = ctx.TransitValue?.GetType().Name;
+            var traceMsg = $"<{tagName} Value=\"({returnValueType.Truncate(30)}){returnValue.Truncate(40)}\" To=\"{ctx.Target}.{Expression}\"/>";
+            TraceLine(traceMsg);
+        }
+
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            TransitContinuation continuation = TransitContinuation.Continue;
+            if (Expression.Contains("{"))
+                ExpressionEvaluator.Evaluate(Expression, ctx);
+            else
+                ctx.Target.SetValue(Expression, ctx.TransitValue);
 
-            if (continuation == TransitContinuation.Continue)
-            {
-                if (Expression.Contains("{"))
-                {
-                    ExpressionEvaluator.Evaluate(Expression, ctx);
-                }
-                else
-                {
-                    ctx.Target.SetValue(Expression, ctx.TransitValue);
-                }
-            }
-
-            return new TransitResult(TransitContinuation.Continue, ctx.TransitValue);
+            return new TransitResult(ctx.TransitValue);
         }
     }   
 }

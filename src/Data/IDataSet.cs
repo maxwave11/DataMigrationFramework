@@ -6,7 +6,7 @@ namespace XQ.DataMigration.Data
     /// <summary>
     /// Common interface for accessing to particular objects (entries, rows) of some data provder
     /// </summary>
-    public interface IDataSet : IEnumerable<IValuesObject>, IDisposable
+    public interface IDataSet : IEnumerable<IValuesObject>
     {
         string DataSetId { get; }
 

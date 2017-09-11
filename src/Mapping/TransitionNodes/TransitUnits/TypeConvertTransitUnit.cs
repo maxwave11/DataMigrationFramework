@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Serialization;
@@ -8,7 +9,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class TypeConvertTransitUnit : TransitUnit
+    public class TypeConvertTransitUnit : TransitionNode
     {
         [XmlAttribute]
         public string DataTypeFormats { get; set; }
@@ -33,14 +34,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             if(!Enum.TryParse(DataType, true, out _typeCode))
                 throw new Exception($"Can't parse type name '{DataType}'");
+            
             base.Initialize(parent);
         }
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var value = base.Transit(ctx).Value;
+            var value = ctx.TransitValue;
             var typedValue = GetTypedValue(_typeCode, value, DataTypeFormats.IsNotEmpty() ? DataTypeFormats.Split(',') : null);
-            return new TransitResult(TransitContinuation.Continue, typedValue);
+            return new TransitResult(typedValue);
         }
 
         public static  object GetTypedValue(TypeCode targetType, object value, string[] DataTypeFormats = null)
@@ -71,7 +73,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                     }
                     catch (Exception)
                     {
-                        //возможно это doble, преобразованный в дату SourceProvider'ом
+                        //РІРѕР·РјРѕР¶РЅРѕ СЌС‚Рѕ double, РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅС‹Р№ РІ РґР°С‚Сѓ SourceProvider'РѕРј
                         var date = Convert.ToDateTime(value).ToString("dd.M");
                         return Convert.ToDouble(date, CultureInfo.InvariantCulture);
                         throw;
@@ -85,8 +87,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 case TypeCode.Boolean:
                     return ToBool(value);
                 case TypeCode.DateTime:
-                    if (value is string && DataTypeFormats?.Any() == true)
+                    if (value is string)
                     {
+                        //set default date formats to parse
+                        DataTypeFormats = DataTypeFormats?.Any() == true ? DataTypeFormats : new[] {"dd.MM.yyyy","d.M.yyyy","dd.M.yyyy","d.MM.yyyy"};
                         return DateTime.ParseExact(value.ToString(), DataTypeFormats, new DateTimeFormatInfo(), DateTimeStyles.None);
                     }
                     return Convert.ToDateTime(value);
@@ -105,6 +109,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             {
                 return Convert.ToBoolean(Convert.ToInt32(value));
             }
+        }
+
+        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
+        {
+            attributes = $"TargetType=\"{ DataType }\"";
+            base.TraceStart(ctx, attributes);
         }
     }
 }

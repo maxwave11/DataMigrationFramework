@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace XQ.DataMigration.Data
 {
@@ -8,6 +9,6 @@ namespace XQ.DataMigration.Data
     /// </summary>
     public interface IDataProvider : IDisposable
     {
-        IDataSet GetDataSet(string dataSetId);
+        IDataSet GetDataSet(string providerQuery);
     }
 }

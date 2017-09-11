@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using XQ.DataMigration.Enums;
+using XQ.DataMigration.MapConfig;
+using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions
 {
+
     public class ValueTransition : ComplexTransition
     {
         [XmlAttribute]
@@ -37,7 +42,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             InitializeStartTransitions();
             InitializeUserDefinedTransitions(userDefinedTransitions);
             InitializeEndTransitions();
-
+            Color = ConsoleColor.Green;
             base.Initialize(parent);
         }
 
@@ -45,7 +50,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             if (From.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new TransitUnit { Expression = From });
+                this.ChildTransitions.Add(new ReadTransitUnit(){ From = From });
             }
         }
 
@@ -54,11 +59,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             this.ChildTransitions.AddRange(userDefinedTransitions);
         }
 
+        protected override TransitContinuation GetContinuationOnSkip(TransitResult result)
+        {
+            if (result.Continuation == TransitContinuation.SkipValue && this is ValueTransition)
+                return TransitContinuation.Continue;
+
+           
+            return base.GetContinuationOnSkip(result);
+        }
+
         protected virtual void InitializeEndTransitions()
         {
             if (Replace.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new ReplaceTransitUnit { ReplaceRules = Replace });
+                this.ChildTransitions.Add(new ReplaceTransition { ReplaceRules = Replace });
             }
 
             if (DataType.IsNotEmpty())
@@ -72,13 +86,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             }
         }
 
-        public override string ToString()
+        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            var info = base.ToString() +
-               $"\n    From: { From }" +
-               $"\n    To: { To }" +
-               (Replace.IsNotEmpty() ? $"\n    Replace: { Replace }" : "");
-            return info;
+            attributes = $"From=\"{From}\" To=\"{To}\"";
+            base.TraceStart(ctx, attributes);
         }
     }
 }

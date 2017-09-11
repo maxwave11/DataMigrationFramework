@@ -1,12 +1,14 @@
-﻿using XQ.DataMigration.Enums;
+﻿using System;
+using XQ.DataMigration.Enums;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 
 namespace XQ.DataMigration.Mapping.Logic
 {
     public class TransitResult
     {
-        public TransitResult()
+        public TransitResult(object value)
         {
-            Continuation = TransitContinuation.Continue;
+            Value = value;
         }
 
         public TransitResult(TransitContinuation continuation, object value, string message ="")
@@ -16,7 +18,7 @@ namespace XQ.DataMigration.Mapping.Logic
             Message = message;
         }
 
-        public TransitContinuation Continuation { get; }
+        public TransitContinuation Continuation { get; } = TransitContinuation.Continue;
         public object Value { get; }
         public string Message { get; }
     }

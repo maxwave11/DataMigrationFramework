@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
@@ -47,7 +48,14 @@ namespace XQ.DataMigration.MapConfig
 
         public void RegisterTransitElement(Type type)
         {
-            if (!type.IsSubclassOf(typeof(TransitUnit)) && !type.IsSubclassOf(typeof(ObjectTransition)))
+            var allowedBaseClasses = new []
+            {
+                typeof(TransitionNode), 
+                typeof(TransitUnit), 
+                typeof(ObjectTransition)
+            };
+            
+            if (!allowedBaseClasses.Any(type.IsSubclassOf))
                 throw new Exception($"Types for register must be derived from {nameof(TransitUnit)} or {nameof(ObjectTransition)}");
 
             _customElements[type.Name] = type;
@@ -76,15 +84,19 @@ namespace XQ.DataMigration.MapConfig
             objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
             objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(PivotObjectTransition), typeof(PivotObjectTransition)));
             objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
+            objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectSetTransition), typeof(ObjectSetTransition)));
+
 
             //register default object transitions
             var complexElementChildren = new XmlAttributes();
+            //complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitionNode), typeof(ValueTransition)));
+            //complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ComplexTransition), typeof(ValueTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValueTransition), typeof(ValueTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(LookupValueTransition), typeof(LookupValueTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitUnit), typeof(TransitUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ConditionUnit), typeof(ConditionUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TypeConvertTransitUnit), typeof(TypeConvertTransitUnit)));
-            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ReplaceTransitUnit), typeof(ReplaceTransitUnit)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ReplaceTransition), typeof(ReplaceTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(WriteMessageUnit), typeof(WriteMessageUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(NestedObjectTransition), typeof(NestedObjectTransition)));
@@ -101,7 +113,7 @@ namespace XQ.DataMigration.MapConfig
                     continue;
                 }
 
-                if (typeof(TransitUnit).IsAssignableFrom(customTransitionType.Value))
+                if (typeof(TransitionNode).IsAssignableFrom(customTransitionType.Value))
                     complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
             }
 

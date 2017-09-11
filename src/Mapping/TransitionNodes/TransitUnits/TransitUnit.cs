@@ -21,12 +21,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 returnValue = ExpressionEvaluator.Evaluate(Expression, ctx);
             }
 
-            return new TransitResult(TransitContinuation.Continue, returnValue);
+            return new TransitResult(returnValue);
         }
 
-        public override string ToString()
+        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            return $"{base.ToString()}\n    Expression: {Expression}";
+            attributes += $" Expression=\"{ Expression }\" ContextValue=\"{ ctx.TransitValue }\"";
+            base.TraceStart(ctx, attributes);
         }
     }
 }
