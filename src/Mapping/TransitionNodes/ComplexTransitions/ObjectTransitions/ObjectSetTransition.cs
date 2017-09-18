@@ -204,19 +204,22 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             try
             {
-                TraceLine($"Saving {_transittedObjects.Count()} objects...");
+                throw new Exception();
+                
+                TraceLine($"Saving {_transittedObjects.Count} ({ _transittedObjects.Count(i=>i.Value.IsNew)} new) objects...");
 
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
                 Migrator.Current.Action.DefaultTargetProvider.SaveObjects(_transittedObjects.Values);
                 stopWath.Stop();
-                TraceLine($"Saved {_transittedObjects.Count()} objects, time: {stopWath.Elapsed.TotalMinutes} min");
+                TraceLine($"Saved {_transittedObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
                 
             }
             catch (Exception ex)
             {
-                Tracer.TraceText("=====Error while saving transitted objects: " + ex, this, ConsoleColor.Red);
+                var objectsInfo =  _transittedObjects.Select(i => i.Value.GetInfo()).Join("\n===========================\n");
+                Tracer.TraceText("=====Error while saving transitted objects: " + ex  + objectsInfo, this, ConsoleColor.Red);
                 throw;
             }
 
