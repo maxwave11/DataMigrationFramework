@@ -108,7 +108,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 if (result.Continuation == TransitContinuation.SkipObject)
                 {
-                    //TraceLine("Object skipped. " + result.Message);
+                    //TraceLine($"Object skipped (Key = {ctx.Source.Key})" + result.Message);
                     continue;
                 }
 
@@ -204,22 +204,39 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             try
             {
-                throw new Exception();
-                
-                TraceLine($"Saving {_transittedObjects.Count} ({ _transittedObjects.Count(i=>i.Value.IsNew)} new) objects...");
+                TraceLine($"Saving {_transittedObjects.Count} objects...");
+                var newObjectsCount = _transittedObjects.Count(i => i.Value.IsNew);
+
+                if (newObjectsCount > 0)
+                    TraceLine($"New objects: {newObjectsCount}");
 
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
                 Migrator.Current.Action.DefaultTargetProvider.SaveObjects(_transittedObjects.Values);
                 stopWath.Stop();
+
                 TraceLine($"Saved {_transittedObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
-                
+
+              
+                if (ObjectTransition is ObjectTransition)
+                {
+                    //NOTICE: Need to put objects to cache only after success saving 
+                    //to avoid putting to cache skipped and invalid objects.
+                    var provider = Migrator.Current.Action.DefaultTargetProvider;
+
+                    var dataSet = provider.GetDataSet(((ObjectTransition) ObjectTransition).TargetDataSetId);
+                    foreach (var transittedObject in _transittedObjects)
+                    {
+                        dataSet.PutObjectToCache(transittedObject.Value, transittedObject.Key);
+                    }
+                }
+
             }
             catch (Exception ex)
             {
-                var objectsInfo =  _transittedObjects.Select(i => i.Value.GetInfo()).Join("\n===========================\n");
-                Tracer.TraceText("=====Error while saving transitted objects: " + ex  + objectsInfo, this, ConsoleColor.Red);
+                var objectsInfo = _transittedObjects.Select(i => i.Value.GetInfo()).Join("\n===========================\n");
+                Tracer.TraceText("=====Error while saving transitted objects: " + ex + objectsInfo, this,ConsoleColor.Red);
                 throw;
             }
 
