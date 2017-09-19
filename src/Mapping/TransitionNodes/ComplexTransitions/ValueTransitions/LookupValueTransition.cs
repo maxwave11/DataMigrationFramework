@@ -56,7 +56,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
                 LookupDataSetId = LookupDataSetId,
                 LookupExpr = LookupExpr,
                 ProviderName = ProviderName,
-                OnNotFound = OnNotFound
+                OnNotFound = OnNotFound,
+                TraceWarnings = this.TraceWarnings
             });
 
             if (Return.IsNotEmpty())
