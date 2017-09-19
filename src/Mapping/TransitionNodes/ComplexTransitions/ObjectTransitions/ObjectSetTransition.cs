@@ -36,16 +36,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         [XmlAttribute]
         public string QueryToSource { get; set; }
 
-
-        /// <summary>
-        /// Set this value if you want to transit concrete range of DataSet objects from source system
-        /// Example 1: 2-10
-        /// Example 2: 2-10, 14-50
-        /// </summary>
-        [XmlAttribute]
-        public string RowsRange { get; set; }
-
-     
         /// <summary>
         /// The name of provider from which should be fetched source objects
         /// </summary>
@@ -56,8 +46,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         #region Members
 
         private readonly Dictionary<string, IValuesObject> _transittedObjects = new Dictionary<string, IValuesObject>();
-
-        private Dictionary<int, int> _allowedRanges;
 
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
@@ -70,7 +58,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         {
             Color = ConsoleColor.Magenta;
             
-            ParseRowsRange();
 
             if (ObjectTransition == null)
                 throw new Exception($"{nameof(ObjectTransition)} can't be empty");
@@ -97,13 +84,18 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             if (srcDataSet == null)
                  return new TransitResult(null);
 
-
+            var rowNumber = 0;
             foreach (var sourceObject in srcDataSet)
             {
-                if (!CanTransit(sourceObject))
-                    continue;
+                rowNumber++;
+                sourceObject.SetValue("RowNumber", rowNumber);
 
                 ctx.Source = sourceObject;
+
+                if (!ObjectTransition.CanTransit(ctx))
+                    continue;
+
+
                 var result = ObjectTransition.TransitInternal(ctx);
 
                 if (result.Continuation == TransitContinuation.SkipObject)
@@ -241,51 +233,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             }
 
             _transittedObjects.Clear();
-        }
-
-        private bool CanTransit(IValuesObject srcObject)
-        {
-           // if (!IsRowIndexInRange(rowIndex)) return false;
-
-            if (Migrator.Current.Action.Filter.IsNotEmpty())
-            {
-                var expression = new CompiledExpression<bool>(Migrator.Current.Action.Filter);
-                var registry = new TypeRegistry();
-                registry.RegisterType<IValuesObject>();
-
-                registry.RegisterSymbol("Src", srcObject);
-                expression.TypeRegistry = registry;
-
-                return expression.Eval();
-            }
-
-            return true;
-        }
-
-        private bool IsRowIndexInRange(int rowIndex)
-        {
-            if (RowsRange.IsEmpty()) return true;
-
-            return this._allowedRanges.Any(i => i.Key <= rowIndex && rowIndex <= i.Value);
-        }
-
-        private void ParseRowsRange()
-        {
-            if (RowsRange.IsEmpty()) return;
-
-            if (this._allowedRanges == null)
-            {
-                this._allowedRanges = new Dictionary<int, int>();
-
-                foreach (string strRange in RowsRange.Split(','))
-                {
-                    if (strRange.Contains("-"))
-
-                        this._allowedRanges.Add(Convert.ToInt32(strRange.Split('-')[0]), Convert.ToInt32(strRange.Split('-')[1]));
-                    else
-                        this._allowedRanges.Add(Convert.ToInt32(strRange), Convert.ToInt32(strRange));
-                }
-            }
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
@@ -48,12 +49,24 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         [XmlAttribute]
         public string From { get; set; }
 
+        /// <summary>
+        /// Set this value if you want to transit concrete range of DataSet objects from source system
+        /// Example 1: 2-10
+        /// Example 2: 2-10, 14-50
+        /// </summary>
+        [XmlAttribute]
+        public string RowsRange { get; set; }
+
+        private Dictionary<int, int> _allowedRanges;
+
+
         public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 
         public override void Initialize(TransitionNode parent)
         {
             Color = ConsoleColor.Magenta;
+            ParseRowsRange();
             Validate();
 
             if (KeyTransition != null)
@@ -71,13 +84,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 throw new Exception($"{nameof(KeyTransition)} is required for {nameof(ObjectTransition)} element");
         }
 
-        //protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
-        //{
-        //    //var source = ctx.Source;
-        //    //var objectKey = source!=null ? GetKeyFromSource(source):"SOURCE NULL";
-        //    base.TraceStart(ctx, $"Key='{objectKey}'");
-        //}
-
         public override TransitResult Transit(ValueTransitContext ctx)
         {
             TraceEntries.Clear();
@@ -85,52 +91,26 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             if (ctx.Source == null)
                 throw new InvalidOperationException($"Can't transit NULL Source. Use {nameof(ObjectSetTransition)} to link to some source and use {nameof(ObjectTransition)} within parent {nameof(ObjectSetTransition)}");
 
-            //don't transit objects with empty key
-            //  var result =  KeyTransition.Transit(ctx);
-            // var objectKey = GetKeyFromSource(source);
-
-
-            //var target = GetTargetObject(objectKey);
-
-
-            //if (target == null)
-            //    return new TransitResult(TransitContinuation.SkipObject, null);
-
-            // var valueTransitContext = new ValueTransitContext(source, null, source, this);
             ctx.ObjectTransition = this;
             return base.Transit(ctx);
-            //foreach (var valueTransition in ChildTransitions)
-            //{
-            //    if (ActualTrace == TraceMode.True)
-            //        TraceLine("");
-
-            //    var valueTransitContext = new ValueTransitContext(source, target, source, this);
-            //    var result = valueTransition.TransitInternal(valueTransitContext);
-
-            //    if (result.Continuation == TransitContinuation.SkipValue)
-            //    {
-            //        continue;
-            //    }
-
-            //    if (result.Continuation == TransitContinuation.SkipObject)
-            //    {
-            //        return new TransitResult(TransitContinuation.SkipObject, null);
-            //    }
-
-            //    if (result.Continuation == TransitContinuation.Stop)
-            //    {
-            //        throw new Exception("Object transition stopped");
-            //    }
-            //}
-
-            ////TraceObjectTransitionEnd(this);
-
         }
 
         protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
             ctx.SetCurrentValue(childNode.Name, ctx.Source);
-            return base.TransitChild(childNode, ctx);
+            
+            var result =  base.TransitChild(childNode, ctx);
+            if (childNode is KeyTransition)
+                TraceLine("Key: " + ctx.Source.Key);
+            return result;
+        }
+
+        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
+        {
+            if (ctx?.Source!=null)
+                attributes += "RowNumber=" + ctx.Source["RowNumber"];
+
+            base.TraceStart(ctx, attributes);
         }
 
         protected override void TraceEnd(ValueTransitContext ctx)
@@ -140,11 +120,69 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             TraceLine(traceMsg);
         }
 
-
         internal void AddTraceEntry(string msg, ConsoleColor color)
         {
             TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
         }
+
+        //private bool CanTransit(IValuesObject srcObject)
+        //{
+        //    if (!IsRowIndexInRange(rowIndex)) return false;
+
+        //    if (Migrator.Current.Action.Filter.IsNotEmpty())
+        //    {
+        //        var expression = new CompiledExpression<bool>(Migrator.Current.Action.Filter);
+        //        var registry = new TypeRegistry();
+        //        registry.RegisterType<IValuesObject>();
+
+        //        registry.RegisterSymbol("Src", srcObject);
+        //        expression.TypeRegistry = registry;
+
+        //        return expression.Eval();
+        //    }
+
+        //    return true;
+        //}
+
+        public override bool CanTransit(ValueTransitContext ctx)
+        {
+            if (ctx?.Source != null)
+            {
+                if (!IsRowIndexInRange((int) ctx.Source["RowNumber"]))
+                    return false;
+            }
+
+            return base.CanTransit(ctx);
+        }
+
+
+        private bool IsRowIndexInRange(int rowIndex)
+        {
+            if (RowsRange.IsEmpty()) return true;
+
+            return _allowedRanges.Any(i => i.Key <= rowIndex && rowIndex <= i.Value);
+        }
+
+        private void ParseRowsRange()
+        {
+            if (RowsRange.IsEmpty()) return;
+
+            if (this._allowedRanges == null)
+            {
+                this._allowedRanges = new Dictionary<int, int>();
+
+                foreach (string strRange in RowsRange.Split(','))
+                {
+                    if (strRange.Contains("-"))
+
+                        this._allowedRanges.Add(Convert.ToInt32(strRange.Split('-')[0]), Convert.ToInt32(strRange.Split('-')[1]));
+                    else
+                        this._allowedRanges.Add(Convert.ToInt32(strRange), Convert.ToInt32(strRange));
+                }
+            }
+        }
+
+        
 
     }
 }

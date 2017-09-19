@@ -153,6 +153,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             return Parent?.HasParentOfType<T>() ?? false;
         }
 
+        public virtual bool CanTransit(ValueTransitContext ctx)
+        {
+            return this.Enabled;
+        }
+
         public override string ToString()
         {
             return $"{Name ?? this.GetType().Name}";

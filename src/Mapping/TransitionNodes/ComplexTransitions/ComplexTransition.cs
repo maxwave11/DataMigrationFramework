@@ -35,9 +35,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
             foreach (var childTransition in ChildTransitions)
             {
-                if (!CanTransitChild(childTransition))
+
+                if (!childTransition.CanTransit(ctx))
                     continue;
-                
+
                 var result = TransitChild(childTransition, ctx);
 
                 if (result.Continuation != TransitContinuation.Continue)
@@ -51,11 +52,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             }
 
             return new TransitResult(ctx.TransitValue);
-        }
-
-        protected virtual bool CanTransitChild(TransitionNode childNode)
-        {
-            return childNode.Enabled;
         }
 
         protected virtual TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
