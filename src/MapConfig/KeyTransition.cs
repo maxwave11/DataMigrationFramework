@@ -114,7 +114,7 @@ namespace XQ.DataMigration.MapConfig
             if (objectKey.IsEmpty())
             {
                 TraceLine("Source object key is empty. Skipping object.");
-                return new TransitResult(TransitContinuation.SkipObject);
+                return new TransitResult(TransitContinuation.SkipObject, null);
             }
             var target = GetTargetObject(objectKey);
 
