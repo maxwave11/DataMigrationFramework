@@ -100,7 +100,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 if (result.Continuation == TransitContinuation.SkipObject)
                 {
-                    //TraceLine($"Object skipped (Key = {ctx.Source.Key})" + result.Message);
+                    if (ObjectTransition is ObjectTransition)
+                    {
+                        //!don't put to cache skipped and invalid objects
+                        var provider = Migrator.Current.Action.DefaultTargetProvider;
+                        var dataSet = provider.GetDataSet(((ObjectTransition)ObjectTransition).TargetDataSetId);
+                        //remove only just created objects. If object is not new, it means that it already saved and valid object
+                        if(ctx.Target?.IsNew == true)
+                            dataSet.RemoveObjectFromCache(ctx.Target.Key);
+                    }
+
+                   // TraceLine($"Object skipped (Key = {ctx.Source.Key})" + result.Message);
                     continue;
                 }
 
@@ -209,21 +219,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 stopWath.Stop();
 
                 TraceLine($"Saved {_transittedObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
-
-              
-                if (ObjectTransition is ObjectTransition)
-                {
-                    //NOTICE: Need to put objects to cache only after success saving 
-                    //to avoid putting to cache skipped and invalid objects.
-                    var provider = Migrator.Current.Action.DefaultTargetProvider;
-
-                    var dataSet = provider.GetDataSet(((ObjectTransition) ObjectTransition).TargetDataSetId);
-                    foreach (var transittedObject in _transittedObjects)
-                    {
-                        dataSet.PutObjectToCache(transittedObject.Value, transittedObject.Key);
-                    }
-                }
-
             }
             catch (Exception ex)
             {

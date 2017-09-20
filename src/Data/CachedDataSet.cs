@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
@@ -42,8 +43,18 @@ namespace XQ.DataMigration.Data
 
         public void PutObjectToCache(IValuesObject tObject, string objectkey)
         {
-            if (objectkey.IsNotEmpty())
-                _objectsCache[objectkey.ToUpper().Trim()] = tObject;
+            if (objectkey.IsEmpty())
+                return;
+
+            _objectsCache[objectkey.ToUpper().Trim()] = tObject;
+        }
+
+        public void RemoveObjectFromCache(string objectkey)
+        {
+            if (objectkey.IsEmpty())
+                return;
+
+            _objectsCache.Remove(objectkey.ToUpper().Trim());
         }
 
         IEnumerator IEnumerable.GetEnumerator()

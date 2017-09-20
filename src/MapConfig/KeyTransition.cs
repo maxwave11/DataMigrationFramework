@@ -189,7 +189,7 @@ namespace XQ.DataMigration.MapConfig
 
             var newObject = provider.CreateObject(_objectTransition.TargetDataSetId);
             newObject.Key = key;
-
+            provider.GetDataSet(_objectTransition.TargetDataSetId).PutObjectToCache(newObject, key);
             return newObject;
         }
     }
