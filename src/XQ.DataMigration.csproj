@@ -77,7 +77,6 @@
     <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteMessageUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ValueTransitions\LookupValueTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\TransitionGroup.cs" />
-    <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\PivotObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitionNode.cs" />
     <Compile Include="Mapping\Logic\TransitResult.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />
