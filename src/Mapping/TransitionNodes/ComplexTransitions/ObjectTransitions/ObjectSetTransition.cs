@@ -17,12 +17,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     /// <summary>
     /// Transition which transit objects data from DataSet of source system to DataSet of target system
     /// </summary>
-    public class ObjectSetTransition : TransitionNode
+    public class ObjectSetTransition : ComplexTransition
     {
-    
-        [XmlElement]
-        public TransitionNode ObjectTransition { get; set; }
-
         #region XmlAttributes
         /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value
@@ -45,8 +41,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         #region Members
 
-        private readonly Dictionary<string, IValuesObject> _transittedObjects = new Dictionary<string, IValuesObject>();
-
+        private readonly List<IValuesObject> _transittedObjects = new List<IValuesObject>();
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 
@@ -57,16 +52,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public override void Initialize(TransitionNode parent)
         {
             Color = ConsoleColor.Magenta;
-            
-
-            if (ObjectTransition == null)
-                throw new Exception($"{nameof(ObjectTransition)} can't be empty");
-
+         
             if (string.IsNullOrEmpty(QueryToSource))
                 throw new Exception($"{nameof(QueryToSource)} can't be empty in {nameof(ObjectSetTransition)}");
-
-
-            ObjectTransition.Initialize(this);
 
             base.Initialize(parent);
         }
@@ -75,6 +63,27 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         {
             attributes = $"{nameof(Name)}=\"{Name}\" {nameof(QueryToSource)}=\"{QueryToSource}\"";
             base.TraceStart(ctx, attributes);
+        }
+
+        protected virtual IEnumerable<IValuesObject> GetSourceObjects(ValueTransitContext ctx)
+        {
+            try
+            {
+                if (ctx.Source is IValueObjectsCollecion)
+                    return ((IValueObjectsCollecion)ctx.Source).GetObjects(this.QueryToSource);
+
+                var sourceProvider = Migrator.Current.Action.DefaultSourceProvider;
+
+                if (SourceProviderName.IsNotEmpty())
+                    sourceProvider = Migrator.Current.Action.MapConfig.GetSourceProvider(SourceProviderName);
+
+                return sourceProvider.GetDataSet(QueryToSource);
+            }
+            catch (Exception ex)
+            {
+                Tracer.TraceError("Error while trying to get source datat set." + ex, this, null);
+                return null;
+            }
         }
 
         public override TransitResult Transit(ValueTransitContext ctx)
@@ -92,25 +101,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 ctx.Source = sourceObject;
 
-                if (!ObjectTransition.CanTransit(ctx))
-                    continue;
+                //if (!ObjectTransition.CanTransit(ctx))
+                //    continue;
 
 
-                var result = ObjectTransition.TransitInternal(ctx);
+                var result = TransitChildren(ctx);
 
                 if (result.Continuation == TransitContinuation.SkipObject)
                 {
-                    if (ObjectTransition is ObjectTransition)
-                    {
-                        //!don't put to cache skipped and invalid objects
-                        var provider = Migrator.Current.Action.DefaultTargetProvider;
-                        var dataSet = provider.GetDataSet(((ObjectTransition)ObjectTransition).TargetDataSetId);
-                        //remove only just created objects. If object is not new, it means that it already saved and valid object
-                        if(ctx.Target?.IsNew == true)
-                            dataSet.RemoveObjectFromCache(ctx.Target.Key);
-                    }
-
-                   // TraceLine($"Object skipped (Key = {ctx.Source.Key})" + result.Message);
+                    // TraceLine($"Object skipped (Key = {ctx.Source.Key})" + result.Message);
                     continue;
                 }
 
@@ -119,28 +118,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                     TraceLine($"Breaking {nameof(ObjectSetTransition)}");
                     return result;
                 }
-
-                var targetObjects = new List<IValuesObject>();
-
-                var target = ctx.Target;
-                if (target is IEnumerable<IValuesObject>)
-                {
-                    targetObjects.AddRange((IEnumerable<IValuesObject>)target);
-                }
-                else
-                {
-                    if (target != null)
-                        targetObjects.Add((IValuesObject)target);
-                }
-
-                if (!targetObjects.Any())
-                {
-                    Tracer.TraceSkipObject("Skipped", this, sourceObject);
-                    continue;
-                }
-
-                MarkObjectsAsTransitted(targetObjects);
-                TrySaveTransittedObjects();
             }
 
             SaveTransittedObjects();
@@ -148,25 +125,39 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             return new TransitResult(null);
         }
 
-        protected virtual IEnumerable<IValuesObject> GetSourceObjects(ValueTransitContext ctx)
+        protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
-            try
+            //reset cached source key because different nesetd ObjectTransitions 
+            //can use different source key transition logic
+            ctx.Source.Key = String.Empty;
+
+            var result =  base.TransitChild(childNode, ctx);
+            
+            var targetObjects = new List<IValuesObject>();
+
+            var target = ctx.Target;
+            if (target is IEnumerable<IValuesObject>)
             {
-                if (ctx.Source is IValueObjectsCollecion)
-                    return ((IValueObjectsCollecion) ctx.Source).GetObjects(this.QueryToSource);
-
-                var sourceProvider = Migrator.Current.Action.DefaultSourceProvider;
-
-                if (SourceProviderName.IsNotEmpty())
-                    sourceProvider = Migrator.Current.Action.MapConfig.GetSourceProvider(SourceProviderName);
-
-                return sourceProvider.GetDataSet(QueryToSource);
+                targetObjects.AddRange((IEnumerable<IValuesObject>)target);
             }
-            catch (Exception ex)
+            else
             {
-                Tracer.TraceError("Error while trying to get source datat set." + ex, this, null);
-                return null;
+                if (target != null)
+                    targetObjects.Add((IValuesObject)target);
             }
+
+            MarkObjectsAsTransitted(targetObjects);
+            TrySaveTransittedObjects();
+         
+            return result;
+        }
+
+        protected override TransitContinuation GetContinuation(TransitResult result)
+        {
+            if (result.Continuation == TransitContinuation.SkipObject)
+                return TransitContinuation.Continue;
+
+            return base.GetContinuation(result);
         }
 
         private void MarkObjectsAsTransitted(IEnumerable<IValuesObject> targetObjects)
@@ -181,7 +172,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 if (targetKey.IsEmpty())
                     continue;
 
-                _transittedObjects[targetKey] = targetObject;
+                _transittedObjects.Add(targetObject);
             }
         }
 
@@ -207,7 +198,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             try
             {
                 TraceLine($"Saving {_transittedObjects.Count} objects...");
-                var newObjectsCount = _transittedObjects.Count(i => i.Value.IsNew);
+                var newObjectsCount = _transittedObjects.Count(i => i.IsNew);
 
                 if (newObjectsCount > 0)
                     TraceLine($"New objects: {newObjectsCount}");
@@ -215,14 +206,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                Migrator.Current.Action.DefaultTargetProvider.SaveObjects(_transittedObjects.Values);
+                Migrator.Current.Action.DefaultTargetProvider.SaveObjects(_transittedObjects);
                 stopWath.Stop();
 
                 TraceLine($"Saved {_transittedObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
             }
             catch (Exception ex)
             {
-                var objectsInfo = _transittedObjects.Select(i => i.Value.GetInfo()).Join("\n===========================\n");
+                var objectsInfo = _transittedObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
                 Tracer.TraceText("=====Error while saving transitted objects: " + ex + objectsInfo, this,ConsoleColor.Red);
                 throw;
             }

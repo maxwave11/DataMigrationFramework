@@ -11,18 +11,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
-
-    public class NestedObjectTransition: ObjectTransition
-    {
-        public override TransitResult Transit(ValueTransitContext transitContext)
-        {
-            var nestedSource =  new ValuesObject(transitContext.Source);
-            var ctx = new ValueTransitContext(nestedSource, null, null, null);
-            return base.Transit(ctx);
-        }
-    }
-
-    public class ObjectTransition: ComplexTransition
+    public class ObjectTransition : ComplexTransition
     {
         /// <summary>
         /// The unique DataSet id of target system
@@ -59,8 +48,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         private Dictionary<int, int> _allowedRanges;
 
-
         public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
+
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 
         public override void Initialize(TransitionNode parent)
@@ -73,8 +62,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             {
                 ChildTransitions.Insert(0, KeyTransition);
             }
-            
-            
+
             base.Initialize(parent);
         }
 
@@ -92,22 +80,42 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 throw new InvalidOperationException($"Can't transit NULL Source. Use {nameof(ObjectSetTransition)} to link to some source and use {nameof(ObjectTransition)} within parent {nameof(ObjectSetTransition)}");
 
             ctx.ObjectTransition = this;
-            return base.Transit(ctx);
+            var result = base.Transit(ctx);
+
+            if (result.Continuation == TransitContinuation.SkipObject && ctx.Target?.IsNew == true)
+            {
+                //If object just created and skipped by migration logic - need to remove it from cache
+                //becaus it is invalid object and we must disallow reference to this objects by any keys
+                //If object is not new, it means that it already saved and passed/valid object
+                var provider = Migrator.Current.Action.DefaultTargetProvider;
+                var dataSet = provider.GetDataSet(TargetDataSetId);
+                dataSet.RemoveObjectFromCache(ctx.Target.Key);
+            }
+
+            return result;
         }
 
         protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
             ctx.SetCurrentValue(childNode.Name, ctx.Source);
-            
-            var result =  base.TransitChild(childNode, ctx);
+
+            var result = base.TransitChild(childNode, ctx);
             if (childNode is KeyTransition)
                 TraceLine("Key: " + ctx.Source.Key);
             return result;
         }
 
+        protected override TransitContinuation GetContinuation(TransitResult result)
+        {
+            if (result.Continuation == TransitContinuation.SkipValue)
+                return TransitContinuation.Continue;
+
+            return base.GetContinuation(result);
+        }
+
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            if (ctx?.Source!=null)
+            if (ctx?.Source != null)
                 attributes += "RowNumber=" + ctx.Source["RowNumber"];
 
             base.TraceStart(ctx, attributes);
@@ -125,36 +133,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
         }
 
-        //private bool CanTransit(IValuesObject srcObject)
-        //{
-        //    if (!IsRowIndexInRange(rowIndex)) return false;
-
-        //    if (Migrator.Current.Action.Filter.IsNotEmpty())
-        //    {
-        //        var expression = new CompiledExpression<bool>(Migrator.Current.Action.Filter);
-        //        var registry = new TypeRegistry();
-        //        registry.RegisterType<IValuesObject>();
-
-        //        registry.RegisterSymbol("Src", srcObject);
-        //        expression.TypeRegistry = registry;
-
-        //        return expression.Eval();
-        //    }
-
-        //    return true;
-        //}
-
         public override bool CanTransit(ValueTransitContext ctx)
         {
             if (ctx?.Source != null)
             {
-                if (!IsRowIndexInRange((int) ctx.Source["RowNumber"]))
+                if (!IsRowIndexInRange((int)ctx.Source["RowNumber"]))
                     return false;
             }
 
             return base.CanTransit(ctx);
         }
-
 
         private bool IsRowIndexInRange(int rowIndex)
         {
@@ -181,8 +169,5 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 }
             }
         }
-
-        
-
     }
 }

@@ -39,15 +39,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
                 if (!childTransition.CanTransit(ctx))
                     continue;
 
-                var result = TransitChild(childTransition, ctx);
+                var childTransitResult = TransitChild(childTransition, ctx);
 
-                if (result.Continuation != TransitContinuation.Continue)
+                if (childTransitResult.Continuation != TransitContinuation.Continue)
                 {
-                    if (result.Continuation == TransitContinuation.SkipUnit)
-                        continue;
-                    
                     TraceLine($"Breaking {this.GetType().Name}");
-                    return new TransitResult(GetContinuationOnSkip(result), ctx.TransitValue);
+                    return childTransitResult;
                 }
             }
 
@@ -56,14 +53,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
         protected virtual TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
-            return childNode.TransitInternal(ctx);
+            var childTransitResult =  childNode.TransitInternal(ctx);
+            var nextContinuation = GetContinuation(childTransitResult);
+            return new TransitResult(nextContinuation, ctx.TransitValue);
         }
 
-        protected virtual TransitContinuation GetContinuationOnSkip(TransitResult result)
+        protected virtual TransitContinuation GetContinuation(TransitResult result)
         {
+            if (result.Continuation == TransitContinuation.SkipUnit)
+                return TransitContinuation.Continue;
+
             return result.Continuation;
         }
-
-
     }
 }

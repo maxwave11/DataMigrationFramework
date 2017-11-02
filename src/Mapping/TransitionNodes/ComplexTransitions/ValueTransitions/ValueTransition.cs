@@ -59,14 +59,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             this.ChildTransitions.AddRange(userDefinedTransitions);
         }
 
-        protected override TransitContinuation GetContinuationOnSkip(TransitResult result)
-        {
-            if (result.Continuation == TransitContinuation.SkipValue && this is ValueTransition)
-                return TransitContinuation.Continue;
-
-           
-            return base.GetContinuationOnSkip(result);
-        }
+       
 
         protected virtual void InitializeEndTransitions()
         {
