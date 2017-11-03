@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
-namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
+namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
     public class ReplaceTransition : ComplexTransition
     {
