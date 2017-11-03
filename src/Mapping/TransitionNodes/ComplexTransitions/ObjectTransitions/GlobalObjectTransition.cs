@@ -9,7 +9,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         public override TransitResult Transit(ValueTransitContext transitContext)
         {
-            var ctx = new ValueTransitContext(GlobalObject, GlobalObject, null, this);
+            var ctx = new ValueTransitContext(transitContext.Source ?? GlobalObject, GlobalObject, null, this);
             return base.Transit(ctx);
         }
 

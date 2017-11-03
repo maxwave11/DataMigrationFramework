@@ -111,7 +111,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 sourceObject.SetValue("RowNumber", rowNumber);
 
                 ctx.Source = sourceObject;
-
+                ctx.Target = null;
                 //if (!ObjectTransition.CanTransit(ctx))
                 //    continue;
 
