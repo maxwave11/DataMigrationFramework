@@ -27,10 +27,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public int SaveCount { get; set; }
 
         /// <summary>
-        /// The unique DataSet id of source system
+        /// The query which can be parsed and recognized by Source object or Source Data provider (depend from <see cref="FetchMode"/>)
         /// </summary>
         [XmlAttribute]
         public string QueryToSource { get; set; }
+
+        /// <summary>
+        /// Determines how source objects will be fetched
+        /// </summary>
+        [XmlAttribute]
+        public FetchMode FetchMode { get; set; }
 
         /// <summary>
         /// The name of provider from which should be fetched source objects
@@ -69,9 +75,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         {
             try
             {
-                if (ctx.Source is IValueObjectsCollecion)
-                    return ((IValueObjectsCollecion)ctx.Source).GetObjects(this.QueryToSource);
+                //need to fix this later and recognize expression more smart
+                if (QueryToSource.StartsWith("{"))
+                    QueryToSource = ExpressionEvaluator.EvaluateString(QueryToSource, ctx);
 
+                if (FetchMode == FetchMode.SourceObject)
+                    return ((IValueObjectsCollecion)ctx.Source).GetObjects(this.QueryToSource);
+                
+                
                 var sourceProvider = Migrator.Current.Action.DefaultSourceProvider;
 
                 if (SourceProviderName.IsNotEmpty())

@@ -25,12 +25,16 @@ namespace XQ.DataMigration.Mapping.Expressions
         {
             var translatedExpression = TranslateExpression(migrationExpression, objTransitionType);
             var compiledExpr = new CompiledExpression(translatedExpression);
-            var r = new TypeRegistry();
-            r.RegisterDefaultTypes();
-            r.RegisterType(nameof(IValuesObject), typeof(IValuesObject));
-            r.RegisterType(objTransitionType.Name, objTransitionType);
-            _customTypes.ForEach(type => r.RegisterType(type.Name, type));
-            compiledExpr.TypeRegistry = r;
+
+            var typeRegistry = new TypeRegistry();
+            typeRegistry.RegisterDefaultTypes();
+            typeRegistry.RegisterType(nameof(IValuesObject), typeof(IValuesObject));
+
+            if(objTransitionType != null)
+                typeRegistry.RegisterType(objTransitionType.Name, objTransitionType);
+
+            _customTypes.ForEach(type => typeRegistry.RegisterType(type.Name, type));
+            compiledExpr.TypeRegistry = typeRegistry;
             var result = compiledExpr.ScopeCompile<ExpressionContext>();
             return result;
         }
@@ -67,7 +71,8 @@ namespace XQ.DataMigration.Mapping.Expressions
             var newExpression = migrationExpression.Contains("{") ? migrationExpression : "{" + nameof(ExpressionContext.VALUE) + "[" + migrationExpression + "]}";
 
             //cast to concrete ObjectTransition type
-            newExpression = newExpression.Replace(nameof(ExpressionContext.THIS), $"(({objTransitionType.Name}){nameof(ExpressionContext.THIS)})");
+            if(objTransitionType != null)
+                newExpression = newExpression.Replace(nameof(ExpressionContext.THIS), $"(({objTransitionType.Name}){nameof(ExpressionContext.THIS)})");
 
             //convertion  'some text' => "some text"
             newExpression = newExpression.Replace('\'', '"');

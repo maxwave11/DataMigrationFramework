@@ -15,7 +15,7 @@ namespace XQ.DataMigration.Mapping.Expressions
 
         public object Evaluate(string expression, ValueTransitContext ctx)
         {
-            var compiledFunction = GetCompiledFunction(expression, ctx.ObjectTransition.GetType());
+            var compiledFunction = GetCompiledFunction(expression, ctx.ObjectTransition?.GetType());
 
             try
             {

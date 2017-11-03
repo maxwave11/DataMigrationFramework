@@ -42,6 +42,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         internal TraceLevel ActualTrace => TraceLevel == TraceLevel.Auto ? Parent?.ActualTrace ?? TraceLevel : TraceLevel;
 
+        internal Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
+
         [XmlIgnore]
         public TransitionNode Parent { get; private set; }
 

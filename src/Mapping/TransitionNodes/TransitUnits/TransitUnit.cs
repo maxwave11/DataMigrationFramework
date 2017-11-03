@@ -11,8 +11,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         [XmlAttribute]
         public string Expression { get; set; }
 
-        internal Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
-
         public override TransitResult Transit(ValueTransitContext ctx)
         {
             var returnValue = ctx.TransitValue;
