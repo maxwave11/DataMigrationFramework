@@ -51,6 +51,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 
+        private IValuesObject _currentSourceObject;
+
         #endregion
 
         #region Methods
@@ -110,7 +112,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 rowNumber++;
                 sourceObject.SetValue("RowNumber", rowNumber);
 
-                ctx.Source = sourceObject;
+                _currentSourceObject = sourceObject;
                 ctx.Target = null;
                 //if (!ObjectTransition.CanTransit(ctx))
                 //    continue;
@@ -138,8 +140,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
-            //reset cached source key because different nesetd ObjectTransitions 
-            //can use different source key transition logic
+            
+            ctx.Source = _currentSourceObject;
+            //reset cached source key because different nesetd transitions 
+            //can use different source key evaluation logic
             ctx.Source.Key = String.Empty;
 
             var result =  base.TransitChild(childNode, ctx);
