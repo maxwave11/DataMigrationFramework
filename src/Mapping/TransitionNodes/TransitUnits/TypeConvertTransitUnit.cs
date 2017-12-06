@@ -17,6 +17,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         [XmlAttribute]
         public string DataType { get; set; }
 
+        [XmlAttribute]
+        public char DecimalSeparator { get; set; } = '.';
+
         private TypeCode _typeCode;
         public override void Initialize(TransitionNode parent)
         {
@@ -45,31 +48,31 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return new TransitResult(typedValue);
         }
 
-        public static  object GetTypedValue(TypeCode targetType, object value, string[] DataTypeFormats = null)
+        public object GetTypedValue(TypeCode targetType, object value, string[] DataTypeFormats = null)
         {
             if (value == null || value.ToString().IsEmpty()) return null;
 
             switch (targetType)
             {
                 case TypeCode.Int32:
-                    if (value.ToString().IndexOfAny(new[] { ',', '.' }) > 0)
+                    if (value.ToString().Contains(DecimalSeparator))
                         return Convert.ToInt32(GetTypedValue(TypeCode.Double, value, DataTypeFormats), CultureInfo.InvariantCulture);
 
                     return Convert.ToInt32(value, CultureInfo.InvariantCulture);
 
                 case TypeCode.Int64:
-                    if (value.ToString().IndexOfAny(new[] { ',', '.' }) > 0)
+                    if (value.ToString().Contains(DecimalSeparator))
                         return Convert.ToInt64(GetTypedValue(TypeCode.Double, value, DataTypeFormats), CultureInfo.InvariantCulture);
 
                     return Convert.ToInt64(value, CultureInfo.InvariantCulture);
 
                 case TypeCode.Single:
-                    return Convert.ToSingle(value.ToString().Replace(',', '.').Replace(" ", String.Empty), CultureInfo.InvariantCulture);
+                    return Convert.ToSingle(PrepareDecimalValue(value), CultureInfo.InvariantCulture);
 
                 case TypeCode.Double:
                     try
                     {
-                        return Convert.ToDouble(value.ToString().Replace(',', '.').Replace(" ", String.Empty), CultureInfo.InvariantCulture);
+                        return Convert.ToDouble(PrepareDecimalValue(value), CultureInfo.InvariantCulture);
                     }
                     catch (Exception)
                     {
@@ -79,7 +82,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                         throw;
                     }
                 case TypeCode.Decimal:
-                    return Convert.ToDecimal(value.ToString().Replace(',', '.').Replace(" ", String.Empty), CultureInfo.InvariantCulture);
+                    return Convert.ToDecimal(PrepareDecimalValue(value), CultureInfo.InvariantCulture);
 
                 case TypeCode.String:
                     return Convert.ToString(value);
@@ -109,6 +112,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             {
                 return Convert.ToBoolean(Convert.ToInt32(value));
             }
+        }
+
+        private string PrepareDecimalValue(object value)
+        {
+            var strValue = value.ToString();
+            if (DecimalSeparator == '.')
+                strValue = strValue.Replace(",", String.Empty);
+            else
+            {
+                strValue = strValue.Replace(DecimalSeparator.ToString(), String.Empty);
+            }
+
+            return strValue.Replace(" ", String.Empty);
         }
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
