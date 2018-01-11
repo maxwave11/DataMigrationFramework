@@ -9,27 +9,48 @@ using XQ.DataMigration.Utils;
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
     /// <summary>
-    /// Transition unit which allows to get a value from some reference data set. For example, find asset and get his name by asset id or find
-    /// city id by city name or by any other condition. Lookup condition determined by LookupExpr migration expression.
+    /// Transition unit which allows to find a specific value from some reference data set. For example, find an asset and get its name 
+    /// by asset's id or find a city id by city name or by any other condition. Lookup condition determined by <c>LookupKeyExpr</c> or 
+    /// <c>LookupAlternativeExpr</c> migration expression.
     /// </summary>
     internal class LookupValueTransitUnit: TransitUnit
     {
+        
         [XmlAttribute]
-        //DataSet id in which current transition will be search particular entry by expression determined in LookupExpr
+        /// <summary>
+        /// DataSet id in which current transition will try to find a particular object by expression determined in 
+        /// <c>LookupKeyExpr</c> or <c>LookupAlternativeExpr</c>
+        /// </summary>
         public string LookupDataSetId { get; set; }
 
         [XmlAttribute]
-        //Migration expression which determine how to find particular entry
-        //For each entry from Lookup DataSet the result of expression evaluation compared with current transition value 
-        public string LookupExpr { get; set; }
+        /// <summary>
+        /// Migration expression which determines how to evaluate key for each lookup object from <c>LookupDataSetId</c>. 
+        /// This key will allow to find a specific object from lookup's DataSet. In general you should to find objects by this way 
+        /// because it's very fast. 
+        /// WARNING: Use this attribute carefully because all fetched objects from DataSet (if they wasn't fetched early by some another
+        /// transition) will be hosted in local cache by this key.
+        /// NOTE: If you want to find an object by another way (not by its key) then you should to use <c>LookupAlternativeExpr</c> attribue
+        /// </summary>
+        public string LookupKeyExpr { get; set; }
 
         [XmlAttribute]
-        //указывает, к какому провайдеру будет обращаться логика Lookup для поиска нужного значения
-        //По умолчанию - Target
+        /// <summary>
+        /// By using this attribute lookup logic will try to find a specific object by alternative expression (not by <c>LookupKeyExpr</c>). 
+        /// But anyway <c>LookupKeyExpr</c> is required for correct objects caching.
+        /// WARNING: Searching an object by this way is pretty slow! Use this attribute only if you have't data to find object by its key
+        /// </summary>
+        public string LookupAlternativeExpr { get; set; }
+
+        [XmlAttribute]
+        /// <summary>
+        /// Specifies which DataProvider lookup logic will use to search particular objects
+        /// Default Target provder by default
+        /// </summary>
         public string ProviderName { get; set; }
 
         /// <summary>
-        /// Specify what to do if lookup value not found
+        /// Specifies migration behavior in case when lookup object wasn't found
         /// </summary>
         [XmlAttribute]
         public TransitContinuation OnNotFound { get; set; } = TransitContinuation.RaiseError;
@@ -44,8 +65,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             if (LookupDataSetId.IsEmpty())
                 throw new Exception($"{nameof(LookupDataSetId)} is required for { nameof(LookupValueTransitUnit)} element");
 
-            if (LookupExpr.IsEmpty())
-                throw new Exception($"{nameof(LookupExpr)} is required for { nameof(LookupValueTransitUnit)} element");
+            if (LookupKeyExpr.IsEmpty())
+                throw new Exception($"{nameof(LookupKeyExpr)} is required for { nameof(LookupValueTransitUnit)} element");
 
             
             base.Initialize(parent);
@@ -53,18 +74,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var key = base.Transit(ctx).Value?.ToString();
             IValuesObject lookupObject = null;
-            _currentObjectTransition = ctx.ObjectTransition;
             string message = "";
             var continuation = TransitContinuation.Continue;
-            if (key.IsNotEmpty())
+
+            var valueToFind = base.Transit(ctx).Value?.ToString();
+
+            if (valueToFind.IsNotEmpty())
             {
-                lookupObject = GetLookupObjectByKey(key);
+                lookupObject = FindLookupObject(valueToFind);
 
                 if (lookupObject == null)
                 {
-                    Migrator.Current.Tracer.TraceWarning($"Warning: lookup object not found by key '{key}'\n", this);
+                    Migrator.Current.Tracer.TraceWarning($"Warning: lookup object not found by key '{valueToFind}'\n", this);
 
                     continuation = this.OnNotFound;
                     if (continuation != TransitContinuation.Continue)
@@ -75,25 +97,33 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return new TransitResult(continuation, lookupObject, message);
         }
 
-        private IValuesObject GetLookupObjectByKey(string key)
+        private IValuesObject FindLookupObject(string valueToFind)
         {
-            IDataProvider provider;
-            if (ProviderName.IsEmpty())
-                provider = Migrator.Current.Action.DefaultTargetProvider;
-            else
-            {
-                provider = Migrator.Current.Action.MapConfig.GetDataProvider(ProviderName);
-            }
+            var mapAction = Migrator.Current.Action;
 
+            var provider = ProviderName.IsEmpty()
+                ? mapAction.DefaultTargetProvider
+                : mapAction.MapConfig.GetDataProvider(ProviderName);
+         
             var dataSet = provider.GetDataSet(LookupDataSetId);
 
-            return dataSet.GetObjectByKey(key, GetLookupExpressionValue);
+            var lookupObject = LookupAlternativeExpr.IsEmpty()
+                ? dataSet.GetObjectByKey(valueToFind, EvaluateObjectKey)
+                : dataSet.GetObjectByExpression(valueToFind, EvaluateAlternativeExpression, EvaluateObjectKey);
+
+            return lookupObject;
         }
 
-        private string GetLookupExpressionValue(IValuesObject lookupObject)
+        private string EvaluateObjectKey(IValuesObject lookupObject)
         {
             var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, _currentObjectTransition);
-            return ExpressionEvaluator.EvaluateString(LookupExpr, ctx);
+            return ExpressionEvaluator.EvaluateString(LookupKeyExpr, ctx);
+        }
+
+        private string EvaluateAlternativeExpression(IValuesObject lookupObject)
+        {
+            var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, _currentObjectTransition);
+            return ExpressionEvaluator.EvaluateString(LookupAlternativeExpr, ctx);
         }
     }
 }

@@ -11,12 +11,13 @@ namespace XQ.DataMigration.Data
         string DataSetId { get; }
 
         /// <summary>
-        /// Extract object from current DataSet by unique object key. Object key defined always defined
-        /// in mapping configuration file in KeyDefinition element 
-        /// </summary>
-        /// <param name="objectKey"></param>
-        /// <param name="evaluateKey"></param>
-        /// <returns></returns>
+        /// Extract an object from current DataSet by unique object key. Object's key always must be defined
+        /// in mapping configuration file in <c>KeyDefinition</c> 
         IValuesObject GetObjectByKey(string objectKey, Func<IValuesObject, string> evaluateKey);
+
+        /// <summary>
+        /// Extract a first (or null) object from current DataSet by some expression. If result value of expression evaluation on any oject
+        /// is equal to  <paramref name="valueToFind"/> then this object will be returned.
+        IValuesObject GetObjectByExpression(string valueToFind, Func<IValuesObject, string> evaluateExpression, Func<IValuesObject, string> evaluateKey);
     }
 }

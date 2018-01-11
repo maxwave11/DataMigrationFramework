@@ -22,7 +22,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
 
         [XmlAttribute]
         //имя ключевого поля в категории, в которой находится элемент, на который ссылается значение этогополя (для ссылочных полей)
-        public string LookupExpr { get; set; }
+        public string LookupKeyExpr { get; set; }
+
+        [XmlAttribute]
+        public string LookupAlternativeExpr { get; set; }
 
         [XmlAttribute]
         //имя поля ссылочного объекта, из которого подставится значение (вместо стандартного EWKey ключа этого ссылочного объекта)
@@ -48,13 +51,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             if (ReplaceBeforeLookup.IsNotEmpty())
                 ChildTransitions.Add(new ReplaceTransition { ReplaceRules = ReplaceBeforeLookup });
 
-            if (LookupDataSetId.IsEmpty() || LookupExpr.IsEmpty())
-                throw new Exception($"{ nameof(LookupDataSetId)} and {nameof(LookupExpr)} fields of {nameof(LookupValueTransition)} is required");
+            if (LookupDataSetId.IsEmpty() || LookupKeyExpr.IsEmpty())
+                throw new Exception($"{ nameof(LookupDataSetId)} and {nameof(LookupKeyExpr)} fields of {nameof(LookupValueTransition)} is required");
 
             ChildTransitions.Add(new LookupValueTransitUnit
             {
                 LookupDataSetId = LookupDataSetId,
-                LookupExpr = LookupExpr,
+                LookupKeyExpr = LookupKeyExpr,
+                LookupAlternativeExpr = LookupAlternativeExpr,
                 ProviderName = ProviderName,
                 OnNotFound = OnNotFound,
                 TraceWarnings = this.TraceWarnings

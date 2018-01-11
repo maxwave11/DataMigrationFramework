@@ -20,12 +20,22 @@ namespace XQ.DataMigration.Data
         public IValuesObject GetObjectByKey(string objectKey, Func<IValuesObject, string> evaluateKey)
         {
             if (!_objectsCache.Any())
-            {
                 LoadObjectsToCache(evaluateKey);
-            }
 
             IValuesObject cachedObject;
             _objectsCache.TryGetValue(objectKey.ToUpper().Trim(), out cachedObject);
+
+            return cachedObject;
+        }
+
+        public IValuesObject GetObjectByExpression(string valueToFind, Func<IValuesObject, string> evaluateExpression, Func<IValuesObject, string> evaluateKey)
+        {
+            if (!_objectsCache.Any())
+                LoadObjectsToCache(evaluateKey);
+
+            var cachedObject =
+                _objectsCache.Values.FirstOrDefault(
+                    i => evaluateExpression(i).ToUpper().Trim() == valueToFind.ToUpper().Trim());
 
             return cachedObject;
         }
