@@ -9,6 +9,8 @@ namespace XQ.DataMigration.Data
     /// </summary>
     public interface IDataProvider : IDisposable
     {
+        string Name { get; set; }
+        void Initialize();
         IDataSet GetDataSet(string providerQuery);
     }
 }

@@ -16,8 +16,8 @@ namespace XQ.DataMigration.MapConfig
     public class MapConfigReader
     {
         private readonly Stream _fileStream;
-        private readonly Dictionary<string, Type> _customElements = new Dictionary<string, Type>();
-        private readonly Dictionary<string, Type> _customProviders = new Dictionary<string, Type>();
+        private readonly List<Type> _customElements = new List<Type>();
+        private readonly List<Type> _dataProviders = new List<Type>();
 
         public MapConfigReader(string fileName)
         {
@@ -58,7 +58,8 @@ namespace XQ.DataMigration.MapConfig
             if (!allowedBaseClasses.Any(type.IsSubclassOf))
                 throw new Exception($"Types for register must be derived from {nameof(TransitUnit)} or {nameof(ObjectTransition)}");
 
-            _customElements[type.Name] = type;
+            if (!_customElements.Contains(type))
+                _customElements.Add(type);
         }
 
         public void RegisterSourceProvider(Type type)
@@ -66,7 +67,8 @@ namespace XQ.DataMigration.MapConfig
             if (!typeof(ISourceProvider).IsAssignableFrom(type))
                 throw new Exception($"Types for register must be derived from {nameof(ISourceProvider)}");
 
-            _customProviders[type.Name] = type;
+            if(!_dataProviders.Contains(type))
+                _dataProviders.Add(type);
         }
 
         public void RegisterTargetProvider(Type type)
@@ -74,7 +76,8 @@ namespace XQ.DataMigration.MapConfig
             if (!typeof(ITargetProvider).IsAssignableFrom(type))
                 throw new Exception($"Types for register must be derived from {nameof(ITargetProvider)}");
 
-            _customProviders[type.Name] = type;
+            if (!_dataProviders.Contains(type))
+                _dataProviders.Add(type);
         }
 
         private XmlAttributeOverrides GetCustomAttributeOverrides()
@@ -82,10 +85,8 @@ namespace XQ.DataMigration.MapConfig
             //register default object transitions
             //var objectSetElementChildren = new XmlAttributes();
             //objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
-            //objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(PivotObjectTransition), typeof(PivotObjectTransition)));
             //objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
             //objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectSetTransition), typeof(ObjectSetTransition)));
-
 
             //register default object transitions
             var complexElementChildren = new XmlAttributes();
@@ -104,27 +105,27 @@ namespace XQ.DataMigration.MapConfig
 
             foreach (var customTransitionType in _customElements)
             {
-                if (typeof(ObjectTransition).IsAssignableFrom(customTransitionType.Value))
+                if (typeof(ObjectTransition).IsAssignableFrom(customTransitionType))
                 {
-                    complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
+                    complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Name, customTransitionType));
                     //objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
                     continue;
                 }
 
-                if (typeof(TransitionNode).IsAssignableFrom(customTransitionType.Value))
-                    complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Key, customTransitionType.Value));
+                if (typeof(TransitionNode).IsAssignableFrom(customTransitionType))
+                    complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Name, customTransitionType));
             }
 
             var providerTypes = new XmlAttributes();
-            foreach (var providerType in _customProviders)
+            foreach (var providerType in _dataProviders)
             {
-                providerTypes.XmlElements.Add(new XmlElementAttribute(providerType.Key, providerType.Value));
+                providerTypes.XmlArrayItems.Add(new XmlArrayItemAttribute(providerType));
             }
 
             var attribOverrides = new XmlAttributeOverrides();
             attribOverrides.Add(typeof(ComplexTransition), nameof(ComplexTransition.ChildTransitions), complexElementChildren);
             //attribOverrides.Add(typeof(ObjectSetTransition), nameof(ObjectSetTransition.ObjectTransition), objectSetElementChildren);
-            attribOverrides.Add(typeof(DataProviderSettings), nameof(DataProviderSettings.DataProvider), providerTypes);
+            attribOverrides.Add(typeof(MapConfig), nameof(MapConfig.DataProviders), providerTypes);
             return attribOverrides;
         }
 
