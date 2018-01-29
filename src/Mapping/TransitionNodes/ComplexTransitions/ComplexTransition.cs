@@ -54,16 +54,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
         protected virtual TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
             var childTransitResult =  childNode.TransitInternal(ctx);
-            var nextContinuation = GetContinuation(childTransitResult);
-            return new TransitResult(nextContinuation, ctx.TransitValue);
+            childTransitResult = EndTransitChild(childTransitResult, ctx);
+            return childTransitResult;
         }
 
-        protected virtual TransitContinuation GetContinuation(TransitResult result)
+        protected virtual TransitResult EndTransitChild(TransitResult result, ValueTransitContext ctx)
         {
             if (result.Continuation == TransitContinuation.SkipUnit)
-                return TransitContinuation.Continue;
+                return new TransitResult(result.Value);
 
-            return result.Continuation;
+            return result;
         }
     }
 }

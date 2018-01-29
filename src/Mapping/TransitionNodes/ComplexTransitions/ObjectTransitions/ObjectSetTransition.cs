@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -43,6 +44,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         /// </summary>
         [XmlAttribute]
         public string SourceProviderName { get; set; }
+
+        /// <summary>
+        /// Set this value if you want to transit concrete range of DataSet objects from source system
+        /// Example 1: 2-10
+        /// Example 2: 2-10, 14-50
+        /// </summary>
+        [XmlAttribute]
+        public string RowsRange { get; set; }
+
+        private Dictionary<int, int> _allowedRanges;
         #endregion
 
         #region Members
@@ -63,6 +74,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
          
             if (string.IsNullOrEmpty(QueryToSource))
                 throw new Exception($"{nameof(QueryToSource)} can't be empty in {nameof(ObjectSetTransition)}");
+
+            ParseRowsRange();
+
 
             base.Initialize(parent);
         }
@@ -110,14 +124,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             foreach (var sourceObject in srcDataSet)
             {
                 rowNumber++;
+
+                if (!IsRowIndexInRange(rowNumber))
+                    continue;
+
                 sourceObject.SetValue("RowNumber", rowNumber);
 
                 _currentSourceObject = sourceObject;
                 ctx.Target = null;
-                //if (!ObjectTransition.CanTransit(ctx))
-                //    continue;
-
-
+                
                 var result = TransitChildren(ctx);
 
                 if (result.Continuation == TransitContinuation.SkipObject)
@@ -140,7 +155,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
-            
             ctx.Source = _currentSourceObject;
             //reset cached source key because different nesetd transitions 
             //can use different source key evaluation logic
@@ -167,12 +181,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             return result;
         }
 
-        protected override TransitContinuation GetContinuation(TransitResult result)
+        protected override TransitResult EndTransitChild(TransitResult result, ValueTransitContext ctx)
         {
             if (result.Continuation == TransitContinuation.SkipObject)
-                return TransitContinuation.Continue;
+            {
+                //set Target to null to disallow add objects to _transittedObjects list
+                //and don't allow to migrate it
+                ctx.Target = null;
+                return new TransitResult(result.Value);
+            }
 
-            return base.GetContinuation(result);
+            return base.EndTransitChild(result,ctx);
         }
 
         private void MarkObjectsAsTransitted(IEnumerable<IValuesObject> targetObjects)
@@ -234,6 +253,33 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             }
 
             _transittedObjects.Clear();
+        }
+
+        private bool IsRowIndexInRange(int rowIndex)
+        {
+            if (RowsRange.IsEmpty()) return true;
+
+            return _allowedRanges.Any(i => i.Key <= rowIndex && rowIndex <= i.Value);
+        }
+
+
+        private void ParseRowsRange()
+        {
+            if (RowsRange.IsEmpty()) return;
+
+            if (this._allowedRanges == null)
+            {
+                this._allowedRanges = new Dictionary<int, int>();
+
+                foreach (string strRange in RowsRange.Split(','))
+                {
+                    if (strRange.Contains("-"))
+
+                        this._allowedRanges.Add(Convert.ToInt32(strRange.Split('-')[0]), Convert.ToInt32(strRange.Split('-')[1]));
+                    else
+                        this._allowedRanges.Add(Convert.ToInt32(strRange), Convert.ToInt32(strRange));
+                }
+            }
         }
 
         #endregion

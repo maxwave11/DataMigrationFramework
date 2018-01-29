@@ -32,21 +32,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         [XmlAttribute]
         public ObjectTransitMode TransitMode { get; set; }
 
-        /// <summary>
-        /// Migration expression to define context for current ObjectTransition
-        /// </summary>
-        [XmlAttribute]
-        public string From { get; set; }
 
-        /// <summary>
-        /// Set this value if you want to transit concrete range of DataSet objects from source system
-        /// Example 1: 2-10
-        /// Example 2: 2-10, 14-50
-        /// </summary>
-        [XmlAttribute]
-        public string RowsRange { get; set; }
-
-        private Dictionary<int, int> _allowedRanges;
+      
 
         public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
 
@@ -55,7 +42,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public override void Initialize(TransitionNode parent)
         {
             Color = ConsoleColor.Magenta;
-            ParseRowsRange();
             Validate();
 
             if (KeyTransition != null)
@@ -105,12 +91,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             return result;
         }
 
-        protected override TransitContinuation GetContinuation(TransitResult result)
+        protected override TransitResult EndTransitChild(TransitResult result, ValueTransitContext ctx)
         {
             if (result.Continuation == TransitContinuation.SkipValue)
-                return TransitContinuation.Continue;
+                return new TransitResult(result.Value);
 
-            return base.GetContinuation(result);
+            return base.EndTransitChild(result, ctx);
         }
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
@@ -131,43 +117,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         internal void AddTraceEntry(string msg, ConsoleColor color)
         {
             TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
-        }
-
-        public override bool CanTransit(ValueTransitContext ctx)
-        {
-            if (ctx?.Source != null)
-            {
-                if (!IsRowIndexInRange((int)ctx.Source["RowNumber"]))
-                    return false;
-            }
-
-            return base.CanTransit(ctx);
-        }
-
-        private bool IsRowIndexInRange(int rowIndex)
-        {
-            if (RowsRange.IsEmpty()) return true;
-
-            return _allowedRanges.Any(i => i.Key <= rowIndex && rowIndex <= i.Value);
-        }
-
-        private void ParseRowsRange()
-        {
-            if (RowsRange.IsEmpty()) return;
-
-            if (this._allowedRanges == null)
-            {
-                this._allowedRanges = new Dictionary<int, int>();
-
-                foreach (string strRange in RowsRange.Split(','))
-                {
-                    if (strRange.Contains("-"))
-
-                        this._allowedRanges.Add(Convert.ToInt32(strRange.Split('-')[0]), Convert.ToInt32(strRange.Split('-')[1]));
-                    else
-                        this._allowedRanges.Add(Convert.ToInt32(strRange), Convert.ToInt32(strRange));
-                }
-            }
-        }
+        } 
     }
 }
