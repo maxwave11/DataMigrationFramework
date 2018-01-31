@@ -83,7 +83,7 @@
     <Compile Include="Mapping\Trace\ValueTransitErrorEventArgs.cs" />
     <Compile Include="MapConfig\MapAction.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectSetTransition.cs" />
-    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceRule.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ReplaceTransition.cs" />
     <Compile Include="Mapping\Logic\ValueTransitContext.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\TransitUnit.cs" />

@@ -8,7 +8,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class ReplaceRule : TransitUnit
+    public class ReplaceUnit : TransitUnit
     {
         [XmlAttribute]
         public string Rule { get; set; }
@@ -45,8 +45,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             if (ConditionIsTrue(ctx))
             {
-                if (ConditionIsTrue(ctx))
-                    value = GetReplacedValue(ctx);
+                value = ReplaceValue(ctx);
 
                 continuation = Important ? TransitContinuation.SkipUnit : TransitContinuation.Continue;
             }
@@ -54,7 +53,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return new TransitResult(continuation, value);
         }
 
-        private string GetReplacedValue(ValueTransitContext ctx)
+        private string ReplaceValue(ValueTransitContext ctx)
         {
             if (ReplaceExpression.Contains("{"))
             {

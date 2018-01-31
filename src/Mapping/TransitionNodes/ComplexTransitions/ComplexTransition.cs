@@ -35,7 +35,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
             foreach (var childTransition in ChildTransitions)
             {
-
                 if (!childTransition.CanTransit(ctx))
                     continue;
 
