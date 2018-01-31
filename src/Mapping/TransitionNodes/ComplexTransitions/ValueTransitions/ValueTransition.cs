@@ -50,7 +50,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             if (From.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new ReadTransitUnit(){ From = From });
+                this.ChildTransitions.Add(new ReadTransitUnit(){ From = From , OnError = this.OnError});
             }
         }
 
@@ -65,17 +65,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             if (Replace.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new ReplaceTransition { ReplaceRules = Replace });
+                this.ChildTransitions.Add(new ReplaceTransition { ReplaceRules = Replace, OnError = this.OnError });
             }
 
             if (DataType.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new TypeConvertTransitUnit { DataType = DataType, DataTypeFormats = DataTypeFormat });
+                this.ChildTransitions.Add(new TypeConvertTransitUnit { DataType = DataType, DataTypeFormats = DataTypeFormat, OnError = this.OnError });
             }
 
             if (To.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new WriteTransitUnit() { Expression = To});
+                this.ChildTransitions.Add(new WriteTransitUnit() { Expression = To, OnError = this.OnError });
             }
         }
 
