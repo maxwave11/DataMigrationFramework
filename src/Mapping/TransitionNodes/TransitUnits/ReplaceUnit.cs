@@ -46,7 +46,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             if (ConditionIsTrue(ctx))
             {
                 value = ReplaceValue(ctx);
-
+                ctx.SetCurrentValue(this.Name, value);
                 continuation = Important ? TransitContinuation.SkipUnit : TransitContinuation.Continue;
             }
 
