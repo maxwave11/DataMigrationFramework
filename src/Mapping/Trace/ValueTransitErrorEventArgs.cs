@@ -31,7 +31,7 @@ $@"Error description:
 { Context.ObjectTransition?.TraceEntries.Select(t=>t.Mesage).Join("") }
 
 ==============SRC==============
-{ Context.Source?.GetInfo().Truncate(1024) }
+{ Context.Source?.GetInfo() }
 
 ==============TARGET===========
 { Context.Target?.GetInfo() }
