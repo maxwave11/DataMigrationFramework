@@ -18,7 +18,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public string DataType { get; set; }
 
         [XmlAttribute]
-        public char DecimalSeparator { get; set; } = '.';
+        public string DecimalSeparator { get; set; } = ".";
 
         private TypeCode _typeCode;
         public override void Initialize(TransitionNode parent)
@@ -117,11 +117,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         private string PrepareDecimalValue(object value)
         {
             var strValue = value.ToString();
-            if (DecimalSeparator == '.')
+            if (DecimalSeparator.Trim() == ".")
                 strValue = strValue.Replace(",", String.Empty);
             else
             {
-                strValue = strValue.Replace(DecimalSeparator.ToString(), String.Empty);
+                strValue = strValue.Replace(DecimalSeparator.Trim(), String.Empty);
             }
 
             return strValue.Replace(" ", String.Empty);

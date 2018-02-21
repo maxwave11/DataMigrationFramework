@@ -26,6 +26,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         public string DataType { get; set; }
 
         [XmlAttribute]
+        public string DecimalSeparator { get; set; } = ".";
+
+        [XmlAttribute]
         public string DataTypeFormat { get; set; }
 
         [XmlAttribute]
@@ -65,17 +68,31 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             if (Replace.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new ReplaceTransition { ReplaceRules = Replace, OnError = this.OnError });
+                this.ChildTransitions.Add(new ReplaceTransition
+                {
+                    ReplaceRules = Replace,
+                    OnError = this.OnError
+                });
             }
 
             if (DataType.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new TypeConvertTransitUnit { DataType = DataType, DataTypeFormats = DataTypeFormat, OnError = this.OnError });
+                this.ChildTransitions.Add(new TypeConvertTransitUnit
+                {
+                    DataType = DataType,
+                    DataTypeFormats = DataTypeFormat,
+                   // DecimalSeparator = DecimalSeparator,
+                    OnError = this.OnError
+                });
             }
 
             if (To.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new WriteTransitUnit() { Expression = To, OnError = this.OnError });
+                this.ChildTransitions.Add(new WriteTransitUnit()
+                {
+                    Expression = To,
+                    OnError = this.OnError
+                });
             }
         }
 
