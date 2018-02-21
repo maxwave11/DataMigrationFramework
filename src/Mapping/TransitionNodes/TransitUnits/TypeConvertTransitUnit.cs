@@ -121,7 +121,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 strValue = strValue.Replace(",", String.Empty);
             else
             {
-                strValue = strValue.Replace(DecimalSeparator.Trim(), String.Empty);
+                strValue = strValue.Replace(DecimalSeparator.Trim(), ".");
             }
 
             return strValue.Replace(" ", String.Empty);
