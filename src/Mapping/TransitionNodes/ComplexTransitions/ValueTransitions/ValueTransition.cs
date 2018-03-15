@@ -81,7 +81,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
                 {
                     DataType = DataType,
                     DataTypeFormats = DataTypeFormat,
-                   // DecimalSeparator = DecimalSeparator,
+                    DecimalSeparator = DecimalSeparator,
                     OnError = this.OnError
                 });
             }
