@@ -125,5 +125,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, _currentObjectTransition);
             return ExpressionEvaluator.EvaluateString(LookupAlternativeExpr, ctx);
         }
+
+        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
+        {
+            attributes += $" {nameof(LookupDataSetId)}=\"{ LookupDataSetId }\"";
+            base.TraceStart(ctx, attributes);
+        }
     }
 }

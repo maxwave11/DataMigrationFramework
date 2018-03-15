@@ -161,7 +161,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             ctx.Source.Key = String.Empty;
 
             var result =  base.TransitChild(childNode, ctx);
-            
+
+            if (result.Continuation == TransitContinuation.SkipObject || result.Continuation == TransitContinuation.SkipObjectSet)
+                return result;
+
             var targetObjects = new List<IValuesObject>();
 
             var target = ctx.Target;
@@ -171,27 +174,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             }
             else
             {
-                if (target != null)
+                if (target != null)//target can be null if SkipObject activated
                     targetObjects.Add((IValuesObject)target);
             }
 
             MarkObjectsAsTransitted(targetObjects);
+            //need to save after each child transition to avoid referencing to unsaved data
             TrySaveTransittedObjects();
          
             return result;
-        }
-
-        protected override TransitResult EndTransitChild(TransitResult result, ValueTransitContext ctx)
-        {
-            if (result.Continuation == TransitContinuation.SkipObject)
-            {
-                //set Target to null to disallow add objects to _transittedObjects list
-                //and don't allow to migrate it
-                ctx.Target = null;
-                return new TransitResult(result.Value);
-            }
-
-            return base.EndTransitChild(result,ctx);
         }
 
         private void MarkObjectsAsTransitted(IEnumerable<IValuesObject> targetObjects)
