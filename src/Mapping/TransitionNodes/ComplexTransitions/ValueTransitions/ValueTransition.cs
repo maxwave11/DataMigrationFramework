@@ -2,22 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions
 {
-
     public class ValueTransition : ComplexTransition
     {
         [XmlAttribute]
         public string From { get; set; }
-
-        [XmlAttribute]
-        public string To { get; set; }
 
         [XmlAttribute]
         public string Replace { get; set; }
@@ -34,50 +28,63 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         [XmlAttribute]
         public string Format { get; set; }
 
+        [XmlAttribute]
+        public string To { get; set; }
+
         public override void Initialize(TransitionNode parent)
         {
-
             if (ChildTransitions == null)
                 ChildTransitions = new List<TransitionNode>();
 
-            var userDefinedTransitions = ChildTransitions.ToList();
-            ChildTransitions?.Clear();
-            InitializeStartTransitions();
-            InitializeUserDefinedTransitions(userDefinedTransitions);
-            InitializeEndTransitions();
             Color = ConsoleColor.Green;
+            
+            InitializeChildTransitions();
+
             base.Initialize(parent);
         }
 
-        protected virtual void InitializeStartTransitions()
+        protected virtual void InitializeChildTransitions()
+        {
+            var userDefinedTransitions = ChildTransitions.ToList();
+            ChildTransitions?.Clear();
+
+            InsertReadTransitUnit();
+            InsertCustomTransitions(userDefinedTransitions);
+            InsertReplaceTransitUnit();
+            InsertDataTypeConvertTransitUnit();
+            InsertWriteTransitUnit();
+        }
+
+        protected virtual void InsertCustomTransitions(List<TransitionNode> userDefinedTransitions)
+        {
+            ChildTransitions.AddRange(userDefinedTransitions);
+        }
+
+        protected virtual void InsertReadTransitUnit()
         {
             if (From.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new ReadTransitUnit(){ From = From , OnError = this.OnError});
+                ChildTransitions.Add(new ReadTransitUnit() {From = From, OnError = this.OnError});
             }
         }
 
-        protected virtual void InitializeUserDefinedTransitions(IEnumerable<TransitionNode> userDefinedTransitions)
-        {
-            this.ChildTransitions.AddRange(userDefinedTransitions);
-        }
-
-       
-
-        protected virtual void InitializeEndTransitions()
+        protected virtual void InsertReplaceTransitUnit()
         {
             if (Replace.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new ReplaceTransition
+                ChildTransitions.Add(new ReplaceTransition
                 {
                     ReplaceRules = Replace,
                     OnError = this.OnError
                 });
             }
+        }
 
+        protected virtual void InsertDataTypeConvertTransitUnit()
+        {
             if (DataType.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new TypeConvertTransitUnit
+                ChildTransitions.Add(new TypeConvertTransitUnit
                 {
                     DataType = DataType,
                     DataTypeFormats = DataTypeFormat,
@@ -85,10 +92,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
                     OnError = this.OnError
                 });
             }
+        }
 
+        //WriteTransitUnit must be always last transtion in ChildTransitions collection
+        protected virtual void InsertWriteTransitUnit()
+        {
             if (To.IsNotEmpty())
             {
-                this.ChildTransitions.Add(new WriteTransitUnit()
+                ChildTransitions.Add(new WriteTransitUnit()
                 {
                     Expression = To,
                     OnError = this.OnError

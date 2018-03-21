@@ -74,6 +74,7 @@
     <Compile Include="Enums\ObjectTransitMode.cs" />
     <Compile Include="Enums\TransitContinuation.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\CustomTransitionNode.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteMessageUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ValueTransitions\LookupValueTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\TransitionGroup.cs" />

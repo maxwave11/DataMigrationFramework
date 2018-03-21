@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
@@ -46,15 +48,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
         }
 
-        protected override void InitializeEndTransitions()
+        protected override void InsertCustomTransitions(List<TransitionNode> userDefinedTransitions)
         {
-            if (ReplaceBeforeLookup.IsNotEmpty())
-                ChildTransitions.Add(new ReplaceTransition { ReplaceRules = ReplaceBeforeLookup });
+            base.InsertCustomTransitions(userDefinedTransitions);
 
             if (LookupDataSetId.IsEmpty() || LookupKeyExpr.IsEmpty())
                 throw new Exception($"{ nameof(LookupDataSetId)} and {nameof(LookupKeyExpr)} fields of {nameof(LookupValueTransition)} is required");
 
-            ChildTransitions.Add(new LookupValueTransitUnit
+            var customLookupTransitions = new List<TransitionNode>();
+
+            if (ReplaceBeforeLookup.IsNotEmpty())
+                customLookupTransitions.Add(new ReplaceTransition { ReplaceRules = ReplaceBeforeLookup });
+
+            customLookupTransitions.Add(new LookupValueTransitUnit
             {
                 LookupDataSetId = LookupDataSetId,
                 LookupKeyExpr = LookupKeyExpr,
@@ -65,9 +71,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             });
 
             if (Return.IsNotEmpty())
-                ChildTransitions.Add(new TransitUnit { Expression = Return });
+                customLookupTransitions.Add(new TransitUnit { Expression = Return });
 
-            base.InitializeEndTransitions();
+            ChildTransitions.AddRange(customLookupTransitions);
         }
     }
 }
