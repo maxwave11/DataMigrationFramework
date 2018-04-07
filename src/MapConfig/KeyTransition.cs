@@ -84,7 +84,7 @@ namespace XQ.DataMigration.MapConfig
             base.Initialize(parent);
             SourceKeyTransition.Initialize(this);
             TargetKeyTransition.Initialize(this);
-
+            TraceLevel = TraceLevel.None;
             SourceKeyTransition.Name = "SourceKeyTransition";
             TargetKeyTransition.Name = "TargetKeyTransition";
 

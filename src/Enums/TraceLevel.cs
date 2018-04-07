@@ -22,6 +22,11 @@ namespace XQ.DataMigration.Enums
         /// Output full information about transition process (all Transition nodes will be included). 
         /// Warning: This mode will write a lot of information. Use this option only while debugging in order to find some issue in data migration
         /// </summary>
-        Verbose = 3
+        Verbose = 3,
+
+        /// <summary>
+        /// Prevent any trace output for node
+        /// </summary>
+        None = 4
     }
 }

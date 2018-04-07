@@ -50,12 +50,22 @@ namespace XQ.DataMigration.Mapping.Trace
             if (!string.IsNullOrEmpty(message))
                 message = FormatMessage(message, node);
 
-            AddTraceEntryToObjectTransition(node, message, color);
+            if (node.HasParentOfType<KeyTransition>() && node.ActualTrace == TraceLevel.None)
+            {
+                //don't add KeyTransition's TraceEntries to log if it's disabled
+            }
+            else
+            {
+                AddTraceEntryToObjectTransition(node, message, color);
+            }
 
             var doTrace = true;
 
             switch (node.ActualTrace)
             {
+                case TraceLevel.None:
+                    doTrace = false;
+                    break;
                 case TraceLevel.ObjectSet:
                     if (node.HasParentOfType<ObjectSetTransition>() && !(node is ObjectSetTransition))
                         doTrace = false;
@@ -70,7 +80,6 @@ namespace XQ.DataMigration.Mapping.Trace
             
             if (doTrace)
                 Trace?.Invoke(this, new TraceMessage(message, color, node));
-
         }
 
         public void TraceWarning(string message, TransitionNode node)
