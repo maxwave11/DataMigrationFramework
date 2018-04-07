@@ -95,7 +95,13 @@ namespace XQ.DataMigration.Data
 
                     var pivotColumns = FindPivotColumns(pivotPattern, this);
 
-                    Migrator.Current.Tracer.TraceLine($"No pivoted columns found by pattern '{pivotPattern}'!");
+                    if (!pivotColumns.Any())
+                    {
+                        var columnNames = FieldNames.Select(i => $"'{i}'").Join();
+                        var warningMsg = $"No pivoted columns found by pattern '{pivotPattern}'! All column names: {columnNames}";
+                        Migrator.Current.Tracer.TraceLine(warningMsg);
+                    }
+
                     if (result == null)
                         result = pivotColumns.Select(i => new ValuesObject(this)).ToList();
 
@@ -124,7 +130,7 @@ namespace XQ.DataMigration.Data
         private string[] FindPivotColumns(string columnPattern, IValuesObject source)
         {
             var regex = new Regex(columnPattern);
-            return source.FieldNames.Where(f => regex.IsMatch(f)).ToArray();
+            return source.FieldNames.Where(f => regex.IsMatch(f.Trim())).ToArray();
         }
     }
 }
