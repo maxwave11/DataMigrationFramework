@@ -86,7 +86,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
                 if (lookupObject == null)
                 {
-                    Migrator.Current.Tracer.TraceWarning($"Warning: lookup object not found by key '{valueToFind}'\n", this);
+                    Migrator.Current.Tracer.TraceWarning($"Lookup object not found by key '{valueToFind}'\n", this);
 
                     continuation = this.OnNotFound;
                     if (continuation != TransitContinuation.Continue)

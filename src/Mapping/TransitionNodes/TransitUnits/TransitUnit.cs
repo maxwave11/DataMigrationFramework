@@ -24,7 +24,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            attributes += $" Expression=\"{ Expression }\" ContextValue=\"{ ctx.TransitValue }\"";
+            attributes += $" Expression=\"{ Expression }\"";
             base.TraceStart(ctx, attributes);
         }
     }

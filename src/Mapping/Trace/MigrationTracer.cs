@@ -88,7 +88,7 @@ namespace XQ.DataMigration.Mapping.Trace
                 return;
             
             if (!string.IsNullOrEmpty(message))
-                message = "WARNING:" + FormatMessage(message, node);
+                message = FormatMessage("WARNING:" + message, node);
 
             AddTraceEntryToObjectTransition(node, message, ConsoleColor.Yellow);
 

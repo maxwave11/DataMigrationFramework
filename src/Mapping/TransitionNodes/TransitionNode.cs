@@ -63,17 +63,24 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         protected virtual void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
             var tagName = this.GetType().Name;
-            var incomingValueType = ctx.TransitValue?.GetType().Name;
-            var incomingValue = ctx.TransitValue?.ToString();
+            
 
             if (!string.IsNullOrEmpty(attributes))
                 attributes = " " + attributes;
 
+            var incomingValue = ctx.TransitValue?.ToString();
+            var incomingValueType = ctx.TransitValue?.GetType().Name;
+
             var traceMsg = $"<{tagName}{attributes}>";
             TraceLine(traceMsg);
 
-            //traceMsg = $"{MigrationTracer.IndentUnit}<Input Value=\"({incomingValueType.Truncate(30)}){incomingValue.Truncate(40)}\"/>";
-            //TraceLine(traceMsg);
+            TraceLine($"{MigrationTracer.IndentUnit}<Input Value=\"({incomingValueType.Truncate(30)}){incomingValue}\"/>");
+
+            if (TraceMessage.IsNotEmpty())
+            {
+                var userMessage = $"Trace Massage: '{ ExpressionEvaluator.Evaluate(TraceMessage, ctx) }'";
+                TraceLine(userMessage);
+            }
         }
 
         protected virtual void TraceEnd(ValueTransitContext ctx)
