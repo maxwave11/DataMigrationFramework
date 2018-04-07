@@ -32,7 +32,7 @@ namespace XQ.DataMigration.Mapping
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Tracer.TraceText("====== Migration start ======");
+            Tracer.TraceLine("====== Migration start ======");
 
             foreach (MapAction action in this._mapConfig.MapActions.Where(i => i.DoMapping))
             {
@@ -45,7 +45,7 @@ namespace XQ.DataMigration.Mapping
             }
 
             stopwatch.Stop();
-            Tracer.TraceText($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
+            Tracer.TraceLine($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
         }
 
         private void MapAction(MapAction action)

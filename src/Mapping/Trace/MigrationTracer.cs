@@ -35,20 +35,20 @@ namespace XQ.DataMigration.Mapping.Trace
 
         internal const string IndentUnit = "  ";
 
-        public void TraceText(string message)
+        public void TraceLine(string message)
         {
-            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.White, null));
+            Trace?.Invoke(this, new TraceMessage('\n' + message, ConsoleColor.White, null));
         }
 
-        public void TraceText(string message, TransitionNode node)
+        public void TraceLine(string message, TransitionNode node)
         {
-            TraceText(message, node, node.Color);
+            TraceLine(message, node, node.Color);
         }
 
-        public void TraceText(string message, TransitionNode node, ConsoleColor color)
+        public void TraceLine(string message, TransitionNode node, ConsoleColor color)
         {
             if (!string.IsNullOrEmpty(message))
-                message =  message.Split('\n').Select(i => string.IsNullOrEmpty(i) ? String.Empty : GetIndent(node) + i).Join("\n");
+                message = FormatMessage(message, node);
 
             AddTraceEntryToObjectTransition(node, message, color);
 
@@ -79,7 +79,7 @@ namespace XQ.DataMigration.Mapping.Trace
                 return;
             
             if (!string.IsNullOrEmpty(message))
-                message = message.Split('\n').Select(i => string.IsNullOrEmpty(i) ? String.Empty : GetIndent(node) + i).Join("\n");
+                message = "WARNING:" + FormatMessage(message, node);
 
             AddTraceEntryToObjectTransition(node, message, ConsoleColor.Yellow);
 
@@ -88,13 +88,13 @@ namespace XQ.DataMigration.Mapping.Trace
 
         public void TraceSkipObject(string text, TransitionNode node, IValuesObject sourceObject)
         {
-            TraceText(text, node, ConsoleColor.Yellow);
+            TraceLine(text, node, ConsoleColor.Yellow);
             OnObjectSkipped?.Invoke(this, sourceObject);
         }
 
         public TransitContinuation TraceError(string message, TransitionNode node, ValueTransitContext ctx)
         {
-            var msg = message.Split('\n').Select(i => GetIndent(node) + i).Join("\n");
+            var msg = FormatMessage(message, node);
             AddTraceEntryToObjectTransition(node, msg, ConsoleColor.Yellow);
 
             Trace?.Invoke(this, new TraceMessage(msg, ConsoleColor.Red, node));
@@ -104,17 +104,17 @@ namespace XQ.DataMigration.Mapping.Trace
             return args.Continue ? TransitContinuation.Continue : TransitContinuation.Stop;
         }
 
-        protected string GetIndent(TransitionNode node)
+        private string FormatMessage(string msg, TransitionNode node)
         {
-            var _indent = "";
+            var indent = "";
             TransitionNode nextParent = node.Parent;
             while (nextParent != null)
             {
                 nextParent = nextParent.Parent;
-                _indent += IndentUnit;
+                indent += IndentUnit;
             }
 
-            return _indent;
+            return '\n' + msg.Split('\n').Select(i => indent + i).Join("\n");
         }
 
         private void AddTraceEntryToObjectTransition(TransitionNode node, string message, ConsoleColor color)

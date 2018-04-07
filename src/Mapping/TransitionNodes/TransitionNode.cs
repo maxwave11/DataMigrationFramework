@@ -89,15 +89,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             TraceLine(traceMsg);
         }
 
-        protected virtual void Trace(string message)
-        {
-            Migrator.Current.Tracer.TraceText(message, this);
-        }
-
         protected virtual void TraceLine(string message)
         {
-            Migrator.Current.Tracer.TraceText(message, this);
-            Migrator.Current.Tracer.TraceText("\n", this);
+            Migrator.Current.Tracer.TraceLine(message, this);
         }
 
         internal TransitResult TransitInternal(ValueTransitContext ctx)

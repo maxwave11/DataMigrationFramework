@@ -120,6 +120,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             if (srcDataSet == null)
                  return new TransitResult(null);
 
+            if (!srcDataSet.Any())
+                Tracer.TraceWarning("Source objects collection is empty!", this);
+
             var rowNumber = 0;
             foreach (var sourceObject in srcDataSet)
             {
@@ -231,7 +234,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             catch (Exception ex)
             {
                 var objectsInfo = targetObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
-                Tracer.TraceText("=====Error while saving transitted objects: " + ex + objectsInfo, this,ConsoleColor.Red);
+                Tracer.TraceLine("=====Error while saving transitted objects: " + ex + objectsInfo, this,ConsoleColor.Red);
                 throw;
             }
 

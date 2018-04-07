@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
+using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
@@ -94,6 +95,7 @@ namespace XQ.DataMigration.Data
 
                     var pivotColumns = FindPivotColumns(pivotPattern, this);
 
+                    Migrator.Current.Tracer.TraceLine($"No pivoted columns found by pattern '{pivotPattern}'!");
                     if (result == null)
                         result = pivotColumns.Select(i => new ValuesObject(this)).ToList();
 
