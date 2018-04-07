@@ -83,6 +83,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
+            //Reset TransitValue by Source object before any children begins inside ObjectTrastition
+            //Notice: if you want to pass TransitValue between transitions you have to place your
+            //'connected' transition nodes inside ValueTransition
             ctx.SetCurrentValue(childNode.Name, ctx.Source);
 
             var result = base.TransitChild(childNode, ctx);
