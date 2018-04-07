@@ -81,6 +81,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                         return Convert.ToDouble(date, CultureInfo.InvariantCulture);
                         throw;
                     }
+
                 case TypeCode.Decimal:
                     return Convert.ToDecimal(PrepareDecimalValue(value), CultureInfo.InvariantCulture);
 
@@ -89,12 +90,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
                 case TypeCode.Boolean:
                     return ToBool(value);
+
                 case TypeCode.DateTime:
                     if (value is string)
                     {
                         //set default date formats to parse
                         DataTypeFormats = DataTypeFormats?.Any() == true ? DataTypeFormats : new[] {"dd.MM.yyyy","d.M.yyyy","dd.M.yyyy","d.MM.yyyy"};
-                        return DateTime.ParseExact(value.ToString(), DataTypeFormats, new DateTimeFormatInfo(), DateTimeStyles.None);
+                        return DateTime.ParseExact(value.ToString().Trim(), DataTypeFormats, new DateTimeFormatInfo(), DateTimeStyles.None);
                     }
                     return Convert.ToDateTime(value);
             }
