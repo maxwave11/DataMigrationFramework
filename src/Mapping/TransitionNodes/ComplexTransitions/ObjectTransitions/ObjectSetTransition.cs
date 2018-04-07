@@ -148,7 +148,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 }
             }
 
-            SaveTransittedObjects();
+            if (_transittedObjects.Any())
+                SaveTargetObjects(_transittedObjects);
 
             return new TransitResult(null);
         }
@@ -179,9 +180,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             }
 
             MarkObjectsAsTransitted(targetObjects);
+
             //need to save after each child transition to avoid referencing to unsaved data
-            TrySaveTransittedObjects();
-         
+            if (SaveCount > 0 && _transittedObjects.Count >= SaveCount)
+                SaveTargetObjects(_transittedObjects);
+            
             return result;
         }
 
@@ -201,19 +204,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             }
         }
 
-        private void TrySaveTransittedObjects()
+        protected virtual void SaveTargetObjects(List<IValuesObject> targetObjects)
         {
-            if (SaveCount > 0 && _transittedObjects.Count >= SaveCount)
-            {
-                SaveTransittedObjects();
-            }
-        }
-
-        private void SaveTransittedObjects()
-        {
-            if (!_transittedObjects.Any())
-                return;
-
             if (!Migrator.Current.Action.DoSave)
             {
                 TraceLine("Don't saving objects due of MapAction.DoSave = false");
@@ -222,8 +214,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             try
             {
-                TraceLine($"Saving {_transittedObjects.Count} objects...");
-                var newObjectsCount = _transittedObjects.Count(i => i.IsNew);
+                TraceLine($"Saving {targetObjects.Count} objects...");
+                var newObjectsCount = targetObjects.Count(i => i.IsNew);
 
                 if (newObjectsCount > 0)
                     TraceLine($"New objects: {newObjectsCount}");
@@ -231,19 +223,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                Migrator.Current.Action.DefaultTargetProvider.SaveObjects(_transittedObjects);
+                Migrator.Current.Action.DefaultTargetProvider.SaveObjects(targetObjects);
                 stopWath.Stop();
 
-                TraceLine($"Saved {_transittedObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
+                TraceLine($"Saved {targetObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
             }
             catch (Exception ex)
             {
-                var objectsInfo = _transittedObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
+                var objectsInfo = targetObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
                 Tracer.TraceText("=====Error while saving transitted objects: " + ex + objectsInfo, this,ConsoleColor.Red);
                 throw;
             }
 
-            _transittedObjects.Clear();
+            targetObjects.Clear();
         }
 
         private bool IsRowIndexInRange(int rowIndex)
