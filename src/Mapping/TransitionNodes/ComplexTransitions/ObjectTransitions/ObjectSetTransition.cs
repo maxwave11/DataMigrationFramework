@@ -139,10 +139,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var result = TransitChildren(ctx);
 
                 if (result.Continuation == TransitContinuation.SkipObject)
-                {
-                    // TraceLine($"Object skipped (Key = {ctx.Source.Key})" + result.Message);
                     continue;
-                }
+
+                if (result.Continuation == TransitContinuation.SkipObjectSet)
+                    return new TransitResult(ctx.TransitValue);
 
                 if (result.Continuation != TransitContinuation.Continue)
                 {
