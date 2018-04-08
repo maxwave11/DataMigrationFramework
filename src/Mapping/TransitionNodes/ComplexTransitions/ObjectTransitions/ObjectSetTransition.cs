@@ -83,7 +83,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            attributes = $"{nameof(Name)}=\"{Name}\" {nameof(QueryToSource)}=\"{QueryToSource}\"";
+            var queryToSource =  QueryToSource.StartsWith("{")
+                ? ExpressionEvaluator.EvaluateString(QueryToSource, ctx)
+                : QueryToSource;
+
+            attributes = $"{nameof(Name)}=\"{Name}\" {nameof(QueryToSource)}=\"{queryToSource}\"";
             base.TraceStart(ctx, attributes);
         }
 
@@ -91,12 +95,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         {
             try
             {
-                //need to fix this later and recognize expression more smart
-                if (QueryToSource.StartsWith("{"))
-                    QueryToSource = ExpressionEvaluator.EvaluateString(QueryToSource, ctx);
+                //need to fix this later and recognize expression by more smart way
+                var queryToSource = QueryToSource.StartsWith("{")
+                                        ? ExpressionEvaluator.EvaluateString(QueryToSource, ctx)
+                                        : QueryToSource;
 
                 if (FetchMode == FetchMode.SourceObject)
-                    return ((IValueObjectsCollecion)ctx.Source).GetObjects(this.QueryToSource);
+                    return ((IValueObjectsCollecion)ctx.Source).GetObjects(queryToSource);
                 
                 
                 var sourceProvider = Migrator.Current.Action.DefaultSourceProvider;
@@ -104,7 +109,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 if (SourceProviderName.IsNotEmpty())
                     sourceProvider = Migrator.Current.Action.MapConfig.GetSourceProvider(SourceProviderName);
 
-                return sourceProvider.GetDataSet(QueryToSource);
+                return sourceProvider.GetDataSet(queryToSource);
             }
             catch (Exception ex)
             {
