@@ -63,6 +63,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 
         private IValuesObject _currentSourceObject;
+        
+        private int _currentRowsCount;
 
         #endregion
 
@@ -125,10 +127,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             if (srcDataSet == null)
                  return new TransitResult(null);
 
-            if (!srcDataSet.Any())
+            _currentRowsCount = srcDataSet.Count();
+
+            if (_currentRowsCount == 0)
                 Tracer.TraceWarning("Source objects collection is empty!", this);
 
             var rowNumber = 0;
+
+            
             foreach (var sourceObject in srcDataSet)
             {
                 rowNumber++;
@@ -154,6 +160,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                     TraceLine($"Breaking {nameof(ObjectSetTransition)}");
                     return result;
                 }
+
+                TraceLine($"Completed {(double)rowNumber / _currentRowsCount:P1} ({rowNumber} of {_currentRowsCount})");
+
             }
 
             if (_transittedObjects.Any())
@@ -233,7 +242,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 Migrator.Current.Action.DefaultTargetProvider.SaveObjects(targetObjects);
                 stopWath.Stop();
-
+                
+                
                 TraceLine($"Saved {targetObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
             }
             catch (Exception ex)
