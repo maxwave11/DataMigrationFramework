@@ -4,7 +4,7 @@ using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.Expressions
 {
-    internal class ExpressionEvaluator
+    public class ExpressionEvaluator
     {
         private readonly Dictionary<string, Delegate> _compiledExpressionsCache = new Dictionary<string, Delegate>();
 
