@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
@@ -125,8 +126,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             {
                 strValue = strValue.Replace(DecimalSeparator.Trim(), ".");
             }
-
-            return strValue.Replace(" ", String.Empty);
+            
+            //return string without any white spaces (don't use String.Replace for that)
+            return Regex.Replace(strValue, @"\s+", "");
         }
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
