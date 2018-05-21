@@ -40,7 +40,7 @@ namespace XQ.DataMigration.Data
         {
             object result = null;
             if (!_dataContainer.TryGetValue(name, out result))
-                throw new Exception($"There is no field {name} in current {nameof(ValuesObject)}");
+                throw new Exception($"There is no field '{name}' in current {nameof(ValuesObject)}");
 
             return result;
         }
