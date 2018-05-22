@@ -82,7 +82,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             if (valueToFind.IsNotEmpty())
             {
-                lookupObject = FindLookupObject(valueToFind);
+                lookupObject = FindLookupObject(valueToFind, ctx);
 
                 if (lookupObject == null)
                 {
@@ -97,15 +97,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return new TransitResult(continuation, lookupObject, message);
         }
 
-        private IValuesObject FindLookupObject(string valueToFind)
+        private IValuesObject FindLookupObject(string valueToFind, ValueTransitContext ctx)
         {
             var mapAction = Migrator.Current.Action;
 
             var provider = ProviderName.IsEmpty()
                 ? mapAction.DefaultTargetProvider
                 : mapAction.MapConfig.GetDataProvider(ProviderName);
-         
-            var dataSet = provider.GetDataSet(LookupDataSetId);
+
+            var queryToSource = LookupDataSetId.StartsWith("{")
+                                        ? ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx)
+                                        : LookupDataSetId;
+
+            var dataSet = provider.GetDataSet(queryToSource);
 
             var lookupObject = LookupAlternativeExpr.IsEmpty()
                 ? dataSet.GetObjectByKey(valueToFind, EvaluateObjectKey)
@@ -128,7 +132,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            attributes += $" {nameof(LookupDataSetId)}=\"{ LookupDataSetId }\"";
+            var queryToSource = LookupDataSetId.StartsWith("{")
+                                       ? ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx)
+                                       : LookupDataSetId;
+
+            attributes += $" {nameof(LookupDataSetId)}=\"{ queryToSource }\"";
             base.TraceStart(ctx, attributes);
         }
     }
