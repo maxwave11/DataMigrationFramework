@@ -84,7 +84,12 @@ namespace XQ.DataMigration.MapConfig
             base.Initialize(parent);
             SourceKeyTransition.Initialize(this);
             TargetKeyTransition.Initialize(this);
-            TraceLevel = TraceLevel.None;
+
+            //Don't trace Key Transitions by default. 
+            //Need to set TraceLevel explicitly if you want to trace this node
+            if (TraceLevel== TraceLevel.Auto)
+                TraceLevel = TraceLevel.None;
+
             SourceKeyTransition.Name = "SourceKeyTransition";
             TargetKeyTransition.Name = "TargetKeyTransition";
 
