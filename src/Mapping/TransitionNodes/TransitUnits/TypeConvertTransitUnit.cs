@@ -51,18 +51,24 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public object GetTypedValue(TypeCode targetType, object value, string[] DataTypeFormats = null)
         {
-            if (value == null || value.ToString().IsEmpty()) return null;
+            if (value == null)
+                return null;
+
+            var strValue = Convert.ToString(value, CultureInfo.InvariantCulture);
+
+            if (strValue.IsEmpty())
+                return null;
 
             switch (targetType)
             {
                 case TypeCode.Int32:
-                    if (value.ToString().Contains(DecimalSeparator))
+                    if (strValue.Contains(DecimalSeparator))
                         return Convert.ToInt32(GetTypedValue(TypeCode.Double, value, DataTypeFormats), CultureInfo.InvariantCulture);
 
                     return Convert.ToInt32(value, CultureInfo.InvariantCulture);
 
                 case TypeCode.Int64:
-                    if (value.ToString().Contains(DecimalSeparator))
+                    if (strValue.Contains(DecimalSeparator))
                         return Convert.ToInt64(GetTypedValue(TypeCode.Double, value, DataTypeFormats), CultureInfo.InvariantCulture);
 
                     return Convert.ToInt64(value, CultureInfo.InvariantCulture);
@@ -97,7 +103,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                     {
                         //set default date formats to parse
                         DataTypeFormats = DataTypeFormats?.Any() == true ? DataTypeFormats : new[] {"dd.MM.yyyy","d.M.yyyy","dd.M.yyyy","d.MM.yyyy"};
-                        return DateTime.ParseExact(value.ToString().Trim(), DataTypeFormats, new DateTimeFormatInfo(), DateTimeStyles.None);
+                        return DateTime.ParseExact(strValue.Trim(), DataTypeFormats, new DateTimeFormatInfo(), DateTimeStyles.None);
                     }
                     return Convert.ToDateTime(value);
             }
@@ -119,7 +125,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         private string PrepareDecimalValue(object value)
         {
-            var strValue = value.ToString();
+            
+            var strValue = Convert.ToString(value, CultureInfo.InvariantCulture);
             if (DecimalSeparator.Trim() == ".")
                 strValue = strValue.Replace(",", String.Empty);
             else
