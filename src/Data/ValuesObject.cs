@@ -47,6 +47,9 @@ namespace XQ.DataMigration.Data
 
         public void SetValue(string name, object value)
         {
+            if (name.IsEmpty())
+                throw new ArgumentException($"Field name can't be empty");
+
             _dataContainer[name] = value;
         }
 
