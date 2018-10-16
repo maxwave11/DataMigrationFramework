@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
@@ -20,6 +21,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public string TargetDataSetId { get; set; }
 
         /// <summary>
+        /// Call SaveObjects when transitioned objects count reached this value
+        /// </summary>
+        /// TODO move it to separate SaveTransition
+        [XmlAttribute]
+        public int SaveCount { get; set; }
+
+        /// <summary>
         /// Key definition element which describes how to get keys for source and for target objects respectively
         /// </summary>
         [XmlElement]
@@ -32,12 +40,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         [XmlAttribute]
         public ObjectTransitMode TransitMode { get; set; }
 
-
-      
-
         public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
+
+        private readonly List<IValuesObject> _transittedObjects = new List<IValuesObject>();
+
 
         public override void Initialize(TransitionNode parent)
         {
@@ -71,12 +79,34 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             if (result.Continuation == TransitContinuation.SkipObject && ctx.Target?.IsNew == true)
             {
                 //If object just created and skipped by migration logic - need to remove it from cache
-                //becaus it is invalid object and we must disallow reference to this objects by any keys
+                //becaus it's invalid and we must prevent any chance to reference to this objects by any keys
                 //If object is not new, it means that it already saved and passed/valid object
                 var provider = Migrator.Current.Action.DefaultTargetProvider;
                 var dataSet = provider.GetDataSet(TargetDataSetId);
                 dataSet.RemoveObjectFromCache(ctx.Target.Key);
             }
+            if (SaveCount > 0)
+            {
+                var targetObjects = new List<IValuesObject>();
+
+                var target = ctx.Target;
+                if (target is IEnumerable<IValuesObject>)
+                {
+                    targetObjects.AddRange((IEnumerable<IValuesObject>)target);
+                }
+                else
+                {
+                    if (target != null)//target can be null if SkipObject activated
+                        targetObjects.Add(target);
+                }
+
+                MarkObjectsAsTransitted(targetObjects);
+
+                //need to save after each child transition to avoid referencing to unsaved data
+                if (_transittedObjects.Count >= SaveCount)
+                    SaveTargetObjects(_transittedObjects);
+            }
+
 
             return result;
         }
@@ -120,6 +150,60 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         internal void AddTraceEntry(string msg, ConsoleColor color)
         {
             TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
-        } 
+        }
+
+        //TODO: move it to separate save transition!
+        #region TEMP    
+        protected virtual void SaveTargetObjects(List<IValuesObject> targetObjects)
+        {
+            if (!Migrator.Current.Action.DoSave)
+            {
+                TraceLine("Don't saving objects due of MapAction.DoSave = false");
+                return;
+            }
+
+            try
+            {
+                TraceLine($"Saving {targetObjects.Count} objects...");
+                var newObjectsCount = targetObjects.Count(i => i.IsNew);
+
+                if (newObjectsCount > 0)
+                    TraceLine($"New objects: {newObjectsCount}");
+
+                var stopWath = new Stopwatch();
+                stopWath.Start();
+
+                Migrator.Current.Action.DefaultTargetProvider.SaveObjects(targetObjects);
+                stopWath.Stop();
+
+
+                TraceLine($"Saved {targetObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
+            }
+            catch (Exception ex)
+            {
+                var objectsInfo = targetObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
+                Tracer.TraceLine("=====Error while saving transitted objects: " + ex + objectsInfo, this, ConsoleColor.Red);
+                throw;
+            }
+
+            targetObjects.Clear();
+        }
+
+        private void MarkObjectsAsTransitted(IEnumerable<IValuesObject> targetObjects)
+        {
+            foreach (IValuesObject targetObject in targetObjects)
+            {
+                if (targetObject.IsEmpty())
+                    continue;
+
+                var targetKey = targetObject.Key;
+
+                if (targetKey.IsEmpty())
+                    continue;
+
+                _transittedObjects.Add(targetObject);
+            }
+        }
+        #endregion
     }
 }

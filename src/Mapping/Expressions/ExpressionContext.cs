@@ -54,6 +54,9 @@ namespace XQ.DataMigration.Mapping.Expressions
             if (obj == null)
                 return null;
 
+            if (obj is ValuesObject)
+                return ((ValuesObject)obj)[fieldName];
+
             return obj.GetType().GetProperty(fieldName).GetValue(obj);
         }
         public bool IsNotEmpty(string str)

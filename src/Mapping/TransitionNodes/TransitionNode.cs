@@ -14,7 +14,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
     /// <summary>
     /// Base class for all transition elements in Map configuration
     /// </summary>
-    public abstract class TransitionNode
+    public abstract class TransitionNode: ITransitionNode
     {
         [XmlAttribute]
         public string Name { get; set; }
@@ -32,7 +32,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public string TraceMessage { get; set; }
 
         [XmlAttribute]
-        public ConsoleColor Color { get; set; }  = ConsoleColor.White;
+        public virtual ConsoleColor Color { get; set; }  = ConsoleColor.White;
 
         /// <summary>
         /// Mark element by this attribute to fast debug particular TransitionNode
