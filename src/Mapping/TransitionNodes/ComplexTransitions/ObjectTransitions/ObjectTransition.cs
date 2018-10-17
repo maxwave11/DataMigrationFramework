@@ -87,20 +87,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             }
             if (SaveCount > 0)
             {
-                var targetObjects = new List<IValuesObject>();
-
                 var target = ctx.Target;
-                if (target is IEnumerable<IValuesObject>)
+             
+                if (target != null)//target can be null if SkipObject activated
                 {
-                    targetObjects.AddRange((IEnumerable<IValuesObject>)target);
-                }
-                else
-                {
-                    if (target != null)//target can be null if SkipObject activated
-                        targetObjects.Add(target);
-                }
+                    if (!(target is IValuesObject))
+                        throw new InvalidOperationException($"Target object should be of type {nameof(IValuesObject)}");
 
-                MarkObjectsAsTransitted(targetObjects);
+                    MarkObjectsAsTransitted(target);
+                }
 
                 //need to save after each child transition to avoid referencing to unsaved data
                 if (_transittedObjects.Count >= SaveCount)
@@ -189,20 +184,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             targetObjects.Clear();
         }
 
-        private void MarkObjectsAsTransitted(IEnumerable<IValuesObject> targetObjects)
+        private void MarkObjectsAsTransitted(IValuesObject targetObject)
         {
-            foreach (IValuesObject targetObject in targetObjects)
-            {
-                if (targetObject.IsEmpty())
-                    continue;
+            if (targetObject.IsEmpty() || targetObject.Key.IsEmpty())
+                return;
 
-                var targetKey = targetObject.Key;
+            if (_transittedObjects.Contains(targetObject))
+                return;
 
-                if (targetKey.IsEmpty())
-                    continue;
-
-                _transittedObjects.Add(targetObject);
-            }
+            _transittedObjects.Add(targetObject);
         }
         #endregion
     }
