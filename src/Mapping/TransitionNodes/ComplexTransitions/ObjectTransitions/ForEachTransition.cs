@@ -68,7 +68,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 sourceObject.SetValue("RowNumber", rowNumber);
 
                 _currentSourceObject = sourceObject;
-                
+                ctx.SetCurrentValue(this.Name, sourceObject);
                 var result = TransitChildren(ctx);
 
                 if (result.Continuation == TransitContinuation.SkipObject)
