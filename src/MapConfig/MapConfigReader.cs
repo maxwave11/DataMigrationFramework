@@ -82,6 +82,8 @@ namespace XQ.DataMigration.MapConfig
 
         private XmlAttributeOverrides GetCustomAttributeOverrides()
         {
+            var attribOverrides = new XmlAttributeOverrides();
+
             //register default object transitions
             //var objectSetElementChildren = new XmlAttributes();
             //objectSetElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
@@ -92,7 +94,9 @@ namespace XQ.DataMigration.MapConfig
             var complexElementChildren = new XmlAttributes();
             //complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitionNode), typeof(ValueTransition)));
             //complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ComplexTransition), typeof(ValueTransition)));
+         
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValueTransition), typeof(ValueTransition)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ForEachTransition), typeof(ForEachTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(LookupValueTransition), typeof(LookupValueTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitUnit), typeof(TransitUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ConditionUnit), typeof(ConditionUnit)));
@@ -116,16 +120,23 @@ namespace XQ.DataMigration.MapConfig
                     complexElementChildren.XmlElements.Add(new XmlElementAttribute(customTransitionType.Name, customTransitionType));
             }
 
+            attribOverrides.Add(typeof(ComplexTransition), nameof(ComplexTransition.ChildTransitions), complexElementChildren);
+
+
             var providerTypes = new XmlAttributes();
             foreach (var providerType in _dataProviders)
             {
                 providerTypes.XmlArrayItems.Add(new XmlArrayItemAttribute(providerType));
             }
 
-            var attribOverrides = new XmlAttributeOverrides();
-            attribOverrides.Add(typeof(ComplexTransition), nameof(ComplexTransition.ChildTransitions), complexElementChildren);
-            //attribOverrides.Add(typeof(ObjectSetTransition), nameof(ObjectSetTransition.ObjectTransition), objectSetElementChildren);
             attribOverrides.Add(typeof(MapConfig), nameof(MapConfig.DataProviders), providerTypes);
+
+            var nestedProviderTypes = new XmlAttributes();
+            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(CsvProvider), typeof(CsvProvider)));
+            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ObjectSourceProvider), typeof(ObjectSourceProvider)));
+
+            attribOverrides.Add(typeof(ForEachTransition), nameof(ForEachTransition.DataProvider), nestedProviderTypes);
+
             return attribOverrides;
         }
 
