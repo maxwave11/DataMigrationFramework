@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using CsvHelper;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
@@ -38,7 +39,8 @@ namespace XQ.DataMigration.Data
                         ValuesObject result = new ValuesObject();
                         csvReader.FieldHeaders.ToList().ForEach(i =>
                         {
-                            result.SetValue(i, csvReader[i]);
+                            if (i.IsNotEmpty())
+                                result.SetValue(i, csvReader[i]);
                         });
 
                         yield return result;
