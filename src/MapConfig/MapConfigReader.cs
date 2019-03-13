@@ -106,6 +106,7 @@ namespace XQ.DataMigration.MapConfig
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectSetTransition), typeof(ObjectSetTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(GlobalObjectTransition), typeof(GlobalObjectTransition)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitionGroup), typeof(TransitionGroup)));
 
             foreach (var customTransitionType in _customElements)
             {
@@ -121,6 +122,7 @@ namespace XQ.DataMigration.MapConfig
             }
 
             attribOverrides.Add(typeof(ComplexTransition), nameof(ComplexTransition.ChildTransitions), complexElementChildren);
+            attribOverrides.Add(typeof(MapConfig), nameof(ComplexTransition.ChildTransitions), complexElementChildren);
 
 
             var providerTypes = new XmlAttributes();

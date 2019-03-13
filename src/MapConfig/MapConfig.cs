@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes;
 
 namespace XQ.DataMigration.MapConfig
 {
     public class MapConfig
     {
-        [XmlArray(nameof(TransitionGroups))]
-        [XmlArrayItem(nameof(TransitionGroup))]
-        public List<TransitionGroup> TransitionGroups { get; set; }
+        /// <summary>
+        /// List of nested transitions. 
+        /// </summary>
+        public List<TransitionNode> ChildTransitions { get; set; }
 
         [XmlArray(nameof(DataProviders))]
         public List<Object> DataProviders { get; set; }
@@ -23,7 +24,7 @@ namespace XQ.DataMigration.MapConfig
         internal void Initialize()
         { 
             DataProviders.ForEach(p=>((IDataProvider)p).Initialize());
-            TransitionGroups?.ForEach(i => i.Initialize(null));
+            ChildTransitions?.ForEach(i => i.Initialize(null));
         }
 
         public ISourceProvider GetDefaultSourceProvider()

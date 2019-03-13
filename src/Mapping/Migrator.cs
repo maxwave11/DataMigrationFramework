@@ -30,10 +30,9 @@ namespace XQ.DataMigration.Mapping
 
             Tracer.TraceLine("====== Migration start ======");
 
-            
-            var transGroup = MapConfig.TransitionGroups.FirstOrDefault();
+            var childTransition = MapConfig.ChildTransitions.FirstOrDefault();
             var ctx = new ValueTransitContext(null, null, null, null);
-            transGroup?.TransitInternal(ctx);
+            MapConfig.ChildTransitions?.ForEach(i => i.TransitInternal(ctx));
 
             stopwatch.Stop();
             Tracer.TraceLine($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
