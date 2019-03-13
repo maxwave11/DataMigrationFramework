@@ -84,6 +84,7 @@
     <Compile Include="Data\Providers\ObjectSourceProvider.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ITransitionNode.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ConditionUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\CustomTransitionNode.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteMessageUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ValueTransitions\LookupValueTransition.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="Mapping\TransitionNodes\TransitUnits\TransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ComplexTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ValueTransitions\ValueTransition.cs" />
-    <Compile Include="Mapping\TransitionNodes\TransitUnits\ValidationUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteTransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReadTransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\TypeConvertTransitUnit.cs" />

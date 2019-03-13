@@ -10,7 +10,8 @@ using XQ.DataMigration.Mapping.Trace;
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
     /// <summary>
-    /// Transition which transit objects data from DataSet of source system to DataSet of target system
+    /// Transition which transit objects data from DataSet of source system to DataSet of target system.
+    /// Just iterates all nested elements through elements fetched from DataProvider
     /// </summary>
     public class ForEachTransition : ComplexTransition
     {

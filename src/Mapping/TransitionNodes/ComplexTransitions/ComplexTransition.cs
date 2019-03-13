@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
