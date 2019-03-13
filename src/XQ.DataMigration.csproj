@@ -85,6 +85,8 @@
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ConditionUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\CustomTransitionNode.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceStepUnit.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceTransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteMessageUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ValueTransitions\LookupValueTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\TransitionGroup.cs" />
@@ -93,8 +95,6 @@
     <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />
     <Compile Include="Mapping\Trace\ValueTransitErrorEventArgs.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectSetTransition.cs" />
-    <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceUnit.cs" />
-    <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ReplaceTransition.cs" />
     <Compile Include="Mapping\Logic\ValueTransitContext.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\TransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ComplexTransition.cs" />

@@ -72,7 +72,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             if (Replace.IsNotEmpty())
             {
-                ChildTransitions.Add(new ReplaceTransition
+                ChildTransitions.Add(new ReplaceTransitUnit
                 {
                     ReplaceRules = Replace,
                     OnError = this.OnError

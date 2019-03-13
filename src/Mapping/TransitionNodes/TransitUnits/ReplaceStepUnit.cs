@@ -8,14 +8,17 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class ReplaceUnit : TransitUnit
+    public class ReplaceStepUnit : TransitUnit
     {
         [XmlAttribute]
         public string Rule { get; set; }
+
         [XmlAttribute]
         public bool Important { get; set; }
+
         [XmlAttribute]
         public string Condition { get; set; }
+
         [XmlAttribute]
         public string ReplaceExpression { get; set; }
 

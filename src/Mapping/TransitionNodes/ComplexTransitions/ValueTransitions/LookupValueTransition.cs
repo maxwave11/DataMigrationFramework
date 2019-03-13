@@ -58,7 +58,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             var customLookupTransitions = new List<TransitionNode>();
 
             if (ReplaceBeforeLookup.IsNotEmpty())
-                customLookupTransitions.Add(new ReplaceTransition { ReplaceRules = ReplaceBeforeLookup });
+                customLookupTransitions.Add(new ReplaceTransitUnit { ReplaceRules = ReplaceBeforeLookup });
 
             customLookupTransitions.Add(new LookupValueTransitUnit
             {

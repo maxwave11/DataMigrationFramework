@@ -101,7 +101,7 @@ namespace XQ.DataMigration.MapConfig
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitUnit), typeof(TransitUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ConditionUnit), typeof(ConditionUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TypeConvertTransitUnit), typeof(TypeConvertTransitUnit)));
-            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ReplaceTransition), typeof(ReplaceTransition)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ReplaceTransitUnit), typeof(ReplaceTransitUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(WriteMessageUnit), typeof(WriteMessageUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectTransition), typeof(ObjectTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ObjectSetTransition), typeof(ObjectSetTransition)));
