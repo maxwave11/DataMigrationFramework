@@ -99,11 +99,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         private IValuesObject FindLookupObject(string valueToFind, ValueTransitContext ctx)
         {
-            var mapAction = Migrator.Current.Action;
+            var mapConfig = Migrator.Current.MapConfig;
 
             var provider = ProviderName.IsEmpty()
-                ? mapAction.DefaultTargetProvider
-                : mapAction.MapConfig.GetDataProvider(ProviderName);
+                ? mapConfig.GetDefaultTargetProvider()
+                : mapConfig.GetDataProvider(ProviderName);
 
             var queryToSource = LookupDataSetId.StartsWith("{")
                                         ? ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx)

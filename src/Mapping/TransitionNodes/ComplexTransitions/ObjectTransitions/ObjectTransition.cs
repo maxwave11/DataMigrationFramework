@@ -81,7 +81,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 //If object just created and skipped by migration logic - need to remove it from cache
                 //becaus it's invalid and we must prevent any chance to reference to this objects by any keys
                 //If object is not new, it means that it already saved and passed/valid object
-                var provider = Migrator.Current.Action.DefaultTargetProvider;
+                var provider = Migrator.Current.MapConfig.GetDefaultTargetProvider();
                 var dataSet = provider.GetDataSet(TargetDataSetId);
                 dataSet.RemoveObjectFromCache(ctx.Target.Key);
             }
@@ -151,12 +151,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         #region TEMP    
         protected virtual void SaveTargetObjects(List<IValuesObject> targetObjects)
         {
-            if (!Migrator.Current.Action.DoSave)
-            {
-                TraceLine("Don't saving objects due of MapAction.DoSave = false");
-                return;
-            }
-
             try
             {
                 TraceLine($"Saving {targetObjects.Count} objects...");
@@ -168,7 +162,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                Migrator.Current.Action.DefaultTargetProvider.SaveObjects(targetObjects);
+                Migrator.Current.MapConfig.GetDefaultTargetProvider().SaveObjects(targetObjects);
                 stopWath.Stop();
 
 

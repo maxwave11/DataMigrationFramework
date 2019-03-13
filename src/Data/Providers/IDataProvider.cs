@@ -11,6 +11,7 @@ namespace XQ.DataMigration.Data
     public interface IDataProvider : IDisposable, ITransitionNode
     {
         string Name { get; set; }
+        bool IsDefault { get; set; }
         string Query { get; set; }
         void Initialize();
         IDataSet GetDataSet(string providerQuery);

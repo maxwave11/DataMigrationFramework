@@ -25,6 +25,9 @@ namespace XQ.DataMigration.Data
         [XmlAttribute]
         public string Query { get; set; }
 
+        [XmlAttribute]
+        public bool IsDefault { get; set; }
+
         public void Initialize()
         {
         }

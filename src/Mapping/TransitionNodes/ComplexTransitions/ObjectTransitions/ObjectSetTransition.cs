@@ -106,10 +106,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                     return ((IValueObjectsCollecion)ctx.Source).GetObjects(queryToSource);
                 
                 
-                var sourceProvider = Migrator.Current.Action.DefaultSourceProvider;
+                var sourceProvider = Migrator.Current.MapConfig.GetDefaultSourceProvider();
 
                 if (SourceProviderName.IsNotEmpty())
-                    sourceProvider = Migrator.Current.Action.MapConfig.GetSourceProvider(SourceProviderName);
+                    sourceProvider = Migrator.Current.MapConfig.GetSourceProvider(SourceProviderName);
 
                 return sourceProvider.GetDataSet(queryToSource);
             }
@@ -223,12 +223,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         protected virtual void SaveTargetObjects(List<IValuesObject> targetObjects)
         {
-            if (!Migrator.Current.Action.DoSave)
-            {
-                TraceLine("Don't saving objects due of MapAction.DoSave = false");
-                return;
-            }
-
             try
             {
                 TraceLine($"Saving {targetObjects.Count} objects...");
@@ -240,7 +234,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                Migrator.Current.Action.DefaultTargetProvider.SaveObjects(targetObjects);
+                Migrator.Current.MapConfig.GetDefaultTargetProvider().SaveObjects(targetObjects);
                 stopWath.Stop();
                 
                 

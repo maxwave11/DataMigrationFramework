@@ -17,6 +17,8 @@ namespace XQ.DataMigration.Data
         [XmlAttribute]
         public string Query { get; set; }
 
+        public bool IsDefault { get; set; }
+
         public void Dispose()
         {
             throw new NotImplementedException();

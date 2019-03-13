@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
-using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
 
 namespace XQ.DataMigration.MapConfig
@@ -13,10 +12,6 @@ namespace XQ.DataMigration.MapConfig
         [XmlArray(nameof(TransitionGroups))]
         [XmlArrayItem(nameof(TransitionGroup))]
         public List<TransitionGroup> TransitionGroups { get; set; }
-
-        [XmlArray(nameof(MapActions))]
-        [XmlArrayItem(nameof(MapAction))]
-        public List<MapAction> MapActions { get; set; }
 
         [XmlArray(nameof(DataProviders))]
         public List<Object> DataProviders { get; set; }
@@ -28,20 +23,27 @@ namespace XQ.DataMigration.MapConfig
         internal void Initialize()
         { 
             DataProviders.ForEach(p=>((IDataProvider)p).Initialize());
-
-            MapActions.ForEach(act => act.MapConfig = this);
-
             TransitionGroups?.ForEach(i => i.Initialize(null));
         }
 
-        public ISourceProvider GetSourceProvider(string sourceProviderName)
+        public ISourceProvider GetDefaultSourceProvider()
         {
-            return DataProviders.OfType<ISourceProvider>().SingleOrDefault(i => i.Name == sourceProviderName);
+            return DataProviders.OfType<ISourceProvider>().Single(i => i.IsDefault);
+        }
+
+        public ITargetProvider GetDefaultTargetProvider()
+        {
+            return DataProviders.OfType<ITargetProvider>().Single(i => i.IsDefault);
         }
 
         public ITargetProvider GetTargetProvider(string targetProviderName)
         {
             return DataProviders.OfType<ITargetProvider>().SingleOrDefault(i => i.Name == targetProviderName);
+        }
+
+        public ISourceProvider GetSourceProvider(string sourceProviderName)
+        {
+            return DataProviders.OfType<ISourceProvider>().SingleOrDefault(i => i.Name == sourceProviderName);
         }
 
         public IDataProvider GetDataProvider(string providerName)
