@@ -58,6 +58,57 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             Parent = parent;
         }
 
+        /// <summary>
+        /// Main (core) transition method which wraps node transition logic by logging and next flow control
+        /// Generally used by DataMigration classes to construct transition flow
+        /// </summary>
+        internal TransitResult TransitCore(ValueTransitContext ctx)
+        {
+            if (ctx == null)
+                throw new ArgumentNullException(nameof(ctx));
+
+            TraceStart(ctx);
+
+            if (Break)
+                Debugger.Break();
+
+            object resultValue = null;
+            TransitContinuation continuation;
+            string message = "";
+            try
+            {
+                var result = Transit(ctx);
+                resultValue = result.Value;
+                continuation = result.Continuation;
+                message = result.Message;
+            }
+            catch (Exception ex)
+            {
+                continuation = this.OnError;
+                Migrator.Current.Tracer.TraceWarning(ex.ToString(), this);
+            }
+
+            if (continuation == TransitContinuation.RaiseError)
+            {
+                message = $"Transition stopped, message: {message}";
+                continuation = Migrator.Current.Tracer.TraceError(message, this, ctx);
+            }
+
+            ctx.SetCurrentValue(this.Name, resultValue);
+
+            TraceEnd(ctx);
+
+            return new TransitResult(continuation, ctx.TransitValue, message);
+        }
+
+        /// <summary>
+        /// Method to override in client's code for custom transitions. Allow to use custom logic inside own transitino nodes
+        /// inherited from TransitionNode class
+        /// Don't use this method inside XQ.DataMigration tool - use
+        /// <code>TransitCore</code> instead
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         public abstract TransitResult Transit(ValueTransitContext ctx);
 
         protected virtual void TraceStart(ValueTransitContext ctx, string attributes = "")
@@ -99,45 +150,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         protected virtual void TraceLine(string message)
         {
             Migrator.Current.Tracer.TraceLine(message, this);
-        }
-
-        internal TransitResult TransitInternal(ValueTransitContext ctx)
-        {
-            if (ctx == null)
-                throw new ArgumentNullException(nameof(ctx));
-            
-            TraceStart(ctx);
-
-            if (Break)
-                Debugger.Break();
-
-            object resultValue = null;
-            TransitContinuation continuation;
-            string message = "";
-            try
-            {
-                var result = Transit(ctx);
-                resultValue = result.Value;
-                continuation = result.Continuation;
-                message = result.Message;
-            }
-            catch (Exception ex)
-            {
-                continuation = this.OnError;
-                Migrator.Current.Tracer.TraceWarning(ex.ToString(), this);
-            }
-
-            if (continuation == TransitContinuation.RaiseError)
-            {
-                message = $"Transition stopped, message: {message}";
-                continuation = Migrator.Current.Tracer.TraceError(message, this, ctx);
-            }
-
-            ctx.SetCurrentValue(this.Name, resultValue);
-
-            TraceEnd(ctx);
-
-            return new TransitResult(continuation, ctx.TransitValue, message);
         }
 
         public bool HasParent(TransitionNode node)

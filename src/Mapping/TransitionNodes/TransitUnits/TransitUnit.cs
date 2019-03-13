@@ -6,6 +6,10 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
+
+    /// <summary>
+    /// Transit unit is a node which can't contains nesting elements
+    /// </summary>
     public class TransitUnit: TransitionNode
     {
         [XmlAttribute]

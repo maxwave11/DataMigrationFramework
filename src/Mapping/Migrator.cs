@@ -32,7 +32,7 @@ namespace XQ.DataMigration.Mapping
 
             var childTransition = MapConfig.ChildTransitions.FirstOrDefault();
             var ctx = new ValueTransitContext(null, null, null, null);
-            MapConfig.ChildTransitions?.ForEach(i => i.TransitInternal(ctx));
+            MapConfig.ChildTransitions?.ForEach(i => i.TransitCore(ctx));
 
             stopwatch.Stop();
             Tracer.TraceLine($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");

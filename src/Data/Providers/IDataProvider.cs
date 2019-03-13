@@ -8,7 +8,7 @@ namespace XQ.DataMigration.Data
     /// Common interface for any data provider which provides access to 
     /// particular DataSet of this provider
     /// </summary>
-    public interface IDataProvider : IDisposable, ITransitionNode
+    public interface IDataProvider : IDisposable
     {
         string Name { get; set; }
         bool IsDefault { get; set; }

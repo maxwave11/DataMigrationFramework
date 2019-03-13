@@ -49,7 +49,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var srcDataSet = (IEnumerable<IValuesObject>)DataProvider.TransitInternal(ctx).Value;
+            var srcDataSet = (IEnumerable<IValuesObject>)DataProvider.TransitCore(ctx).Value;
 
             if (srcDataSet == null)
                  return new TransitResult(null);

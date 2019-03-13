@@ -7,7 +7,7 @@ using XQ.DataMigration.Utils;
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
     /// <summary>
-    /// Transit unit which writes value from ValueTransitContext to target object
+    /// Transit unit which writes incoming value from ValueTransitContext to target object
     /// If Expression is just a property name -> unit writes value to appropriate property of target object
     /// If Expression is Migration expression -> unit exeuctes this expression
     /// </summary>

@@ -9,6 +9,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
     {
         /// <summary>
         /// List of nested transitions. 
+        /// NOTE: generic parameter should be a class (not interface) since it will be not deserialized from XML
         /// </summary>
         public List<TransitionNode> ChildTransitions { get; set; }
 
@@ -50,7 +51,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
         protected virtual TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
-            var childTransitResult =  childNode.TransitInternal(ctx);
+            var childTransitResult =  childNode.TransitCore(ctx);
             childTransitResult = EndTransitChild(childTransitResult, ctx);
             return childTransitResult;
         }

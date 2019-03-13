@@ -146,7 +146,7 @@ namespace XQ.DataMigration.MapConfig
                 return sourceObject.Key;
 
             var ctx = new ValueTransitContext(sourceObject, null, sourceObject, _objectTransition);
-            var transitResult = SourceKeyTransition.TransitInternal(ctx);
+            var transitResult = SourceKeyTransition.TransitCore(ctx);
 
             if (transitResult.Continuation == TransitContinuation.Continue)
                 sourceObject.Key = transitResult.Value?.ToString();
@@ -166,7 +166,7 @@ namespace XQ.DataMigration.MapConfig
                 return targetObject.Key;
 
             var ctx = new ValueTransitContext(targetObject, null, targetObject, _objectTransition);
-            var transitResult = TargetKeyTransition.TransitInternal(ctx);
+            var transitResult = TargetKeyTransition.TransitCore(ctx);
             targetObject.Key = transitResult.Value?.ToString();
 
             return targetObject.Key;
