@@ -83,7 +83,7 @@
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ForEachTransition.cs" />
     <Compile Include="Data\Providers\ObjectSourceProvider.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
-    <Compile Include="Mapping\TransitionNodes\TransitUnits\ConditionUnit.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\Condition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\CustomTransitionNode.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceStepUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceTransitUnit.cs" />
