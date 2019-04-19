@@ -6,6 +6,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     public class GlobalObjectTransition: ObjectTransition
     {
         public static IValuesObject GlobalObject { get; private set; } = new ValuesObject();
+        public static IValuesObject CustomObject { get; set; } = new ValuesObject();
 
         public override TransitResult Transit(ValueTransitContext transitContext)
         {

@@ -88,6 +88,7 @@ namespace XQ.DataMigration.Mapping.Expressions
                 nameof(ExpressionContext.VALUE),
                 nameof(ExpressionContext.TARGET),
                 nameof(ExpressionContext.VALUE),
+                nameof(ExpressionContext.CUSTOM),
                 nameof(ExpressionContext.GLOBAL),
                 $@"{nameof(ExpressionContext.HISTORY)}.*?\)"
             };

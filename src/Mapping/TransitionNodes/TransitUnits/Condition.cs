@@ -39,8 +39,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 throw new Exception($"Result of Expression execution in {nameof(Condition)} must be boolean");
 
             if (boolValue.Value == true)
+            {
+                if (ActionOnTrue != TransitContinuation.Continue)
+                    return new TransitResult(ActionOnTrue, null);
+
                 return base.Transit(ctx);
-           
+            }
+
             return new TransitResult(ctx);
         }
     }

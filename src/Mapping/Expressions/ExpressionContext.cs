@@ -19,6 +19,8 @@ namespace XQ.DataMigration.Mapping.Expressions
         public IValuesObject TARGET => _ctx.Target;
         public object VALUE => _ctx.TransitValue;
         public IValuesObject GLOBAL => GlobalObjectTransition.GlobalObject;
+        //object for temporary storing any IValuesObject during migration whic avalilable during whole migration process
+        public IValuesObject CUSTOM { get => GlobalObjectTransition.CustomObject; set => GlobalObjectTransition.CustomObject = value; }
         public ObjectTransition THIS => _ctx.ObjectTransition;        
         private readonly ValueTransitContext _ctx;
 
