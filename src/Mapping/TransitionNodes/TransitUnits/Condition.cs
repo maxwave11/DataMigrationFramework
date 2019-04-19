@@ -46,7 +46,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 return base.Transit(ctx);
             }
 
-            return new TransitResult(ctx);
+            return new TransitResult(ctx.TransitValue);
         }
     }
 }
