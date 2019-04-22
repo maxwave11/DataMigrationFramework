@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Utils;
@@ -12,7 +11,10 @@ namespace XQ.DataMigration.Data
         public string DBPath { get; set; }
 
         [XmlAttribute]
-        public string DefaultDataSetId { get; set; }
+        public string DefaultQuery { get; set; }
+
+        [XmlAttribute]
+        public int HeaderRowNumber { get; set; } = 0;
 
         [XmlAttribute]
         public string Name { get; set; }
@@ -27,9 +29,9 @@ namespace XQ.DataMigration.Data
 
         public IDataSet GetDataSet(string providerQuery)
         {
-            var path = DBPath + "\\" + (providerQuery.IsNotEmpty() ? providerQuery : DefaultDataSetId);
+            var path = DBPath + "\\" + (providerQuery.IsNotEmpty() ? providerQuery : DefaultQuery);
 
-            return new ExcelDataSet(path);
+            return new ExcelDataSet(path, HeaderRowNumber);
         }
 
         public TransitResult Transit(ValueTransitContext ctx)

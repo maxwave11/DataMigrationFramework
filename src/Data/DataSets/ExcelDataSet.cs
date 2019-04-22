@@ -11,24 +11,29 @@ namespace XQ.DataMigration.Data
     public class ExcelDataSet : IDataSet
     {
         public string DataSetId { get; }
-        
-        public ExcelDataSet(string fileName)
+        public int HeaderRowNumber { get; }
+
+        public ExcelDataSet(string fileName, int headerRowNumber)
         {
             DataSetId = fileName;
+            HeaderRowNumber = headerRowNumber;
         }
 
         public IEnumerator<IValuesObject> GetEnumerator()
         {
             using (var stream = File.Open(DataSetId, FileMode.Open, FileAccess.Read))
             {
-                var options = new ExcelReaderConfiguration();
-                
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     string[] headerRow = null;
-
+                    int rowCounter = 0;
                     while (reader.Read())
                     {
+                        rowCounter++;
+
+                        if (rowCounter < HeaderRowNumber)
+                            continue;
+                       
                         //init header row
                         if (headerRow == null)
                         {

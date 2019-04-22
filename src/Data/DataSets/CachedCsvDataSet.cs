@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CsvHelper;
-using XQ.DataMigration.Data;
 
 namespace XQ.DataMigration.Data
 {
@@ -14,7 +13,6 @@ namespace XQ.DataMigration.Data
 
         private TextReader _txtReader;
         private CsvReader _csvReader;
-        private bool _isInitialized;
 
         public CachedCsvDataSet(string fileName, string delimiter) : base(fileName)
         {
@@ -57,7 +55,6 @@ namespace XQ.DataMigration.Data
             this._csvReader = new CsvReader(_txtReader);
             this._csvReader.Configuration.Delimiter = _delimiter;
             this._csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
-            _isInitialized = true;
         }
     }
 }
