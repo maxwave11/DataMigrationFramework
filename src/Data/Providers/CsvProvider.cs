@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Utils;
@@ -43,11 +42,6 @@ namespace XQ.DataMigration.Data
                 _dataSets[dataSetId] = new CachedCsvDataSet(DBPath + "\\" + (dataSetId.IsNotEmpty() ? dataSetId : DefaultDataSetId), Delimiter);
 
             return _dataSets[dataSetId];
-        }
-
-        public void Dispose()
-        {
-            throw new System.NotImplementedException();
         }
 
         public override TransitResult Transit(ValueTransitContext ctx)
