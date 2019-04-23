@@ -1,4 +1,4 @@
-﻿using ExcelDataReader;
+using ExcelDataReader;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,8 +43,17 @@ namespace XQ.DataMigration.Data
                             continue;
                         }
 
-                        var valuesObject = new ValuesObject();
+                        //skip empty rows
+                        bool isEmptyRow = true;
+                        for (int i = 0; i < reader.FieldCount; i++)
+                            isEmptyRow &= string.IsNullOrWhiteSpace(reader.GetValue(i)?.ToString());
 
+                        if (isEmptyRow)
+                            continue;
+
+
+                        //fill VlauesObject from row values
+                        var valuesObject = new ValuesObject();
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
                             if (headerRow[i].IsEmpty())
