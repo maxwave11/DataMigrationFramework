@@ -22,6 +22,10 @@ namespace XQ.DataMigration.MapConfig
         public MapConfigReader(string fileName)
         {
             _fileStream = new FileStream(fileName, FileMode.Open);
+
+            //register default commonly used providers of source data
+            RegisterSourceProvider(typeof(CsvProvider));
+            RegisterSourceProvider(typeof(ExcelProvider));
         }
 
         public MapConfigReader(Stream fileStream)
