@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using XQ.DataMigration.Mapping.TransitionNodes;
 
 namespace XQ.DataMigration.Data
 {
@@ -12,7 +11,6 @@ namespace XQ.DataMigration.Data
         string Name { get; set; }
         bool IsDefault { get; set; }
         string Query { get; set; }
-        void Initialize();
-        IDataSet GetDataSet(string providerQuery);
+        IEnumerable<IValuesObject> GetDataSet(string providerQuery);
     }
 }

@@ -23,7 +23,6 @@ namespace XQ.DataMigration.MapConfig
 
         internal void Initialize()
         { 
-            DataProviders.ForEach(p=>((IDataProvider)p).Initialize());
             ChildTransitions?.ForEach(i => i.Initialize(null));
         }
 

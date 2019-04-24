@@ -27,7 +27,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         public string LookupKeyExpr { get; set; }
 
         [XmlAttribute]
-        public string LookupAlternativeExpr { get; set; }
+        //Don't use this property anymore (fix you migration logic)
+        public string LookupAlternativeExpr { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
         [XmlAttribute]
         //имя поля ссылочного объекта, из которого подставится значение (вместо стандартного EWKey ключа этого ссылочного объекта)
@@ -64,7 +65,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             {
                 LookupDataSetId = LookupDataSetId,
                 LookupKeyExpr = LookupKeyExpr,
-                LookupAlternativeExpr = LookupAlternativeExpr,
                 ProviderName = ProviderName,
                 OnNotFound = OnNotFound,
                 TraceWarnings = this.TraceWarnings

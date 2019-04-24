@@ -1,5 +1,9 @@
-﻿using System;
+﻿using CsvHelper;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Xml.Serialization;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
@@ -27,21 +31,34 @@ namespace XQ.DataMigration.Data
         [XmlAttribute]
         public bool IsDefault { get; set; }
 
-        public void Initialize()
+        public IEnumerable<IValuesObject> GetDataSet(string dataSetId)
         {
-        }
+            var filePath = DBPath + "\\" + (dataSetId.IsNotEmpty() ? dataSetId : DefaultDataSetId);
+            var txtReader = new StreamReader(filePath, Encoding.GetEncoding("Windows-1252"));
+            var csvReader = new CsvReader(txtReader);
+            csvReader.Configuration.Delimiter = Delimiter;
+            csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
+            csvReader.Configuration.TrimFields = true;
+            csvReader.Configuration.IgnoreBlankLines = true;
 
-        private readonly Dictionary<string, IDataSet> _dataSets = new Dictionary<string, IDataSet>();
+            using (txtReader)
+            {
+                using (csvReader)
+                {
+                    while (csvReader.Read())
+                    {
+                        ValuesObject result = new ValuesObject();
+                        csvReader.FieldHeaders.ToList().ForEach(i =>
+                        {
+                            if (i.IsNotEmpty())
+                                result.SetValue(i, csvReader[i]);
+                        });
 
-        public IDataSet GetDataSet(string dataSetId)
-        {
-            if (!CacheData)
-                return new CsvDataSet(DBPath + "\\" + (dataSetId.IsNotEmpty() ? dataSetId : DefaultDataSetId), Delimiter);
+                        yield return result;
+                    }
+                }
+            }
 
-            if (!_dataSets.ContainsKey(dataSetId))
-                _dataSets[dataSetId] = new CachedCsvDataSet(DBPath + "\\" + (dataSetId.IsNotEmpty() ? dataSetId : DefaultDataSetId), Delimiter);
-
-            return _dataSets[dataSetId];
         }
 
         public override TransitResult Transit(ValueTransitContext ctx)

@@ -24,10 +24,6 @@ namespace XQ.DataMigration.Data
             throw new NotImplementedException();
         }
 
-        public IDataSet GetDataSet(string providerQuery)
-        {
-            throw new NotImplementedException();
-        }
 
         public override void Initialize(TransitionNode parent)
         {
@@ -100,7 +96,7 @@ namespace XQ.DataMigration.Data
                 return source.FieldNames.Where(f => regex.IsMatch(f.Trim())).ToArray();
             }
 
-        public void Initialize()
+        public IEnumerable<IValuesObject> GetDataSet(string providerQuery)
         {
             throw new NotImplementedException();
         }

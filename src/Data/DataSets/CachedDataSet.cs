@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public abstract class CachedDataSet : IDataSet
+    public abstract class CachedDataSet: IEnumerable<IValuesObject>
     {
         public string DataSetId { get; }
         private readonly Dictionary<string, IValuesObject> _objectsCache = new Dictionary<string, IValuesObject>();
@@ -28,21 +29,17 @@ namespace XQ.DataMigration.Data
             return cachedObject;
         }
 
-        public IValuesObject GetObjectByExpression(string valueToFind, Func<IValuesObject, string> evaluateExpression, Func<IValuesObject, string> evaluateKey)
-        {
-            if (!_objectsCache.Any())
-                LoadObjectsToCache(evaluateKey);
-
-            var cachedObject =
-                _objectsCache.Values.FirstOrDefault(
-                    i => evaluateExpression(i).ToUpper().Trim() == valueToFind.ToUpper().Trim());
-
-            return cachedObject;
-        }
-
         private void LoadObjectsToCache(Func<IValuesObject, string> evaluateKey)
         {
+            Migrator.Current.Tracer.TraceLine($"Loading objects ({ DataSetId })...");
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var targetObjects = this.ToList();
+            stopwatch.Stop();
+
+            Migrator.Current.Tracer.TraceLine($"Loading completed in { stopwatch.Elapsed.Seconds } sec");
+            
             targetObjects.ForEach(o => PutObjectToCache(o, evaluateKey));
         }
 
@@ -67,12 +64,11 @@ namespace XQ.DataMigration.Data
             _objectsCache.Remove(objectkey.ToUpper().Trim());
         }
 
+        public abstract IEnumerator<IValuesObject> GetEnumerator();
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
-        public abstract IEnumerator<IValuesObject> GetEnumerator();
-        public abstract IValuesObject CreateObject();
     }
 }

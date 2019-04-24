@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
@@ -40,7 +41,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         /// But anyway <c>LookupKeyExpr</c> is required for correct objects caching.
         /// WARNING: Searching an object by this way is pretty slow! Use this attribute only if you have't data to find object by its key
         /// </summary>
-        public string LookupAlternativeExpr { get; set; }
+        /// Don't use this property anymore (fix you migration logic)
+        public string LookupAlternativeExpr { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
         [XmlAttribute]
         /// <summary>
@@ -105,15 +107,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 ? mapConfig.GetDefaultTargetProvider()
                 : mapConfig.GetDataProvider(ProviderName);
 
-            var queryToSource = LookupDataSetId.StartsWith("{")
+            string queryToSource = LookupDataSetId.StartsWith("{")
                                         ? ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx)
                                         : LookupDataSetId;
 
-            var dataSet = provider.GetDataSet(queryToSource);
-
-            var lookupObject = LookupAlternativeExpr.IsEmpty()
-                ? dataSet.GetObjectByKey(valueToFind, EvaluateObjectKey)
-                : dataSet.GetObjectByExpression(valueToFind, EvaluateAlternativeExpression, EvaluateObjectKey);
+            IValuesObject lookupObject = null;
+            if (provider is ITargetProvider targetProvider)
+            {
+                lookupObject = targetProvider.GetObjectByKey(queryToSource, valueToFind, EvaluateObjectKey);
+            }
+            else
+            {
+                var data = provider.GetDataSet(queryToSource);
+                lookupObject = data.SingleOrDefault(i => EvaluateObjectKey(i).ToUpper().Trim() == valueToFind.ToUpper().Trim());
+            }
 
             return lookupObject;
         }
@@ -122,12 +129,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         {
             var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, _currentObjectTransition);
             return ExpressionEvaluator.EvaluateString(LookupKeyExpr, ctx);
-        }
-
-        private string EvaluateAlternativeExpression(IValuesObject lookupObject)
-        {
-            var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, _currentObjectTransition);
-            return ExpressionEvaluator.EvaluateString(LookupAlternativeExpr, ctx);
         }
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")

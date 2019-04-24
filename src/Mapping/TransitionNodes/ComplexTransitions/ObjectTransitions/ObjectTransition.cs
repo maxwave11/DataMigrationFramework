@@ -21,6 +21,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public string TargetDataSetId { get; set; }
 
         /// <summary>
+        /// Query to limit objects fetching size
+        /// </summary>
+        [XmlAttribute]
+        public string QueryToTarget { get; set; }
+
+        /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value
         /// </summary>
         /// TODO move it to separate SaveTransition
@@ -79,11 +85,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             if (result.Continuation == TransitContinuation.SkipObject && ctx.Target?.IsNew == true)
             {
                 //If object just created and skipped by migration logic - need to remove it from cache
-                //becaus it's invalid and we must prevent any chance to reference to this objects by any keys
-                //If object is not new, it means that it already saved and passed/valid object
+                //becaus it's invalid and must be removed from cache to avoid any referencing to this object
+                //by any migration logic (lookups, key ytansitions, etc.)
+                //If object is not new, it means that it's already saved and passed by migration validation
                 var provider = Migrator.Current.MapConfig.GetDefaultTargetProvider();
-                var dataSet = provider.GetDataSet(TargetDataSetId);
-                dataSet.RemoveObjectFromCache(ctx.Target.Key);
+                provider.RemoveObjectFromCache(TargetDataSetId, ctx.Target.Key);
             }
             if (SaveCount > 0)
             {

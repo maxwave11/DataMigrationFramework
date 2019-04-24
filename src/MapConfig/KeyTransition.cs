@@ -176,7 +176,8 @@ namespace XQ.DataMigration.MapConfig
         {
             var provider = Migrator.Current.MapConfig.GetDefaultTargetProvider();
 
-            var existedObject = provider.GetDataSet(_objectTransition.TargetDataSetId).GetObjectByKey(key, GetKeyFromTarget);
+            var existedObject = provider.GetObjectByKey(_objectTransition.TargetDataSetId, key, GetKeyFromTarget);
+
 
             if (_objectTransition.TransitMode == ObjectTransitMode.OnlyExistedObjects)
             {
@@ -192,9 +193,7 @@ namespace XQ.DataMigration.MapConfig
             if (existedObject != null)
                 return existedObject;
 
-            var newObject = provider.CreateObject(_objectTransition.TargetDataSetId);
-            newObject.Key = key;
-            provider.GetDataSet(_objectTransition.TargetDataSetId).PutObjectToCache(newObject, key);
+            var newObject = provider.CreateObject(_objectTransition.TargetDataSetId, key);
             return newObject;
         }
     }
