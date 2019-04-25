@@ -52,6 +52,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public string ProviderName { get; set; }
 
         /// <summary>
+        /// Query to limit amout of objects for fetching
+        /// </summary>
+        [XmlAttribute]
+        public string QueryToTarget { get; set; }
+
+        /// <summary>
         /// Specifies migration behavior in case when lookup object wasn't found
         /// </summary>
         [XmlAttribute]
@@ -114,7 +120,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             IValuesObject lookupObject = null;
             if (provider is ITargetProvider targetProvider)
             {
-                lookupObject = targetProvider.GetObjectByKey(queryToSource, valueToFind, EvaluateObjectKey);
+
+                if (QueryToTarget?.Contains('{') == true)
+                    QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
+
+                lookupObject = targetProvider.GetObjectByKey(queryToSource, valueToFind, EvaluateObjectKey, QueryToTarget);
             }
             else
             {

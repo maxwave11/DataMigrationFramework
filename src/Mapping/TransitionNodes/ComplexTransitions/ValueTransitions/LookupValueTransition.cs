@@ -22,6 +22,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         //id категории, в которой находится элемент, на который ссылается значение этогополя (для ссылочных полей)
         public string LookupDataSetId { get; set; }
 
+        /// <summary>
+        /// Query to limit amout of objects for fetching
+        /// </summary>
+        [XmlAttribute]
+        public string QueryToTarget { get; set; }
+
         [XmlAttribute]
         //имя ключевого поля в категории, в которой находится элемент, на который ссылается значение этогополя (для ссылочных полей)
         public string LookupKeyExpr { get; set; }
@@ -67,7 +73,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
                 LookupKeyExpr = LookupKeyExpr,
                 ProviderName = ProviderName,
                 OnNotFound = OnNotFound,
-                TraceWarnings = this.TraceWarnings
+                QueryToTarget = QueryToTarget,
+                TraceWarnings = TraceWarnings
             });
 
             if (Return.IsNotEmpty())

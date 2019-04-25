@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,11 +20,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         [XmlAttribute]
         public string TargetDataSetId { get; set; }
 
-        /// <summary>
-        /// Query to limit objects fetching size
-        /// </summary>
-        [XmlAttribute]
-        public string QueryToTarget { get; set; }
+       
 
         /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value

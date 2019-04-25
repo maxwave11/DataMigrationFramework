@@ -74,8 +74,13 @@ namespace XQ.DataMigration.Mapping.Expressions
             if(objTransitionType != null)
                 newExpression = newExpression.Replace(nameof(ExpressionContext.THIS), $"(({objTransitionType.Name}){nameof(ExpressionContext.THIS)})");
 
-            //convertion  'some text' => "some text"
-            newExpression = newExpression.Replace('\'', '"');
+
+            //quotes conversion: 
+            //'some text' => "some text"
+            //''some text'' => 'some text'
+            newExpression = newExpression.Replace("''", "~~~");
+            newExpression = newExpression.Replace("'", "\"");
+            newExpression = newExpression.Replace("~~~", "'");
 
             //replace  curly braces to "#open" and "#close" to avoid problems with parsing string formats
             //which can contains curly braces

@@ -38,6 +38,12 @@ namespace XQ.DataMigration.MapConfig
         public string TargetKey { get; set; }
 
         /// <summary>
+        /// Query to limit amout of objects for fetching
+        /// </summary>
+        [XmlElement]
+        public string QueryToTarget { get; set; }
+
+        /// <summary>
         /// Defines a set of transitions which must get a unique migration key for source object of transition. Use this attribute 
         /// if key definition is complex and SourceKey attribute is not enough
         /// </summary>
@@ -121,6 +127,10 @@ namespace XQ.DataMigration.MapConfig
                 TraceLine("Source object key is empty. Skipping object.");
                 return new TransitResult(TransitContinuation.SkipObject, null);
             }
+
+            if (QueryToTarget?.Contains('{') == true)
+                QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
+
             var target = GetTargetObject(objectKey);
 
             if (target == null)
@@ -176,7 +186,7 @@ namespace XQ.DataMigration.MapConfig
         {
             var provider = Migrator.Current.MapConfig.GetDefaultTargetProvider();
 
-            var existedObject = provider.GetObjectByKey(_objectTransition.TargetDataSetId, key, GetKeyFromTarget);
+            var existedObject = provider.GetObjectByKey(_objectTransition.TargetDataSetId, key, GetKeyFromTarget, QueryToTarget);
 
 
             if (_objectTransition.TransitMode == ObjectTransitMode.OnlyExistedObjects)

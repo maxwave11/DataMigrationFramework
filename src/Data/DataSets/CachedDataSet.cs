@@ -10,12 +10,12 @@ namespace XQ.DataMigration.Data
 {
     public abstract class CachedDataSet: IEnumerable<IValuesObject>
     {
-        public string DataSetId { get; }
+        public string TargetType { get; }
         private readonly Dictionary<string, IValuesObject> _objectsCache = new Dictionary<string, IValuesObject>();
 
-        protected CachedDataSet(string dataSetId)
+        protected CachedDataSet(string targetType)
         {
-            DataSetId = dataSetId;
+            TargetType = targetType;
         }
 
         public IValuesObject GetObjectByKey(string objectKey, Func<IValuesObject, string> evaluateKey)
@@ -31,14 +31,14 @@ namespace XQ.DataMigration.Data
 
         private void LoadObjectsToCache(Func<IValuesObject, string> evaluateKey)
         {
-            Migrator.Current.Tracer.TraceLine($"Loading objects ({ DataSetId })...");
+            Migrator.Current.Tracer.TraceLine($"Loading objects ({ TargetType })...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var targetObjects = this.ToList();
             stopwatch.Stop();
 
-            Migrator.Current.Tracer.TraceLine($"Loading completed in { stopwatch.Elapsed.Seconds } sec");
+            Migrator.Current.Tracer.TraceLine($"Loading {targetObjects.Count} objects completed in { stopwatch.Elapsed.Seconds } sec");
             
             targetObjects.ForEach(o => PutObjectToCache(o, evaluateKey));
         }

@@ -28,11 +28,17 @@ namespace XQ.DataMigration.MapConfig
 
         public ISourceProvider GetDefaultSourceProvider()
         {
+            if (!DataProviders.OfType<ISourceProvider>().Any(i => i.IsDefault))
+                throw new InvalidOperationException("Can't find default source data provider");
+
             return DataProviders.OfType<ISourceProvider>().Single(i => i.IsDefault);
         }
 
         public ITargetProvider GetDefaultTargetProvider()
         {
+            if (!DataProviders.OfType<ITargetProvider>().Any(i => i.IsDefault))
+                throw new InvalidOperationException("Can't find default target data provider");
+
             return DataProviders.OfType<ITargetProvider>().Single(i => i.IsDefault);
         }
 

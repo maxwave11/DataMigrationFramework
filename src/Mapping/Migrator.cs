@@ -30,7 +30,6 @@ namespace XQ.DataMigration.Mapping
 
             Tracer.TraceLine("====== Migration start ======");
 
-            var childTransition = MapConfig.ChildTransitions.FirstOrDefault();
             var ctx = new ValueTransitContext(null, null, null, null);
             MapConfig.ChildTransitions?.ForEach(i => i.TransitCore(ctx));
 
