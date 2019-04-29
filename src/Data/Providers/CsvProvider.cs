@@ -23,9 +23,6 @@ namespace XQ.DataMigration.Data
         public string Delimiter { get; set; } = ";";
 
         [XmlAttribute]
-        public bool CacheData { get; set; }
-
-        [XmlAttribute]
         public string Query { get; set; }
 
         [XmlAttribute]
