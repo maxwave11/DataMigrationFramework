@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class ExcelProvider : ISourceProvider
+    public class ExcelProvider : TransitionNode, ISourceProvider
     {
         [XmlAttribute]
         public string DBPath { get; set; }
@@ -20,8 +21,7 @@ namespace XQ.DataMigration.Data
         public int HeaderRowNumber { get; set; } = 0;
 
         [XmlAttribute]
-        public string Name { get; set; }
-        public string Query { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Query { get; set; }
 
         [XmlAttribute]
         public bool IsDefault { get; set; }
@@ -77,9 +77,11 @@ namespace XQ.DataMigration.Data
             }
         }
 
-        public TransitResult Transit(ValueTransitContext ctx)
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
-            throw new NotImplementedException();
+            var actualQuery = Query.Contains("{") ? (string)ExpressionEvaluator.Evaluate(Query, ctx) : Query;
+            DBPath = DBPath.Contains("{") ? (string)ExpressionEvaluator.Evaluate(DBPath, ctx) : DBPath;
+            return new TransitResult(GetDataSet(actualQuery));
         }
     }
 }

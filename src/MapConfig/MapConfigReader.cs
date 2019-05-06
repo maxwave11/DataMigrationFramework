@@ -139,6 +139,7 @@ namespace XQ.DataMigration.MapConfig
 
             var nestedProviderTypes = new XmlAttributes();
             nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(CsvProvider), typeof(CsvProvider)));
+            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ExcelProvider), typeof(ExcelProvider)));
             nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ObjectSourceProvider), typeof(ObjectSourceProvider)));
 
             attribOverrides.Add(typeof(ForEachTransition), nameof(ForEachTransition.DataProvider), nestedProviderTypes);
