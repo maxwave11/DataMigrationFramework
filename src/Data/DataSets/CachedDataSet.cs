@@ -38,9 +38,17 @@ namespace XQ.DataMigration.Data
             var targetObjects = this.ToList();
             stopwatch.Stop();
 
-            Migrator.Current.Tracer.TraceLine($"Loading {targetObjects.Count} objects completed in { stopwatch.Elapsed.Seconds } sec");
-            
+            Migrator.Current.Tracer.TraceLine($"Loading {targetObjects.Count} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
+
+            Migrator.Current.Tracer.TraceLine($"Put objects ({ TargetType }) to cache...");
+
+            stopwatch.Reset();
+            stopwatch.Start();
+
             targetObjects.ForEach(o => PutObjectToCache(o, evaluateKey));
+            stopwatch.Stop();
+
+            Migrator.Current.Tracer.TraceLine($"Put objects ({ TargetType }) to cache completed in { stopwatch.Elapsed.TotalSeconds } sec");
         }
 
         public void PutObjectToCache(IValuesObject tObject, Func<IValuesObject, string> evaluateKey)
