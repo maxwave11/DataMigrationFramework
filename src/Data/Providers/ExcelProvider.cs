@@ -29,6 +29,7 @@ namespace XQ.DataMigration.Data
         [XmlAttribute]
         public int DataStartRowNumber { get; set; } = 2;
 
+        [XmlAttribute]
         public string Query { get; set; }
 
         [XmlAttribute]
