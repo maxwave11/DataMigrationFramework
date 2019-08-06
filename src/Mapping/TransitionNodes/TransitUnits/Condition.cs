@@ -48,5 +48,21 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             return new TransitResult(ctx.TransitValue);
         }
+
+        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
+        {
+            attributes = $"Expression=\"{Expression}\"";
+            base.TraceStart(ctx, attributes);
+        }
+
+        protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+        {
+            //Reset TransitValue by Source object before any children begins inside ObjectTrastition
+            //Notice: if you want to pass TransitValue between transitions you have to place your
+            //'connected' transition nodes inside ValueTransition
+            ctx.SetCurrentValue(childNode.Name, ctx.Source);
+
+            return base.TransitChild(childNode, ctx);
+        }
     }
 }
