@@ -33,8 +33,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         public string LookupKeyExpr { get; set; }
 
         [XmlAttribute]
-        //Don't use this property anymore (fix you migration logic)
-        public string LookupAlternativeExpr { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        //Use this propery to try to find object not by key but by other unique sequence. 
+        //NOTE:Currently used in Avant ppe importing.
+        public string LookupAlternativeExpr { get; set; }
+
+        [XmlAttribute]
+        //Set this poperty to true to allow search in data sets where multiple objects can have same search lookup expression
+        //NOTE: used only when LookupAlternativeExpr is used
+        public bool FindFirstOccurence { get; set; }
 
         [XmlAttribute]
         //имя поля ссылочного объекта, из которого подставится значение (вместо стандартного EWKey ключа этого ссылочного объекта)
@@ -59,8 +65,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             base.InsertCustomTransitions(userDefinedTransitions);
 
-            if (LookupDataSetId.IsEmpty() || LookupKeyExpr.IsEmpty())
-                throw new Exception($"{ nameof(LookupDataSetId)} and {nameof(LookupKeyExpr)} fields of {nameof(LookupValueTransition)} is required");
+            if (LookupDataSetId.IsEmpty())
+                throw new Exception($"{ nameof(LookupDataSetId)}  is required");
+
+            if (LookupKeyExpr.IsEmpty() && LookupAlternativeExpr.IsEmpty())
+                throw new Exception($"Field {nameof(LookupKeyExpr)} or {nameof(LookupAlternativeExpr)}  should be filled to search lookup object");
 
             var customLookupTransitions = new List<TransitionNode>();
 
@@ -74,7 +83,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
                 ProviderName = ProviderName,
                 OnNotFound = OnNotFound,
                 QueryToTarget = QueryToTarget,
-                TraceWarnings = TraceWarnings
+                TraceWarnings = TraceWarnings,
+                LookupAlternativeExpr = LookupAlternativeExpr,
+                FindFirstOccurence = FindFirstOccurence
             });
 
             if (Return.IsNotEmpty())
