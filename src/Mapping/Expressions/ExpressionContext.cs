@@ -59,7 +59,7 @@ namespace XQ.DataMigration.Mapping.Expressions
             if (obj is ValuesObject)
                 return ((ValuesObject)obj)[fieldName];
 
-            return obj.GetType().GetProperty(fieldName).GetValue(obj);
+            return FastReflection.GetValue(obj, fieldName);
         }
         public bool IsNotEmpty(string str)
         {
