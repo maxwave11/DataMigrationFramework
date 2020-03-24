@@ -81,10 +81,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            var queryToSource =  QueryToSource.StartsWith("{")
-                ? ExpressionEvaluator.EvaluateString(QueryToSource, ctx)
-                : QueryToSource;
-
+            var queryToSource = ExpressionEvaluator.EvaluateString(QueryToSource, ctx);
+                
             attributes = $"{nameof(Name)}=\"{Name}\" {nameof(QueryToSource)}=\"{queryToSource}\"";
             base.TraceStart(ctx, attributes);
         }
@@ -94,9 +92,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             try
             {
                 //need to fix this later and recognize expression by more smart way
-                var queryToSource = QueryToSource.StartsWith("{")
-                                        ? ExpressionEvaluator.EvaluateString(QueryToSource, ctx)
-                                        : QueryToSource;
+                var queryToSource = ExpressionEvaluator.EvaluateString(QueryToSource, ctx);
 
                 if (FetchMode == FetchMode.SourceObject)
                     return ((IValueObjectsCollecion)ctx.Source).GetObjects(queryToSource);

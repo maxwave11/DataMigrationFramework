@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Collections.Generic;
 using XQ.DataMigration.Mapping.Logic;
@@ -20,7 +21,11 @@ namespace XQ.DataMigration.Mapping.Expressions
             try
             {
                 var exprContext = new ExpressionContext(ctx);
-                var value = compiledFunction(exprContext);
+                var task = compiledFunction(exprContext);
+                if (!task.IsCompleted)
+                    throw new Exception("TASK NOT COMPLETED!!! ALARM!");
+                
+                var value = task.Result;
                 return value;
             }
             catch (Exception ex)
@@ -29,7 +34,7 @@ namespace XQ.DataMigration.Mapping.Expressions
             }
         }
 
-        private Func<ExpressionContext, object> GetCompiledFunction(string migrationExpression, Type objTransitionType)
+        private ScriptRunner<object> GetCompiledFunction(string migrationExpression, Type objTransitionType)
         {
             Delegate result;
             if (!_compiledExpressionsCache.TryGetValue(migrationExpression, out result))
@@ -45,7 +50,7 @@ namespace XQ.DataMigration.Mapping.Expressions
                 }
             }
 
-            return (Func<ExpressionContext, object>)result;
+            return (ScriptRunner<object>)result;
         }
     }
 }

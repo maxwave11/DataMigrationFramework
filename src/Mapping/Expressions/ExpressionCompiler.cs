@@ -1,10 +1,10 @@
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using XQ.DataMigration.Data;
-using XQ.DataMigration.Utils;
-using Z.Expressions;
 
 namespace XQ.DataMigration.Mapping.Expressions
 {
@@ -21,19 +21,26 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// <param name="migrationExpression">Migration expression from mapping configuration</param>
         /// <param name="objTransitionType">The type of ObjectTransition from which expression should be executed</param>
         /// <returns>Compiled delegate</returns>
-        internal Func<ExpressionContext, object> Compile(string migrationExpression, Type objTransitionType) 
+        internal ScriptRunner<object> Compile(string migrationExpression, Type objTransitionType) 
         {
             var translatedExpression = TranslateExpression(migrationExpression, objTransitionType);
 
-            var evalContext = new EvalContext();
-            evalContext.RegisterType(typeof(IValuesObject));
+            var importTypes = new List<Type>();
+            importTypes.Add(typeof(IValuesObject));
+            importTypes.AddRange(_customTypes.ToArray());
+
             if (objTransitionType != null)
-                evalContext.RegisterType(objTransitionType.GetType());
+                importTypes.Add(objTransitionType);
 
-            evalContext.RegisterType(_customTypes.ToArray());
-
-            var result = evalContext.Compile<Func<ExpressionContext, object>>(translatedExpression);
-            return result;
+            var scriptOptions = ScriptOptions.Default
+                .WithReferences(importTypes.Select(t => t.Assembly))
+                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text"));
+               
+            var script = CSharpScript.Create<object>(translatedExpression, options: scriptOptions,  globalsType: typeof(ExpressionContext));
+            
+            ScriptRunner<object> runner = script.CreateDelegate();
+           
+            return runner;
         }
 
         /// <summary>
@@ -60,28 +67,28 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// <returns>C# expression string</returns>
         private string TranslateExpression(string migrationExpression, Type objTransitionType)
         {
-            //check that count of open and close brackets are equal
+            //check that count of open and close curly braces are equal
             if (migrationExpression.Count(c => c == '{') != migrationExpression.Count(c => c == '}'))
                 throw new Exception($"Expression {migrationExpression} is not valid. Check open and close brackets");
 
-            //if passed field name, convert it to expression {VALUE[fieldname]}
-            var newExpression = migrationExpression.Contains("{") ? migrationExpression : "{" + nameof(ExpressionContext.VALUE) + "[" + migrationExpression + "]}";
+            //if passed field name (plain string curly braces) => convert it to expression {VALUE[fieldname]}
+            var expression = migrationExpression.Contains("{") ? migrationExpression : "{" + nameof(ExpressionContext.VALUE) + "[" + migrationExpression + "]}";
 
             //cast to concrete ObjectTransition type
-            if(objTransitionType != null)
-                newExpression = newExpression.Replace(nameof(ExpressionContext.THIS), $"(({objTransitionType.Name}){nameof(ExpressionContext.THIS)})");
+            if (objTransitionType != null)
+                expression = expression.Replace(nameof(ExpressionContext.THIS), $"(({objTransitionType.Name}){nameof(ExpressionContext.THIS)})");
 
 
             //quotes conversion: 
             //'some text' => "some text"
             //''some text'' => 'some text'
-            newExpression = newExpression.Replace("''", "~~~");
-            newExpression = newExpression.Replace("'", "\"");
-            newExpression = newExpression.Replace("~~~", "'");
+            expression = expression.Replace("''", "~~~");//used in sql statements
+            expression = expression.Replace("'", "\"");
+            expression = expression.Replace("~~~", "'");
 
             //replace  curly braces to "#open" and "#close" to avoid problems with parsing string formats
             //which can contains curly braces
-            newExpression = newExpression.Replace("\\{", "#open").Replace("\\}", "#close");
+            //expression = expression.Replace("\\{", "#open").Replace("\\}", "#close");
 
             //convertion  SOME_EXPRESSION[fieldname] => ((IValuesObject)SOME_EXPRESSION)["fieldname"]
             var valuesObjectPrefixes = new[]
@@ -99,27 +106,18 @@ namespace XQ.DataMigration.Mapping.Expressions
             //Example with expression (query): 2. [$.parent[?(@.jll_propertyid)].jll_propertyid] => ["$.parent[?(@.jll_propertyid)].jll_propertyid"]
             var bracesRegex = @"\s*\[(\s*(([^\[\]]*)?(\[[^\[\]]{1,}\])?([^\[\]]*)?)*\s*)\]";
             var regexp = new Regex($@"({string.Join("|", valuesObjectPrefixes)}){bracesRegex}");
-            newExpression = regexp.Replace(newExpression, $"(({nameof(IValuesObject)})$1)[\"$2\"]");
+            expression = regexp.Replace(expression, $"(({nameof(IValuesObject)})$1)[\"$2\"]");
 
-            //determine if expression is string template 
-            regexp = new Regex(@"^\s*{([^}]*)}\s*$");
-            string retVal;
-            if (regexp.IsMatch(newExpression))
+
+            //determine type of exression. Double braces means that expression should return value as is witout string interpolation
+            if (expression.StartsWith("{{") && expression.EndsWith("}}"))
             {
-                retVal = regexp.Replace(newExpression, "$1");
+                return expression.Replace("{{","").Replace("}}","");
             }
-            else
-            {
-                //build templated string
-                regexp = new Regex(@"{(.*?[^\\])}");
-                newExpression = regexp.Replace(newExpression, "#splitStr($1)#split");
-                var reformatted = newExpression.Split(new [] { "#split"},StringSplitOptions.None)
-                                               .Where(i => i.IsNotEmpty())
-                                               .Select(str => str.StartsWith("Str(") ? str.Trim() : $"\"{ str }\"");
-                retVal = String.Join(" + ", reformatted);
-            }
-            retVal = retVal.Replace("#open", "{").Replace("#close", "}");
-            return retVal;
+
+            //convert plain string to C# string template
+            expression = "$\"" + expression + "\"";
+            return expression;
         }
 
         /// <summary>
