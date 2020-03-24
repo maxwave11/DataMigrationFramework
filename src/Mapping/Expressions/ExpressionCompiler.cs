@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ExpressionEvaluator;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Utils;
+using Z.Expressions;
 
 namespace XQ.DataMigration.Mapping.Expressions
 {
@@ -21,21 +21,18 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// <param name="migrationExpression">Migration expression from mapping configuration</param>
         /// <param name="objTransitionType">The type of ObjectTransition from which expression should be executed</param>
         /// <returns>Compiled delegate</returns>
-        internal Delegate Compile(string migrationExpression, Type objTransitionType) 
+        internal Func<ExpressionContext, object> Compile(string migrationExpression, Type objTransitionType) 
         {
             var translatedExpression = TranslateExpression(migrationExpression, objTransitionType);
-            var compiledExpr = new CompiledExpression(translatedExpression);
 
-            var typeRegistry = new TypeRegistry();
-            typeRegistry.RegisterDefaultTypes();
-            typeRegistry.RegisterType(nameof(IValuesObject), typeof(IValuesObject));
+            var evalContext = new EvalContext();
+            evalContext.RegisterType(typeof(IValuesObject));
+            if (objTransitionType != null)
+                evalContext.RegisterType(objTransitionType.GetType());
 
-            if(objTransitionType != null)
-                typeRegistry.RegisterType(objTransitionType.Name, objTransitionType);
+            evalContext.RegisterType(_customTypes.ToArray());
 
-            _customTypes.ForEach(type => typeRegistry.RegisterType(type.Name, type));
-            compiledExpr.TypeRegistry = typeRegistry;
-            var result = compiledExpr.ScopeCompile<ExpressionContext>();
+            var result = evalContext.Compile<Func<ExpressionContext, object>>(translatedExpression);
             return result;
         }
 
@@ -90,7 +87,6 @@ namespace XQ.DataMigration.Mapping.Expressions
             var valuesObjectPrefixes = new[]
             {
                 nameof(ExpressionContext.SRC),
-                nameof(ExpressionContext.VALUE),
                 nameof(ExpressionContext.TARGET),
                 nameof(ExpressionContext.VALUE),
                 nameof(ExpressionContext.CUSTOM),

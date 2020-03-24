@@ -1,16 +1,12 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
 using System.Xml.Serialization;
-using ExpressionEvaluator;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
-using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions

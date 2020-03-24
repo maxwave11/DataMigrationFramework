@@ -1,4 +1,5 @@
 using System;
+using System.Dynamic;
 using System.Globalization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping.Logic;
