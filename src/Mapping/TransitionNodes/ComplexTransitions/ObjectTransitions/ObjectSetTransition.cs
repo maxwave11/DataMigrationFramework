@@ -106,12 +106,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                     return ((IValueObjectsCollecion)ctx.Source).GetObjects(queryToSource);
                 
                 
-                var sourceProvider = Migrator.Current.MapConfig.GetDefaultSourceProvider();
+                var dataProvider = Migrator.Current.MapConfig.GetDefaultDataProvider();
 
                 if (SourceProviderName.IsNotEmpty())
-                    sourceProvider = Migrator.Current.MapConfig.GetSourceProvider(SourceProviderName);
+                    dataProvider = Migrator.Current.MapConfig.GetDataProvider(SourceProviderName);
 
-                return sourceProvider.GetDataSet(queryToSource);
+                return dataProvider.GetDataSet(queryToSource);
             }
             catch (Exception ex)
             {
@@ -234,7 +234,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                Migrator.Current.MapConfig.GetDefaultTargetProvider().SaveObjects(targetObjects);
+                Migrator.Current.MapConfig.GetTargetProvider().SaveObjects(targetObjects);
                 stopWath.Stop();
                 
                 

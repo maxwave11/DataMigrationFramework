@@ -64,9 +64,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Providers\SqlProvider.cs" />
     <Compile Include="Data\Providers\CsvProvider.cs" />
     <Compile Include="Data\Providers\ExcelProvider.cs" />
-    <Compile Include="Data\Providers\ISourceProvider.cs" />
     <Compile Include="Data\DataSets\CachedDataSet.cs" />
     <Compile Include="Data\Providers\IDataProvider.cs" />
     <Compile Include="Data\IValuesObject.cs" />

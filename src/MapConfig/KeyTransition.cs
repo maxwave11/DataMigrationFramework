@@ -184,7 +184,7 @@ namespace XQ.DataMigration.MapConfig
 
         protected virtual IValuesObject GetTargetObject(string key)
         {
-            var provider = Migrator.Current.MapConfig.GetDefaultTargetProvider();
+            var provider = Migrator.Current.MapConfig.GetTargetProvider();
 
             var existedObject = provider.GetObjectByKey(_objectTransition.TargetDataSetId, key, GetKeyFromTarget, QueryToTarget);
 

@@ -116,7 +116,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             var mapConfig = Migrator.Current.MapConfig;
 
             var provider = ProviderName.IsEmpty()
-                                ? mapConfig.GetDefaultTargetProvider()
+                                ? mapConfig.GetTargetProvider()
                                 : mapConfig.GetDataProvider(ProviderName);
 
             string queryToSource = LookupDataSetId.StartsWith("{")

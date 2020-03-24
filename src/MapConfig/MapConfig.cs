@@ -26,35 +26,35 @@ namespace XQ.DataMigration.MapConfig
             ChildTransitions?.ForEach(i => i.Initialize(null));
         }
 
-        public ISourceProvider GetDefaultSourceProvider()
+        public IDataProvider GetDefaultDataProvider()
         {
-            if (!DataProviders.OfType<ISourceProvider>().Any(i => i.IsDefault))
+            if (!DataProviders.OfType<IDataProvider>().Any(i => i.IsDefault))
                 throw new InvalidOperationException("Can't find default source data provider");
 
-            return DataProviders.OfType<ISourceProvider>().Single(i => i.IsDefault);
-        }
-
-        public ITargetProvider GetDefaultTargetProvider()
-        {
-            if (!DataProviders.OfType<ITargetProvider>().Any(i => i.IsDefault))
-                throw new InvalidOperationException("Can't find default target data provider");
-
-            return DataProviders.OfType<ITargetProvider>().Single(i => i.IsDefault);
-        }
-
-        public ITargetProvider GetTargetProvider(string targetProviderName)
-        {
-            return DataProviders.OfType<ITargetProvider>().SingleOrDefault(i => i.Name == targetProviderName);
-        }
-
-        public ISourceProvider GetSourceProvider(string sourceProviderName)
-        {
-            return DataProviders.OfType<ISourceProvider>().SingleOrDefault(i => i.Name == sourceProviderName);
+            return DataProviders.OfType<IDataProvider>().Single(i => i.IsDefault);
         }
 
         public IDataProvider GetDataProvider(string providerName)
         {
             return DataProviders.OfType<IDataProvider>().SingleOrDefault(i => i.Name == providerName);
         }
+
+        public ITargetProvider GetTargetProvider()
+        {
+            //Only one TargetProvider allowed at current moment!
+            return DataProviders.OfType<ITargetProvider>().Single();
+        }
+
+        //public ITargetProvider GetTargetProvider(string targetProviderName)
+        //{
+        //    return DataProviders.OfType<ITargetProvider>().SingleOrDefault(i => i.Name == targetProviderName);
+        //}
+
+        //public IDataProvider GetDataProvider(string sourceProviderName)
+        //{
+        //    return DataProviders.OfType<IDataProvider>().SingleOrDefault(i => i.Name == sourceProviderName);
+        //}
+
+      
     }
 }

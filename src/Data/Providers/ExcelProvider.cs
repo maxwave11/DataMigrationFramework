@@ -9,7 +9,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class ExcelProvider : TransitionNode, ISourceProvider
+    public class ExcelProvider : TransitionNode, IDataProvider
     {
         [XmlAttribute]
         public string DBPath { get; set; }
