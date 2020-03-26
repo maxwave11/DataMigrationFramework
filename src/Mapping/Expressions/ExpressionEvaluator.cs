@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Collections.Generic;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.Expressions
 {
@@ -9,13 +10,21 @@ namespace XQ.DataMigration.Mapping.Expressions
     {
         private readonly Dictionary<string, Delegate> _compiledExpressionsCache = new Dictionary<string, Delegate>();
 
-        public string EvaluateString(string migrationExpression, ValueTransitContext ctx)
+        public string EvaluateString(string expression, ValueTransitContext ctx)
         {
-            return Evaluate(migrationExpression, ctx)?.ToString();
+            if (expression.IsEmpty())
+                return expression;
+
+            return Evaluate(expression, ctx)?.ToString();
         }
 
         public object Evaluate(string expression, ValueTransitContext ctx)
         {
+            //don't evaluate passed plain strings
+            if (!expression.Contains("{"))
+                return expression;
+
+
             var compiledFunction = GetCompiledFunction(expression, ctx.ObjectTransition?.GetType());
 
             try

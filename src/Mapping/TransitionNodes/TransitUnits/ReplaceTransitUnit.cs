@@ -6,7 +6,6 @@ using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
-using XQ.Infrastructure.Helpers;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {

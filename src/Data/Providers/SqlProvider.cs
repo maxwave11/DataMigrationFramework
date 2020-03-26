@@ -45,8 +45,8 @@ namespace XQ.DataMigration.Data
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var actualQuery = Query.Contains("{") ? (string)ExpressionEvaluator.Evaluate(Query, ctx) : Query;
-            ConnectionString = ConnectionString.Contains("{") ? (string)ExpressionEvaluator.Evaluate(ConnectionString, ctx) : ConnectionString;
+            var actualQuery =  ExpressionEvaluator.EvaluateString(Query, ctx);
+            ConnectionString = ExpressionEvaluator.EvaluateString(ConnectionString, ctx);
             return new TransitResult(GetDataSet(actualQuery));
         }
     }

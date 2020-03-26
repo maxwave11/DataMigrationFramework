@@ -128,8 +128,7 @@ namespace XQ.DataMigration.MapConfig
                 return new TransitResult(TransitContinuation.SkipObject, null);
             }
 
-            if (QueryToTarget?.Contains('{') == true)
-                QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
+            QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
 
             var target = GetTargetObject(objectKey);
 

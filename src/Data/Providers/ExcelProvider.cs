@@ -98,8 +98,8 @@ namespace XQ.DataMigration.Data
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var actualQuery = Query.Contains("{") ? (string)ExpressionEvaluator.Evaluate(Query, ctx) : Query;
-            DBPath = DBPath.Contains("{") ? (string)ExpressionEvaluator.Evaluate(DBPath, ctx) : DBPath;
+            var actualQuery = ExpressionEvaluator.EvaluateString(Query, ctx);
+            DBPath = ExpressionEvaluator.EvaluateString(DBPath, ctx);
             return new TransitResult(GetDataSet(actualQuery));
         }
     }

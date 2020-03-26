@@ -71,13 +71,11 @@ namespace XQ.DataMigration.Mapping.Expressions
             if (migrationExpression.Count(c => c == '{') != migrationExpression.Count(c => c == '}'))
                 throw new Exception($"Expression {migrationExpression} is not valid. Check open and close brackets");
 
-            //if passed field name (plain string curly braces) => convert it to expression {VALUE[fieldname]}
-            var expression = migrationExpression.Contains("{") ? migrationExpression : "{{" + nameof(ExpressionContext.VALUE) + "[" + migrationExpression + "]}}";
+            var expression = migrationExpression;
 
             //cast to concrete ObjectTransition type
             if (objTransitionType != null)
                 expression = expression.Replace(nameof(ExpressionContext.THIS), $"(({objTransitionType.Name}){nameof(ExpressionContext.THIS)})");
-
 
             //quotes conversion: 
             //'some text' => "some text"
@@ -104,19 +102,19 @@ namespace XQ.DataMigration.Mapping.Expressions
             //nested braces can be for some nested queries instead of field name
             //Example with simple field name: 1. [field_name] => ["field_name"]
             //Example with expression (query): 2. [$.parent[?(@.jll_propertyid)].jll_propertyid] => ["$.parent[?(@.jll_propertyid)].jll_propertyid"]
-            var bracesRegex = @"\s*\[(\s*(([^\[\]]*)?(\[[^\[\]]{1,}\])?([^\[\]]*)?)*\s*)\]";
-            var regexp = new Regex($@"({string.Join("|", valuesObjectPrefixes)}){bracesRegex}");
-            expression = regexp.Replace(expression, $"(({nameof(IValuesObject)})$1)[\"$2\"]");
+            var bracesRegex = @"(\??)\s*\[(\s*(([^\[\]]*)?(\[[^\[\]]{1,}\])?([^\[\]]*)?)*\s*)\]";
+            var regexp = new Regex($@"({ string.Join("|", valuesObjectPrefixes) }){ bracesRegex }");
+            expression = regexp.Replace(expression, $"(({nameof(IValuesObject)})$1)$2[\"$3\"]");
 
+          
+            //determine type of exression. Expression like '{...}' should return pure value (no interpolation to string)
+            if (new Regex(@"^{[^}]*}$").IsMatch(expression))
+                return expression.Trim('{', '}');
 
-            //determine type of exression. Double braces means that expression should return value as is witout string interpolation
-            if (expression.StartsWith("{{") && expression.EndsWith("}}"))
-            {
-                return expression.Replace("{{","").Replace("}}","");
-            }
-
+            
             //convert plain string to C# string template
-            expression = "$\"" + expression + "\"";
+            //also trim $ symbol which force to convert expression to interpolated string
+            expression = "$\"" + expression.Trim('$') + "\"";
             return expression;
         }
 

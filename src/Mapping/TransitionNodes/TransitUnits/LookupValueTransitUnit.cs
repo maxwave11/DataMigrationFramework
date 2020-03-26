@@ -69,12 +69,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         [XmlAttribute]
         public TransitContinuation OnNotFound { get; set; } = TransitContinuation.RaiseError;
 
-        private ObjectTransition _currentObjectTransition;
+        private readonly ObjectTransition _currentObjectTransition;
 
         public override void Initialize(TransitionNode parent)
         {
             if (Expression.IsEmpty())
-                Expression = "{VALUE}";
+                Expression = "{ VALUE }";
 
 
             if (LookupDataSetId.IsEmpty())
@@ -82,6 +82,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             if (LookupKeyExpr.IsEmpty() && LookupAlternativeExpr.IsEmpty())
                 throw new Exception($"Field {nameof(LookupKeyExpr)} or {nameof(LookupAlternativeExpr)}  should be filled to search lookup object");
+
+            if (!LookupKeyExpr.Contains("{"))
+                LookupKeyExpr = $"{{ VALUE[{ LookupKeyExpr }] }}";
 
             base.Initialize(parent);
         }
@@ -119,16 +122,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                                 ? mapConfig.GetTargetProvider()
                                 : mapConfig.GetDataProvider(ProviderName);
 
-            string queryToSource = LookupDataSetId.StartsWith("{")
-                                        ? ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx)
-                                        : LookupDataSetId;
+            string queryToSource = ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx);
 
             IValuesObject lookupObject = null;
             if (provider is ITargetProvider targetProvider && LookupAlternativeExpr.IsEmpty())
             {
 
-                if (QueryToTarget?.Contains('{') == true)
-                    QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
+                QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
 
                 //quick serach (from cache, O(1)) by migration key
                 lookupObject = targetProvider.GetObjectByKey(queryToSource, searchValue, EvaluateObjectKey, QueryToTarget);
@@ -168,9 +168,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            var queryToSource = LookupDataSetId.StartsWith("{")
-                                       ? ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx)
-                                       : LookupDataSetId;
+            var queryToSource = ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx);
 
             attributes += $" {nameof(LookupDataSetId)}=\"{ queryToSource }\"";
             base.TraceStart(ctx, attributes);

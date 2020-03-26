@@ -13,6 +13,7 @@ namespace XQ.DataMigration.Mapping.Logic
         public object TransitValue { get; private set; }
         public ObjectTransition ObjectTransition { get; set; }
         public Type ValueType { get; }
+
         public readonly Dictionary<string, object> _valuesHistory = new Dictionary<string, object>();
 
         public ValueTransitContext(IValuesObject source, IValuesObject target, object transitValue, ObjectTransition objTransition)
