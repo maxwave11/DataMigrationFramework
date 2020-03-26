@@ -72,7 +72,7 @@ namespace XQ.DataMigration.Mapping.Expressions
                 throw new Exception($"Expression {migrationExpression} is not valid. Check open and close brackets");
 
             //if passed field name (plain string curly braces) => convert it to expression {VALUE[fieldname]}
-            var expression = migrationExpression.Contains("{") ? migrationExpression : "{" + nameof(ExpressionContext.VALUE) + "[" + migrationExpression + "]}";
+            var expression = migrationExpression.Contains("{") ? migrationExpression : "{{" + nameof(ExpressionContext.VALUE) + "[" + migrationExpression + "]}}";
 
             //cast to concrete ObjectTransition type
             if (objTransitionType != null)
