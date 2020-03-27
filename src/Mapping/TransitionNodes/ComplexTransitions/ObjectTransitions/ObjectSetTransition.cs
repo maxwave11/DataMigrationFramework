@@ -1,16 +1,12 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
 using System.Xml.Serialization;
-using ExpressionEvaluator;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
-using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
@@ -85,10 +81,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            var queryToSource =  QueryToSource.StartsWith("{")
-                ? ExpressionEvaluator.EvaluateString(QueryToSource, ctx)
-                : QueryToSource;
-
+            var queryToSource = ExpressionEvaluator.EvaluateString(QueryToSource, ctx);
+                
             attributes = $"{nameof(Name)}=\"{Name}\" {nameof(QueryToSource)}=\"{queryToSource}\"";
             base.TraceStart(ctx, attributes);
         }
@@ -98,20 +92,18 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             try
             {
                 //need to fix this later and recognize expression by more smart way
-                var queryToSource = QueryToSource.StartsWith("{")
-                                        ? ExpressionEvaluator.EvaluateString(QueryToSource, ctx)
-                                        : QueryToSource;
+                var queryToSource = ExpressionEvaluator.EvaluateString(QueryToSource, ctx);
 
                 if (FetchMode == FetchMode.SourceObject)
                     return ((IValueObjectsCollecion)ctx.Source).GetObjects(queryToSource);
                 
                 
-                var sourceProvider = Migrator.Current.MapConfig.GetDefaultSourceProvider();
+                var dataProvider = Migrator.Current.MapConfig.GetDefaultDataProvider();
 
                 if (SourceProviderName.IsNotEmpty())
-                    sourceProvider = Migrator.Current.MapConfig.GetSourceProvider(SourceProviderName);
+                    dataProvider = Migrator.Current.MapConfig.GetDataProvider(SourceProviderName);
 
-                return sourceProvider.GetDataSet(queryToSource);
+                return dataProvider.GetDataSet(queryToSource);
             }
             catch (Exception ex)
             {
@@ -234,7 +226,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                Migrator.Current.MapConfig.GetDefaultTargetProvider().SaveObjects(targetObjects);
+                Migrator.Current.MapConfig.GetTargetProvider().SaveObjects(targetObjects);
                 stopWath.Stop();
                 
                 

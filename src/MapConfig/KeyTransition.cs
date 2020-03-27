@@ -128,8 +128,7 @@ namespace XQ.DataMigration.MapConfig
                 return new TransitResult(TransitContinuation.SkipObject, null);
             }
 
-            if (QueryToTarget?.Contains('{') == true)
-                QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
+            QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
 
             var target = GetTargetObject(objectKey);
 
@@ -184,7 +183,7 @@ namespace XQ.DataMigration.MapConfig
 
         protected virtual IValuesObject GetTargetObject(string key)
         {
-            var provider = Migrator.Current.MapConfig.GetDefaultTargetProvider();
+            var provider = Migrator.Current.MapConfig.GetTargetProvider();
 
             var existedObject = provider.GetObjectByKey(_objectTransition.TargetDataSetId, key, GetKeyFromTarget, QueryToTarget);
 

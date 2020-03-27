@@ -38,7 +38,7 @@ namespace XQ.DataMigration.Data
             if (!(sourceObject is IValuesObject))
                 throw new InvalidOperationException($"Source object returned by {nameof(From)} expression should implement {nameof(IValuesObject)}");
 
-            var actualQuery = Query.Contains("{") ? (string)ExpressionEvaluator.Evaluate(Query, ctx) : Query;
+            var actualQuery = ExpressionEvaluator.EvaluateString(Query, ctx);
             var result = GetObjects(actualQuery, (IValuesObject)sourceObject);
             return new TransitResult(result);
         }

@@ -12,5 +12,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             get { return Expression; }
             set { Expression = value; }
         }
+
+        public override void Initialize(TransitionNode parent)
+        {
+            if (!Expression.Contains("{"))
+                Expression = $"{{ SRC[{ Expression }] }}";
+            base.Initialize(parent);
+        }
     }   
 }

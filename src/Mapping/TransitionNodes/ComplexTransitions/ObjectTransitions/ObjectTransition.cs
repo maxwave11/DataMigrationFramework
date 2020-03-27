@@ -84,7 +84,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 //becaus it's invalid and must be removed from cache to avoid any referencing to this object
                 //by any migration logic (lookups, key ytansitions, etc.)
                 //If object is not new, it means that it's already saved and passed by migration validation
-                var provider = Migrator.Current.MapConfig.GetDefaultTargetProvider();
+                var provider = Migrator.Current.MapConfig.GetTargetProvider();
                 provider.RemoveObjectFromCache(TargetDataSetId, ctx.Target.Key);
             }
             if (SaveCount > 0)
@@ -164,7 +164,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                Migrator.Current.MapConfig.GetDefaultTargetProvider().SaveObjects(targetObjects);
+                Migrator.Current.MapConfig.GetTargetProvider().SaveObjects(targetObjects);
                 stopWath.Stop();
 
 

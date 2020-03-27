@@ -19,9 +19,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         {
             var returnValue = ctx.TransitValue;
             if (Expression.IsNotEmpty())
-            {
                 returnValue = ExpressionEvaluator.Evaluate(Expression, ctx);
-            }
 
             return new TransitResult(returnValue);
         }

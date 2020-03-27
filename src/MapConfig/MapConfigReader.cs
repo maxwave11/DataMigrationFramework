@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Schema;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping.TransitionNodes;
@@ -24,8 +23,9 @@ namespace XQ.DataMigration.MapConfig
             _fileStream = new FileStream(fileName, FileMode.Open);
 
             //register default commonly used providers of source data
-            RegisterSourceProvider(typeof(CsvProvider));
-            RegisterSourceProvider(typeof(ExcelProvider));
+            RegisterDataProvider(typeof(CsvProvider));
+            RegisterDataProvider(typeof(ExcelProvider));
+            RegisterDataProvider(typeof(SqlProvider));
         }
 
         public MapConfigReader(Stream fileStream)
@@ -52,13 +52,13 @@ namespace XQ.DataMigration.MapConfig
 
         public void RegisterTransitElement(Type type)
         {
-            var allowedBaseClasses = new []
+            var allowedBaseClasses = new[]
             {
-                typeof(TransitionNode), 
-                typeof(TransitUnit), 
+                typeof(TransitionNode),
+                typeof(TransitUnit),
                 typeof(ObjectTransition)
             };
-            
+
             if (!allowedBaseClasses.Any(type.IsSubclassOf))
                 throw new Exception($"Types for register must be derived from {nameof(TransitUnit)} or {nameof(ObjectTransition)}");
 
@@ -66,12 +66,12 @@ namespace XQ.DataMigration.MapConfig
                 _customElements.Add(type);
         }
 
-        public void RegisterSourceProvider(Type type)
+        public void RegisterDataProvider(Type type)
         {
-            if (!typeof(ISourceProvider).IsAssignableFrom(type))
-                throw new Exception($"Types for register must be derived from {nameof(ISourceProvider)}");
+            if (!typeof(IDataProvider).IsAssignableFrom(type))
+                throw new Exception($"Types for register must be derived from {nameof(IDataProvider)}");
 
-            if(!_dataProviders.Contains(type))
+            if (!_dataProviders.Contains(type))
                 _dataProviders.Add(type);
         }
 

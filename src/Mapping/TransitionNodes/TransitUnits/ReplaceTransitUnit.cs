@@ -14,9 +14,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
         [XmlAttribute]
         public string ReplaceRules { get; set; }
 
-        [XmlArray]
+        [XmlArray("ReplaceUnits")]
         [XmlArrayItem(nameof(ReplaceStepUnit))]
-        private List<ReplaceStepUnit> ReplaceUnits { get; set; }
+        public List<ReplaceStepUnit> ReplaceUnits { get; set; }
 
         public override void Initialize(TransitionNode parent)
         {
@@ -30,8 +30,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
                 var rules = ReplaceRules.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                ReplaceUnits = new List<ReplaceStepUnit>();
-                ReplaceUnits.AddRange(rules.Select(i => new ReplaceStepUnit { Rule = i}));
+                ReplaceUnits = rules.Select(i => new ReplaceStepUnit { Rule = i }).ToList();
             }
 
             ReplaceUnits.ForEach(r => r.Initialize(this));

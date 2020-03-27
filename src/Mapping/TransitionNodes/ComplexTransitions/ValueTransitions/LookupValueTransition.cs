@@ -89,7 +89,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             });
 
             if (Return.IsNotEmpty())
+            {
+                if (!Return.Contains("{"))
+                    Return = $"{{ VALUE[{ Return }] }}";
                 customLookupTransitions.Add(new TransitUnit { Expression = Return });
+            }
 
             ChildTransitions.AddRange(customLookupTransitions);
         }

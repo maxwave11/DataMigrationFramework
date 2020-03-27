@@ -17,11 +17,24 @@ namespace XQ.DataMigration.Mapping.Expressions
     {
         public IValuesObject SRC => _ctx.Source;
         public IValuesObject TARGET => _ctx.Target;
+        
+        /// <summary>
+        /// Current transit value. Use this property in expressions to handle value on transit pipeline
+        /// </summary>
         public object VALUE => _ctx.TransitValue;
+        
         public IValuesObject GLOBAL => GlobalObjectTransition.GlobalObject;
-        //object for temporary storing any IValuesObject during migration whic avalilable during whole migration process
-        public IValuesObject CUSTOM { get => GlobalObjectTransition.CustomObject; set => GlobalObjectTransition.CustomObject = value; }
+        
+        //Object for temporary storing any IValuesObject during migration which avalilable during whole migration process
+        public IValuesObject CUSTOM { 
+            get => GlobalObjectTransition.CustomObject; 
+            set => GlobalObjectTransition.CustomObject = value; 
+        }
+
+        //Need to remove it and use just dynamic ObjectTransition methods invocation from new Context.Cmd method
+        [Obsolete]
         public ObjectTransition THIS => _ctx.ObjectTransition;        
+        
         private readonly ValueTransitContext _ctx;
 
         public ExpressionContext(ValueTransitContext ctx)

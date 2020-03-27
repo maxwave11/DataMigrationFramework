@@ -36,7 +36,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             var boolValue = ExpressionEvaluator.Evaluate(Expression, ctx) as bool?;
 
             if (!boolValue.HasValue)
-                throw new Exception($"Result of Expression execution in {nameof(Condition)} must be boolean");
+                throw new Exception($"Result of Expression execution in {nameof(Condition)} node must be boolean");
 
             if (boolValue.Value == true)
             {

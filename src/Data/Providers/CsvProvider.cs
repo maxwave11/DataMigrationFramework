@@ -11,7 +11,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class CsvProvider : TransitionNode, ISourceProvider
+    public class CsvProvider : TransitionNode, IDataProvider
     {
         [XmlAttribute]
         public string DBPath { get;  set; }
@@ -60,8 +60,8 @@ namespace XQ.DataMigration.Data
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var actualQuery = Query.Contains("{") ? (string)ExpressionEvaluator.Evaluate(Query, ctx) : Query;
-            DBPath = DBPath.Contains("{") ? (string)ExpressionEvaluator.Evaluate(DBPath, ctx) : DBPath;
+            var actualQuery = ExpressionEvaluator.EvaluateString(Query, ctx);
+            DBPath = ExpressionEvaluator.EvaluateString(DBPath, ctx);
             return new TransitResult(GetDataSet(actualQuery));
         }
     }
