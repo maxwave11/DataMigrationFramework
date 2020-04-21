@@ -37,7 +37,8 @@ namespace XQ.DataMigration.Data
             csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
             csvReader.Configuration.TrimFields = true;
             csvReader.Configuration.IgnoreBlankLines = true;
-
+            csvReader.Configuration.TrimHeaders = true;
+            
             using (txtReader)
             {
                 using (csvReader)
