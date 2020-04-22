@@ -11,7 +11,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class CsvProvider : TransitionNode, IDataProvider
+    public class CsvDataSource : TransitionNode, IDataSource
     {
         [XmlAttribute]
         public string DBPath { get;  set; }

@@ -14,8 +14,8 @@ namespace XQ.DataMigration.MapConfig
         /// </summary>
         public List<TransitionNode> ChildTransitions { get; set; }
 
-        [XmlArray(nameof(DataProviders))]
-        public List<Object> DataProviders { get; set; }
+        [XmlArray(nameof(DataSources))]
+        public List<Object> DataSources { get; set; }
 
         public MapConfig()
         {
@@ -26,23 +26,23 @@ namespace XQ.DataMigration.MapConfig
             ChildTransitions?.ForEach(i => i.Initialize(null));
         }
 
-        public IDataProvider GetDefaultDataProvider()
+        public IDataSource GetDefaultDataProvider()
         {
-            if (!DataProviders.OfType<IDataProvider>().Any(i => i.IsDefault))
+            if (!DataSources.OfType<IDataSource>().Any(i => i.IsDefault))
                 throw new InvalidOperationException("Can't find default source data provider");
 
-            return DataProviders.OfType<IDataProvider>().Single(i => i.IsDefault);
+            return DataSources.OfType<IDataSource>().Single(i => i.IsDefault);
         }
 
-        public IDataProvider GetDataProvider(string providerName)
+        public IDataSource GetDataProvider(string providerName)
         {
-            return DataProviders.OfType<IDataProvider>().SingleOrDefault(i => i.Name == providerName);
+            return DataSources.OfType<IDataSource>().SingleOrDefault(i => i.Name == providerName);
         }
 
         public ITargetProvider GetTargetProvider()
         {
             //Only one TargetProvider allowed at current moment!
-            return DataProviders.OfType<ITargetProvider>().Single();
+            return DataSources.OfType<ITargetProvider>().Single();
         }
 
         //public ITargetProvider GetTargetProvider(string targetProviderName)

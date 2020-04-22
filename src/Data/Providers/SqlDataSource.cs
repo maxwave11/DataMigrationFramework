@@ -8,7 +8,7 @@ using XQ.DataMigration.Mapping.TransitionNodes;
 
 namespace XQ.DataMigration.Data
 {
-    public class SqlProvider : TransitionNode, IDataProvider
+    public class SqlDataSource : TransitionNode, IDataSource
     {
         [XmlAttribute]
         public string ConnectionString { get; set; }

@@ -7,10 +7,10 @@ namespace XQ.DataMigration.Data
     /// Common interface for any data provider which provides access to 
     /// particular DataSet of this provider
     /// </summary>
-    public interface IDataProvider { 
+    public interface IDataSource { 
         string Name { get; set; }
         bool IsDefault { get; set; }
         string Query { get; set; }
-        IEnumerable<IValuesObject> GetDataSet(string providerQuery);
+        IEnumerable<IValuesObject> GetDataSet(string dataSourceQuery);
     }
 }

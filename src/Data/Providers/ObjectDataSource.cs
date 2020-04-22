@@ -9,7 +9,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class ObjectSourceProvider : TransitionNode, IDataProvider
+    public class ObjectDataSource : TransitionNode, IDataSource
     {
         [XmlAttribute]
         public string From { get; set; }

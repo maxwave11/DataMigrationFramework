@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace XQ.DataMigration.Data
 {
-    public interface ITargetProvider : IDataProvider
+    public interface ITargetProvider : IDataSource
     {
         void SaveObjects(ICollection<IValuesObject> objects);
         IValuesObject CreateObject(string objectType, string key);

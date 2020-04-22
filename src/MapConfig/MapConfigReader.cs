@@ -23,9 +23,9 @@ namespace XQ.DataMigration.MapConfig
             _fileStream = new FileStream(fileName, FileMode.Open);
 
             //register default commonly used providers of source data
-            RegisterDataProvider(typeof(CsvProvider));
-            RegisterDataProvider(typeof(ExcelProvider));
-            RegisterDataProvider(typeof(SqlProvider));
+            RegisterDataProvider(typeof(CsvDataSource));
+            RegisterDataProvider(typeof(ExcelDataSource));
+            RegisterDataProvider(typeof(SqlDataSource));
         }
 
         public MapConfigReader(Stream fileStream)
@@ -68,8 +68,8 @@ namespace XQ.DataMigration.MapConfig
 
         public void RegisterDataProvider(Type type)
         {
-            if (!typeof(IDataProvider).IsAssignableFrom(type))
-                throw new Exception($"Types for register must be derived from {nameof(IDataProvider)}");
+            if (!typeof(IDataSource).IsAssignableFrom(type))
+                throw new Exception($"Types for register must be derived from {nameof(IDataSource)}");
 
             if (!_dataProviders.Contains(type))
                 _dataProviders.Add(type);
@@ -135,14 +135,14 @@ namespace XQ.DataMigration.MapConfig
                 providerTypes.XmlArrayItems.Add(new XmlArrayItemAttribute(providerType));
             }
 
-            attribOverrides.Add(typeof(MapConfig), nameof(MapConfig.DataProviders), providerTypes);
+            attribOverrides.Add(typeof(MapConfig), nameof(MapConfig.DataSources), providerTypes);
 
             var nestedProviderTypes = new XmlAttributes();
-            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(CsvProvider), typeof(CsvProvider)));
-            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ExcelProvider), typeof(ExcelProvider)));
-            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ObjectSourceProvider), typeof(ObjectSourceProvider)));
+            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(CsvDataSource), typeof(CsvDataSource)));
+            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ExcelDataSource), typeof(ExcelDataSource)));
+            nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ObjectDataSource), typeof(ObjectDataSource)));
 
-            attribOverrides.Add(typeof(DataReaderTransition), nameof(DataReaderTransition.DataProvider), nestedProviderTypes);
+            attribOverrides.Add(typeof(DataReaderTransition), nameof(DataReaderTransition.DataSourceObject), nestedProviderTypes);
 
             return attribOverrides;
         }

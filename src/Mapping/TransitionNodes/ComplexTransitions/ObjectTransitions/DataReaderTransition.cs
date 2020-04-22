@@ -20,13 +20,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         [XmlElement]
         
-        public TransitionNode DataProvider { get; set; }
+        public TransitionNode DataSourceObject { get; set; }
 
-        [XmlAttribute, RequiredIf(nameof(DataProvider),null)]
-        public string DataProviderName { get; set; }
+        [XmlAttribute, RequiredIf(nameof(DataSourceObject),null)]
+        public string DataSource { get; set; }
 
-        [XmlAttribute, RequiredIf(nameof(DataProviderName), null, IsInverted = true)]
-        public string DataProviderQuery { get; set; }
+        [XmlAttribute, RequiredIf(nameof(DataSource), null, IsInverted = true)]
+        public string Query { get; set; }
 
         [XmlAttribute]
         public override ConsoleColor Color { get; set; } = ConsoleColor.Magenta;
@@ -47,18 +47,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         public override void Initialize(TransitionNode parent)
         {
-            if (!(DataProvider is IDataProvider))
-                throw new Exception($"{nameof(DataProvider)} property for object {nameof(DataReaderTransition)} should be filled by object of type {nameof(IDataProvider)}");
-
-
+            if (!(DataSourceObject is IDataSource))
+                throw new Exception($"{nameof(DataSourceObject)} property for object {nameof(DataReaderTransition)} should be filled by object of type {nameof(IDataSource)}");
 
             base.Initialize(parent);
         }
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var dataProvider = (IDataProvider)DataProvider ?? Migrator.Current.MapConfig.GetDataProvider(DataProviderName);
-            var srcDataSet = (IEnumerable<IValuesObject>)DataProvider.TransitCore(ctx).Value;
+            var dataProvider = (IDataSource)DataSourceObject ?? Migrator.Current.MapConfig.GetDataProvider(DataSource);
+            var srcDataSet = (IEnumerable<IValuesObject>)DataSourceObject.TransitCore(ctx).Value;
 
             //if (srcDataSet == null)
             //     return new TransitResult(null);
