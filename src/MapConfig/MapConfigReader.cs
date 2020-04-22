@@ -100,7 +100,7 @@ namespace XQ.DataMigration.MapConfig
             //complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ComplexTransition), typeof(ValueTransition)));
          
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ValueTransition), typeof(ValueTransition)));
-            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(ForEachTransition), typeof(ForEachTransition)));
+            complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(DataReaderTransition), typeof(DataReaderTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(LookupValueTransition), typeof(LookupValueTransition)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(TransitUnit), typeof(TransitUnit)));
             complexElementChildren.XmlElements.Add(new XmlElementAttribute(nameof(Condition), typeof(Condition)));
@@ -142,7 +142,7 @@ namespace XQ.DataMigration.MapConfig
             nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ExcelProvider), typeof(ExcelProvider)));
             nestedProviderTypes.XmlElements.Add(new XmlElementAttribute(nameof(ObjectSourceProvider), typeof(ObjectSourceProvider)));
 
-            attribOverrides.Add(typeof(ForEachTransition), nameof(ForEachTransition.DataProvider), nestedProviderTypes);
+            attribOverrides.Add(typeof(DataReaderTransition), nameof(DataReaderTransition.DataProvider), nestedProviderTypes);
 
             return attribOverrides;
         }

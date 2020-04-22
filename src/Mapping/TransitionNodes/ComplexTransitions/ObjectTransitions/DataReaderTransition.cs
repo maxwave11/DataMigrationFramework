@@ -6,6 +6,7 @@ using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
+using XQ.DataMigration.Mapping.TransitionNodes.Validation;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
@@ -13,12 +14,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     /// Transition which transit objects data from DataSet of source system to DataSet of target system.
     /// Just iterates all nested elements through elements fetched from DataProvider
     /// </summary>
-    public class ForEachTransition : ComplexTransition
+    public class DataReaderTransition : ComplexTransition
     {
         #region XmlAttributes
 
         [XmlElement]
+        
         public TransitionNode DataProvider { get; set; }
+
+        [XmlAttribute, RequiredIf(nameof(DataProvider),null)]
+        public string DataProviderName { get; set; }
+
+        [XmlAttribute, RequiredIf(nameof(DataProviderName), null, IsInverted = true)]
+        public string DataProviderQuery { get; set; }
 
         [XmlAttribute]
         public override ConsoleColor Color { get; set; } = ConsoleColor.Magenta;
@@ -40,19 +48,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public override void Initialize(TransitionNode parent)
         {
             if (!(DataProvider is IDataProvider))
-                throw new Exception($"{nameof(DataProvider)} property for object {nameof(ForEachTransition)} should be filled by object of type {nameof(IDataProvider)}");
+                throw new Exception($"{nameof(DataProvider)} property for object {nameof(DataReaderTransition)} should be filled by object of type {nameof(IDataProvider)}");
 
-            DataProvider.Initialize(this);
+
 
             base.Initialize(parent);
         }
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
+            var dataProvider = (IDataProvider)DataProvider ?? Migrator.Current.MapConfig.GetDataProvider(DataProviderName);
             var srcDataSet = (IEnumerable<IValuesObject>)DataProvider.TransitCore(ctx).Value;
 
-            if (srcDataSet == null)
-                 return new TransitResult(null);
+            //if (srcDataSet == null)
+            //     return new TransitResult(null);
 
             _currentRowsCount = srcDataSet.Count();
 
@@ -77,7 +86,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 if (result.Continuation != TransitContinuation.Continue)
                 {
-                    TraceLine($"Breaking {nameof(ForEachTransition)}");
+                    TraceLine($"Breaking {nameof(DataReaderTransition)}");
                     return result;
                 }
 

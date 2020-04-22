@@ -1,9 +1,9 @@
 using System;
-using System.CodeDom;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Xml.Serialization;
 using XQ.DataMigration.Enums;
-using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
 using XQ.DataMigration.Utils;
@@ -32,7 +32,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public string TraceMessage { get; set; }
 
         [XmlAttribute]
-        public virtual ConsoleColor Color { get; set; }  = ConsoleColor.White;
+        public virtual ConsoleColor Color { get; set; } = ConsoleColor.White;
 
         /// <summary>
         /// Mark element by this attribute to fast debug particular TransitionNode
@@ -56,6 +56,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public virtual void Initialize(TransitionNode parent)
         {
             Parent = parent;
+            Validate();
+        }
+
+        void Validate()
+        {
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(this, new ValidationContext(this), results, true))
+            {
+                var firstError = results[0];
+                throw new ValidationException(firstError, null, this);
+            }
         }
 
         /// <summary>
@@ -84,7 +95,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             }
             catch (Exception ex)
             {
-                continuation = this.OnError;
+                continuation = OnError;
                 Migrator.Current.Tracer.TraceWarning(ex.ToString(), this);
             }
 
@@ -94,7 +105,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
                 continuation = Migrator.Current.Tracer.TraceError(message, this, ctx);
             }
 
-            ctx.SetCurrentValue(this.Name, resultValue);
+            ctx.SetCurrentValue(Name, resultValue);
 
             TraceEnd(ctx);
 
@@ -113,8 +124,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         protected virtual void TraceStart(ValueTransitContext ctx, string attributes = "")
         {
-            var tagName = this.GetType().Name;
-            
+            var tagName = GetType().Name;
+
 
             if (!string.IsNullOrEmpty(attributes))
                 attributes = " " + attributes;
@@ -136,7 +147,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         protected virtual void TraceEnd(ValueTransitContext ctx)
         {
-            var tagName = this.GetType().Name;
+            var tagName = GetType().Name;
             var returnValue = ctx.TransitValue?.ToString();
             var returnValueType = ctx.TransitValue?.GetType().Name;
 
@@ -170,12 +181,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         public virtual bool CanTransit(ValueTransitContext ctx)
         {
-            return this.Enabled;
+            return Enabled;
         }
 
         public override string ToString()
         {
-            return $"{Name ?? this.GetType().Name}";
+            return $"Type={GetType().Name} Name={Name}";
         }
     }
 }
