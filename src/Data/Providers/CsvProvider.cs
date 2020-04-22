@@ -17,9 +17,6 @@ namespace XQ.DataMigration.Data
         public string DBPath { get;  set; }
 
         [XmlAttribute]
-        public string DefaultDataSetId { get; set; }
-
-        [XmlAttribute]
         public string Delimiter { get; set; } = ";";
 
         [XmlAttribute]
@@ -28,9 +25,13 @@ namespace XQ.DataMigration.Data
         [XmlAttribute]
         public bool IsDefault { get; set; }
 
-        public IEnumerable<IValuesObject> GetDataSet(string dataSetId)
+        [XmlAttribute]
+        public bool HasHeaderRow { get; set; }
+
+        public IEnumerable<IValuesObject> GetDataSet(string fileRelativePath)
         {
-            var filePath = DBPath + "\\" + (dataSetId.IsNotEmpty() ? dataSetId : DefaultDataSetId);
+            var filePath = $"{DBPath}\\{fileRelativePath}";
+
             var txtReader = new StreamReader(filePath, Encoding.GetEncoding("Windows-1252"));
             var csvReader = new CsvReader(txtReader);
             csvReader.Configuration.Delimiter = Delimiter;
@@ -38,7 +39,8 @@ namespace XQ.DataMigration.Data
             csvReader.Configuration.TrimFields = true;
             csvReader.Configuration.IgnoreBlankLines = true;
             csvReader.Configuration.TrimHeaders = true;
-            
+            csvReader.Configuration.HasHeaderRecord = HasHeaderRow;
+
             using (txtReader)
             {
                 using (csvReader)

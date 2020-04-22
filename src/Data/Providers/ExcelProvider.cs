@@ -14,9 +14,6 @@ namespace XQ.DataMigration.Data
         [XmlAttribute]
         public string DBPath { get; set; }
 
-        [XmlAttribute]
-        public string DefaultQuery { get; set; }
-
         /// <summary>
         /// Indicates in which row in file actual header located
         /// </summary>
@@ -35,11 +32,11 @@ namespace XQ.DataMigration.Data
         [XmlAttribute]
         public bool IsDefault { get; set; }
 
-        public IEnumerable<IValuesObject> GetDataSet(string providerQuery)
+        public IEnumerable<IValuesObject> GetDataSet(string fileRelativePath)
         {
-            var path = DBPath + "\\" + (providerQuery.IsNotEmpty() ? providerQuery : DefaultQuery);
+            var filePath = $"{DBPath}\\{fileRelativePath}";
 
-            using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
