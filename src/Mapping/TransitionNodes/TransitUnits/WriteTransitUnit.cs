@@ -24,14 +24,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             TraceLine(traceMsg);
         }
 
-        public override TransitResult Transit(ValueTransitContext ctx)
-        {
-            if (Expression.Contains("{"))
-                ExpressionEvaluator.Evaluate(Expression, ctx);
-            else
-                ctx.Target.SetValue(Expression, ctx.TransitValue);
-
-            return new TransitResult(ctx.TransitValue);
-        }
+        // public override TransitResult Transit(ValueTransitContext ctx)
+        // {
+        //     if (Expression.Contains("{"))
+        //         ExpressionEvaluator.Evaluate(Expression, ctx);
+        //     else
+        //         ctx.Target.SetValue(Expression, ctx.TransitValue);
+        //
+        //     return new TransitResult(ctx.TransitValue);
+        // }
     }   
 }

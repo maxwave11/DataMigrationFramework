@@ -58,10 +58,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         private string ReplaceValue(ValueTransitContext ctx)
         {
-            if (ReplaceExpression.Contains("{"))
-            {
-                return ExpressionEvaluator.EvaluateString(ReplaceExpression, ctx); 
-            }
+            // if (ReplaceExpression.Contains("{"))
+            // {
+            //     return ExpressionEvaluator.EvaluateString(ReplaceExpression, ctx); 
+            // }
             if (Condition.StartsWith("@regexp:"))
             {
                 var regex = new Regex(Condition.Replace("@regexp:", ""), RegexOptions.IgnoreCase);

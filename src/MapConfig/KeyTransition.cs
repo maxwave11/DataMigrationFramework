@@ -14,6 +14,49 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.MapConfig
 {
+    public class KeyTransition: TransitValueCommand
+    {
+        public string GetKeyForObject(IValuesObject sourceObject)
+        {
+            var ctx = new ValueTransitContext(sourceObject, null, sourceObject);
+            var transitResult = this.TransitCore(ctx);
+
+            if (transitResult.Continuation == TransitContinuation.RaiseError || transitResult.Continuation == TransitContinuation.Stop)
+            {
+                TraceLine($"Transition stopped on { Name }");
+                throw new Exception("Can't transit object key ");
+            }
+
+            return transitResult.Value.ToString();
+        }
+
+        // protected virtual string GetKeyFromSource(IValuesObject sourceObject)
+        // {
+        //     if (!sourceObject.Key.IsEmpty())
+        //         return sourceObject.Key;
+        //
+        //     var ctx = new ValueTransitContext(sourceObject, null, sourceObject);
+        //     var transitResult = SourceKeyTransition.TransitCore(ctx);
+        //
+        //     if (transitResult.Continuation == TransitContinuation.Continue)
+        //         sourceObject.Key = transitResult.Value?.ToString();
+        //
+        //     if (transitResult.Continuation == TransitContinuation.RaiseError || transitResult.Continuation == TransitContinuation.Stop)
+        //     {
+        //         TraceLine($"Transition stopped on { Name }");
+        //         throw new Exception("Can't transit source key ");
+        //     }
+        //
+        //     return sourceObject.Key;
+        // }
+        
+        public static implicit operator KeyTransition(string expression)
+        {
+            return new KeyTransition() { From = expression };
+        }
+    }
+
+
     /// <summary>
     /// Element defines logic by expressions or transitions for evaluating unique migration keys for source and target objects
     /// by existed data of this objects. Matching source and target objects based on this migration key and it's very important to
@@ -21,7 +64,7 @@ namespace XQ.DataMigration.MapConfig
     /// almost always you have to define key evaluation logic for source object and for target object respectively. 
     /// Migration key evaluated for source and target objects must be equal!
     /// </summary>
-    public class KeyTransition: TransitionNode
+    public class KeyTransitionOld: TransitionNode
     {
         /// <summary>
         /// Defines an expression which must evaluate a unique migration key for source object of transition
@@ -126,7 +169,7 @@ namespace XQ.DataMigration.MapConfig
                 return new TransitResult(TransitContinuation.SkipObject, null);
             }
 
-            QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
+           // QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
 
             var target = GetTargetObject(objectKey);
 
@@ -152,7 +195,7 @@ namespace XQ.DataMigration.MapConfig
             if (!sourceObject.Key.IsEmpty())
                 return sourceObject.Key;
 
-            var ctx = new ValueTransitContext(sourceObject, null, sourceObject, _objectTransition);
+            var ctx = new ValueTransitContext(sourceObject, null, sourceObject);
             var transitResult = SourceKeyTransition.TransitCore(ctx);
 
             if (transitResult.Continuation == TransitContinuation.Continue)
@@ -172,7 +215,7 @@ namespace XQ.DataMigration.MapConfig
             if (!targetObject.Key.IsEmpty())
                 return targetObject.Key;
 
-            var ctx = new ValueTransitContext(targetObject, null, targetObject, _objectTransition);
+            var ctx = new ValueTransitContext(targetObject, null, targetObject);
             var transitResult = TargetKeyTransition.TransitCore(ctx);
             targetObject.Key = transitResult.Value?.ToString();
 
@@ -183,7 +226,8 @@ namespace XQ.DataMigration.MapConfig
         {
             var provider = Migrator.Current.MapConfig.GetTargetProvider();
 
-            var existedObject = provider.GetObjectByKey(_objectTransition.TargetDataSetId, key, GetKeyFromTarget, QueryToTarget);
+            IValuesObject existedObject = null;
+            //var existedObject = provider.GetObjectByKey(_objectTransition.TargetDataSetId, key, GetKeyFromTarget, QueryToTarget);
 
 
             if (_objectTransition.TransitMode == ObjectTransitMode.OnlyExistedObjects)

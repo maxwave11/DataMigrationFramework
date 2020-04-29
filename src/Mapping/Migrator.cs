@@ -10,10 +10,10 @@ namespace XQ.DataMigration.Mapping
     {
         public MigrationTracer Tracer { get; }
 
-        internal static Migrator Current  {get; private set; }
+        public static Migrator Current  {get; private set; }
         public ExpressionCompiler ExpressionCompiler { get; } = new ExpressionCompiler();
 
-        internal MapConfig.MapConfig MapConfig { get; private set; }
+        public MapConfig.MapConfig MapConfig { get; private set; }
 
         public Migrator(MapConfig.MapConfig mapConfig)
         {
@@ -29,7 +29,7 @@ namespace XQ.DataMigration.Mapping
 
             Tracer.TraceLine("====== Migration start ======");
 
-            var ctx = new ValueTransitContext(null, null, null, null);
+            var ctx = new ValueTransitContext(null, null, null);
             MapConfig.Pipeline.ForEach(i => i.TransitCore(ctx));
 
             stopwatch.Stop();

@@ -2,6 +2,7 @@
 using System.Xml.Serialization;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
@@ -12,15 +13,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     /// </summary>
     public class TransitUnit: TransitionNode
     {
-        [XmlAttribute]
-        public string Expression { get; set; }
+        public MigrationExpression Expression { get; set; }
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var returnValue = ctx.TransitValue;
-            if (Expression.IsNotEmpty())
-                returnValue = ExpressionEvaluator.Evaluate(Expression, ctx);
-
+            var  returnValue = Expression?.Evaluate(ctx);
             return new TransitResult(returnValue);
         }
 

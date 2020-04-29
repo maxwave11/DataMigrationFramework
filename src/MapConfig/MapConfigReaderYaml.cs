@@ -10,6 +10,7 @@ using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
+using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
@@ -56,7 +57,7 @@ namespace XQ.DataMigration.MapConfig
                 //transitions
                 typeof(KeyTransition),
                 typeof(TransitValueCommand),
-                typeof(LookupValueTransition),
+                typeof(LookupValueTransitUnit),
                 typeof(TransitUnit),
                 typeof(Condition),
                 typeof(TypeConvertTransitUnit),
@@ -72,7 +73,6 @@ namespace XQ.DataMigration.MapConfig
                 { "transit-data", typeof(TransitDataCommand) },
                 { "transit", typeof(TransitValueCommand) },
                 { "condition", typeof(Condition) },
-                { "lookup", typeof(LookupValueTransition) },
                 { "replace", typeof(ReplaceTransitUnit) },
                 { "csv", typeof(CsvDataSource) },
                 { "excel", typeof(ExcelDataSource) },
@@ -88,7 +88,6 @@ namespace XQ.DataMigration.MapConfig
                 .ForEach(type => builder = builder.WithTagMapping("!" + type.Key, type.Value));
 
             //TranslateMapConfig(yamlInput);
-
             var deserializer = builder.Build();
 
             var mapConfig = deserializer.Deserialize<MapConfig>(yamlInput);

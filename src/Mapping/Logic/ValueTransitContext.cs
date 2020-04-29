@@ -16,12 +16,12 @@ namespace XQ.DataMigration.Mapping.Logic
 
         public readonly Dictionary<string, object> _valuesHistory = new Dictionary<string, object>();
 
-        public ValueTransitContext(IValuesObject source, IValuesObject target, object transitValue, ObjectTransition objTransition)
+        public ValueTransitContext(IValuesObject source, IValuesObject target, object transitValue)
         {
             Source = source;
             Target = target;
             TransitValue = transitValue;
-            ObjectTransition = objTransition;
+            //ObjectTransition = objTransition;
             ValueType = transitValue?.GetType();
         }
 

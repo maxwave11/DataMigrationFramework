@@ -15,7 +15,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     public class TransitDataCommand : ComplexTransition
     {
         public IDataSource Source { get; set; }
-        public IDataSource Target { get; set; }
+        public ITargetProvider Target { get; set; }
 
         public TargetObjectsSaver Saver { get; set; }
 
@@ -33,10 +33,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public override void Initialize(TransitionNode parent)
         {
             Color = ConsoleColor.Magenta;
-         
+
             //if (string.IsNullOrEmpty(QueryToSource))
             //    throw new Exception($"{nameof(QueryToSource)} can't be empty in {nameof(TransitDataCommand)}");
-
+            if (Saver == null)
+                throw new ArgumentNullException();
             base.Initialize(parent);
         }
 
@@ -77,16 +78,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         {
             var srcDataSet = Source.GetData();
 
-            if (srcDataSet == null)
-                 return new TransitResult(null);
-
             int completedObjects = 0;
             var totalObjects = srcDataSet.Count();
 
             foreach (var sourceObject in srcDataSet)
             {
                 _currentSourceObject = sourceObject;
-                //ctx.Target = null;
+
+                ctx.Target = Target.GetObjectByKey(sourceObject.Key);;
                 
                 var result = TransitChildren(ctx);
 

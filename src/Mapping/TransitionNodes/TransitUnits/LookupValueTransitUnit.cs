@@ -7,6 +7,7 @@ using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
@@ -19,14 +20,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     internal class LookupValueTransitUnit: TransitUnit
     {
         
-        [XmlAttribute]
         /// <summary>
         /// DataSet id in which current transition will try to find a particular object by expression determined in 
         /// <c>LookupKeyExpr</c> or <c>LookupAlternativeExpr</c>
         /// </summary>
-        public string LookupDataSetId { get; set; }
+        //public string LookupDataSetId { get; set; }
 
-        [XmlAttribute]
+        public IDataSource Source { get; set; }
+
         /// <summary>
         /// Migration expression which determines how to evaluate key for each lookup object from <c>LookupDataSetId</c>. 
         /// This key will allow to find a specific object from lookup's DataSet. In general you should to find objects by this way 
@@ -35,9 +36,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         /// transition) will be hosted in local cache by this key.
         /// NOTE: If you want to find an object by another way (not by its key) then you should to use <c>LookupAlternativeExpr</c> attribue
         /// </summary>
-        public string LookupKeyExpr { get; set; }
+        public MigrationExpression LookupKeyExpr { get; set; }
 
-        [XmlAttribute]
         /// <summary>
         /// By using this attribute lookup logic will try to find a specific object by alternative expression (not by <c>LookupKeyExpr</c>). 
         /// But anyway <c>LookupKeyExpr</c> is required for correct objects caching.
@@ -45,12 +45,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         /// </summary>
         public string LookupAlternativeExpr { get; set; }
 
-        [XmlAttribute]
         //Set this poperty to true to allow search in data sets where multiple objects can have same search lookup expression
         //NOTE: used only when LookupAlternativeExpr is used
         public bool FindFirstOccurence { get; set; }
 
-        [XmlAttribute]
         /// <summary>
         /// Specifies which DataProvider lookup logic will use to search particular objects
         /// Default Target provder by default
@@ -60,27 +58,25 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         /// <summary>
         /// Query to limit amout of objects for fetching
         /// </summary>
-        [XmlAttribute]
         public string QueryToTarget { get; set; }
 
         /// <summary>
         /// Specifies migration behavior in case when lookup object wasn't found
         /// </summary>
-        [XmlAttribute]
         public TransitContinuation OnNotFound { get; set; } = TransitContinuation.RaiseError;
 
         private readonly ObjectTransition _currentObjectTransition;
 
         public override void Initialize(TransitionNode parent)
         {
-            if (Expression.IsEmpty())
+            if (Expression == null)
                 Expression = "{ VALUE }";
 
 
-            if (LookupDataSetId.IsEmpty())
-                throw new Exception($"{ nameof(LookupDataSetId)}  is required");
+            if (Source == null)
+                throw new Exception($"{ nameof(Source)}  is required");
 
-            if (LookupKeyExpr.IsEmpty() && LookupAlternativeExpr.IsEmpty())
+            if (LookupKeyExpr == null && LookupAlternativeExpr.IsEmpty())
                 throw new Exception($"Field {nameof(LookupKeyExpr)} or {nameof(LookupAlternativeExpr)}  should be filled to search lookup object");
 
             if (!LookupKeyExpr.Contains("{"))
@@ -121,59 +117,59 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             //var provider = ProviderName.IsEmpty()
             //                    ? mapConfig.GetTargetProvider()
             //                    : mapConfig.GetDataProvider(ProviderName);
-            IDataSource provider = null;
+            //IDataSource provider = null;
 
-            string queryToSource = ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx);
+           // string queryToSource = ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx);
 
-            IValuesObject lookupObject = null;
-            if (provider is ITargetProvider targetProvider && LookupAlternativeExpr.IsEmpty())
-            {
+            // IValuesObject lookupObject = null;
+            var allObjects = Source.GetData();
 
-                QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
+            IValuesObject lookupObject = allObjects.SingleOrDefault(i=> IsObjectLookupKeyEquals(i, searchValue));
 
-                //quick serach (from cache, O(1)) by migration key
-                lookupObject = targetProvider.GetObjectByKey(queryToSource, searchValue, EvaluateObjectKey, QueryToTarget);
-            }
-            else
-            {
+            //if (provider is ITargetProvider targetProvider && LookupAlternativeExpr.IsEmpty())
+            //{
 
-                var data = provider.GetData();
-                var unifiedSearchValue = searchValue.ToUpper().Trim();
+            //    //QueryToTarget = ExpressionEvaluator.EvaluateString(QueryToTarget, ctx);
 
-                var evaluateKeyMethod = LookupAlternativeExpr.IsEmpty() 
-                    ? (Func<IValuesObject, string>)EvaluateObjectKey 
-                    : EvaluateAlternativeObjectKey;
+            //    //quick serach (from cache, O(1)) by migration key
+                
+            //    lookupObject = Source.Get(queryToSource, searchValue, EvaluateObjectKey, QueryToTarget);
+            //    //lookupObject = targetProvider.GetObjectByKey(queryToSource, searchValue, EvaluateObjectKey, QueryToTarget);
+            //}
+            //else
+            //{
 
-                var searchMethod = FindFirstOccurence 
-                    ? (Func<IEnumerable<IValuesObject>, Func<IValuesObject, bool>, IValuesObject >)Enumerable.FirstOrDefault
-                    : Enumerable.SingleOrDefault;
+            //    var data = provider.GetData();
+            //    var unifiedSearchValue = searchValue.ToUpper().Trim();
 
-                //slow search (simple iteration, O(N))
-                lookupObject = searchMethod(data, i => evaluateKeyMethod(i).ToUpper().Trim() == unifiedSearchValue);
-            }
+            //    var evaluateKeyMethod = LookupAlternativeExpr.IsEmpty() 
+            //        ? (Func<IValuesObject, string>)EvaluateObjectKey 
+            //        : EvaluateAlternativeObjectKey;
+
+            //    var searchMethod = FindFirstOccurence 
+            //        ? (Func<IEnumerable<IValuesObject>, Func<IValuesObject, bool>, IValuesObject >)Enumerable.FirstOrDefault
+            //        : Enumerable.SingleOrDefault;
+
+            //    //slow search (simple iteration, O(N))
+            //    lookupObject = searchMethod(data, i => evaluateKeyMethod(i).ToUpper().Trim() == unifiedSearchValue);
+            //}
 
             return lookupObject;
         }
 
        
-        private string EvaluateObjectKey(IValuesObject lookupObject)
+        private bool IsObjectLookupKeyEquals(IValuesObject lookupObject, string lookupValue)
         {
-            var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, _currentObjectTransition);
-            return ExpressionEvaluator.EvaluateString(LookupKeyExpr, ctx);
+            var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject);
+            return LookupKeyExpr.EvaluateString(ctx).ToUpper().Trim() == lookupValue.ToUpper().Trim();
         }
 
-        private string EvaluateAlternativeObjectKey(IValuesObject lookupObject)
-        {
-            var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject, _currentObjectTransition);
-            return ExpressionEvaluator.EvaluateString(LookupAlternativeExpr, ctx);
-        }
+        // private string EvaluateAlternativeObjectKey(IValuesObject lookupObject)
+        // {
+        //     var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject);
+        //     return ExpressionEvaluator.EvaluateString(LookupAlternativeExpr, ctx);
+        // }
 
-        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
-        {
-            var queryToSource = ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx);
-
-            attributes += $" {nameof(LookupDataSetId)}=\"{ queryToSource }\"";
-            base.TraceStart(ctx, attributes);
-        }
+       
     }
 }

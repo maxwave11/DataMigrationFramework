@@ -13,7 +13,7 @@ namespace XQ.DataMigration.Mapping.Expressions
     /// </summary>
     public class ExpressionCompiler
     {
-        private readonly List<Type> _customTypes = new List<Type>();
+        //private readonly List<Type> _customTypes = new List<Type>();
 
         /// <summary>
         /// Compiles migration expression to delegate
@@ -21,17 +21,15 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// <param name="migrationExpression">Migration expression from mapping configuration</param>
         /// <param name="objTransitionType">The type of ObjectTransition from which expression should be executed</param>
         /// <returns>Compiled delegate</returns>
-        internal ScriptRunner<object> Compile(string migrationExpression, Type objTransitionType) 
+        internal static ScriptRunner<object> Compile(string migrationExpression, List<Type> customTypes) 
         {
-            var translatedExpression = TranslateExpression(migrationExpression, objTransitionType);
+            var translatedExpression = TranslateExpression(migrationExpression);
 
             var importTypes = new List<Type>();
             importTypes.Add(typeof(IValuesObject));
-            importTypes.AddRange(_customTypes.ToArray());
+            importTypes.AddRange(customTypes.ToArray());
 
-            if (objTransitionType != null)
-                importTypes.Add(objTransitionType);
-
+           
             var scriptOptions = ScriptOptions.Default
                 .WithReferences(importTypes.Select(t => t.Assembly))
                 .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text"));
@@ -63,9 +61,8 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// VALUE - current migration value
         /// </summary>
         /// <param name="migrationExpression">Migration expression from mapping configuration</param>
-        /// <param name="objTransitionType">The type of ObjectTransition from which expression should be executed</param>
         /// <returns>C# expression string</returns>
-        private string TranslateExpression(string migrationExpression, Type objTransitionType)
+        private static  string TranslateExpression(string migrationExpression)
         {
             //check that count of open and close curly braces are equal
             if (migrationExpression.Count(c => c == '{') != migrationExpression.Count(c => c == '}'))
@@ -75,11 +72,7 @@ namespace XQ.DataMigration.Mapping.Expressions
 
             //translate simplified global variable accessor directive '@': @variable => GLOBAL[variable]
             expression = new Regex(@"@([^\W]*)").Replace(expression, "GLOBAL[$1]");
-
-            //cast to concrete ObjectTransition type
-            if (objTransitionType != null)
-                expression = expression.Replace(nameof(ExpressionContext.THIS), $"(({objTransitionType.Name}){nameof(ExpressionContext.THIS)})");
-
+            
             //quotes conversion: 
             //'some text' => "some text"
             //''some text'' => 'some text'
@@ -119,17 +112,6 @@ namespace XQ.DataMigration.Mapping.Expressions
             //also trim $ symbol which force to convert expression to interpolated string
             expression = "$\"" + expression.Trim('$') + "\"";
             return expression;
-        }
-
-        /// <summary>
-        /// Registers custom type in order to use it by any migration expression in MapConfig file.
-        /// </summary>
-        public void RegisterType<T>()
-        {
-            if (_customTypes.Contains(typeof(T)))
-                throw new Exception(typeof(T) + " already registered");
-
-            _customTypes.Add(typeof(T));
         }
     }
 }

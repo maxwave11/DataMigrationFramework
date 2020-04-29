@@ -2,16 +2,99 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using Microsoft.CodeAnalysis.Scripting;
+using XQ.DataMigration.Mapping.Expressions;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions
 {
+
+    public class FromFieldMigrationExpression: MigrationExpression
+    {
+        public FromFieldMigrationExpression(string expression) : base(expression)
+        {
+        
+        }
+        
+        public static implicit operator FromFieldMigrationExpression(string expression)
+        {
+            var expr = expression.Contains("{") ? expression : $"{{ SRC[{expression}] }}";
+              
+            return new FromFieldMigrationExpression(expr);
+        }
+    }
+
+    public class MigrationExpression
+    {
+        protected string _expression;
+        
+        private readonly ScriptRunner<object> _scriptRunner;
+        Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
+
+        
+        public MigrationExpression(string expression)
+        {
+
+            if (expression.StartsWith("#"))
+            {
+                _expression = $"{{ VALUE[{ expression }] }}";
+            }
+            else if (expression.StartsWith("$"))
+            {
+                _expression = expression;
+            }
+            else
+                throw new InvalidOperationException("Invalid expression");
+            
+            _scriptRunner = ExpressionCompiler.Compile(_expression, null);
+        }
+
+        public object Evaluate(ValueTransitContext ctx)
+        {
+            return ExpressionEvaluator.Evaluate(_expression, ctx);
+        }
+        
+        public string EvaluateString(string expression, ValueTransitContext ctx)
+        {
+            if (expression.IsEmpty())
+                return expression;
+
+            return Evaluate(expression, ctx)?.ToString();
+        }
+
+        public object Evaluate(string expression, ValueTransitContext ctx)
+        {
+            //don't evaluate passed plain strings
+            if (!expression.Contains("{"))
+                return expression;
+
+            try
+            {
+                var exprContext = new ExpressionContext(ctx);
+                var task = _scriptRunner(exprContext);
+                if (!task.IsCompleted)
+                    throw new Exception("TASK NOT COMPLETED!!! ALARM!");
+                
+                var value = task.Result;
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        
+        public static implicit operator MigrationExpression(string expression)
+        {
+            return new MigrationExpression(expression);
+        }
+    }
+
     public class TransitValueCommand : ComplexTransition
     {
-        [XmlAttribute]
-        public string From { get; set; }
+        public FromFieldMigrationExpression From { get; set; }
 
         [XmlAttribute]
         public string Replace { get; set; }
@@ -29,7 +112,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         public string Format { get; set; }
 
         [XmlAttribute]
-        public string To { get; set; }
+        public MigrationExpression To { get; set; }
 
         public override void Initialize(TransitionNode parent)
         {
@@ -37,6 +120,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
                 Pipeline = new List<TransitionNode>();
 
             Color = ConsoleColor.Green;
+            
             
             InitializeChildTransitions();
 
@@ -62,10 +146,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
 
         protected virtual void InsertReadTransitUnit()
         {
-            if (From.IsNotEmpty())
-            {
-                Pipeline.Add(new ReadTransitUnit() {From = From, OnError = this.OnError});
-            }
+            Pipeline.Add(new TransitUnit() {Expression = From, OnError = this.OnError});
         }
 
         protected virtual void InsertReplaceTransitUnit()
@@ -97,7 +178,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         //WriteTransitUnit must be always last transtion in ChildTransitions collection
         protected virtual void InsertWriteTransitUnit()
         {
-            if (To.IsNotEmpty())
+            if (To != null)
             {
                 Pipeline.Add(new WriteTransitUnit()
                 {

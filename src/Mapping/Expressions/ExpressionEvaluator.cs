@@ -10,7 +10,7 @@ namespace XQ.DataMigration.Mapping.Expressions
     {
         private readonly Dictionary<string, Delegate> _compiledExpressionsCache = new Dictionary<string, Delegate>();
 
-        public string EvaluateString(string expression, ValueTransitContext ctx)
+        public string EvaluexpateString(string expression, ValueTransitContext ctx)
         {
             if (expression.IsEmpty())
                 return expression;
@@ -20,46 +20,48 @@ namespace XQ.DataMigration.Mapping.Expressions
 
         public object Evaluate(string expression, ValueTransitContext ctx)
         {
+
+            return null;
             //don't evaluate passed plain strings
-            if (!expression.Contains("{"))
-                return expression;
+            //if (!expression.Contains("{"))
+            //    return expression;
 
 
-            var compiledFunction = GetCompiledFunction(expression, ctx.ObjectTransition?.GetType());
+            //var compiledFunction = null;
 
-            try
-            {
-                var exprContext = new ExpressionContext(ctx);
-                var task = compiledFunction(exprContext);
-                if (!task.IsCompleted)
-                    throw new Exception("TASK NOT COMPLETED!!! ALARM!");
+            //try
+            //{
+            //    var exprContext = new ExpressionContext(ctx);
+            //    var task = compiledFunction(exprContext);
+            //    if (!task.IsCompleted)
+            //        throw new Exception("TASK NOT COMPLETED!!! ALARM!");
                 
-                var value = task.Result;
-                return value;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            //    var value = task.Result;
+            //    return value;
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw;
+            //}
         }
 
-        private ScriptRunner<object> GetCompiledFunction(string migrationExpression, Type objTransitionType)
-        {
-            Delegate result;
-            if (!_compiledExpressionsCache.TryGetValue(migrationExpression, out result))
-            {
-                try
-                {
-                    result = Migrator.Current.ExpressionCompiler.Compile(migrationExpression, objTransitionType);
-                    _compiledExpressionsCache.Add(migrationExpression, result);
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-            }
+        //private ScriptRunner<object> GetCompiledFunction(string migrationExpression, Type objTransitionType)
+        //{
+        //    Delegate result;
+        //    if (!_compiledExpressionsCache.TryGetValue(migrationExpression, out result))
+        //    {
+        //        try
+        //        {
+        //            result = Migrator.Current.ExpressionCompiler.Compile(migrationExpression, objTransitionType);
+        //            _compiledExpressionsCache.Add(migrationExpression, result);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return (ScriptRunner<object>)result;
-        }
+        //    return (ScriptRunner<object>)result;
+        //}
     }
 }
