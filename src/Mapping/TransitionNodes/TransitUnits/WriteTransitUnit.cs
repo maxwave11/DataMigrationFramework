@@ -1,7 +1,4 @@
-﻿using Antlr.Runtime.Tree;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.Trace;
+﻿using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits

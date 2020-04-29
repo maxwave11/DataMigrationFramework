@@ -118,9 +118,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         {
             var mapConfig = Migrator.Current.MapConfig;
 
-            var provider = ProviderName.IsEmpty()
-                                ? mapConfig.GetTargetProvider()
-                                : mapConfig.GetDataProvider(ProviderName);
+            //var provider = ProviderName.IsEmpty()
+            //                    ? mapConfig.GetTargetProvider()
+            //                    : mapConfig.GetDataProvider(ProviderName);
+            IDataSource provider = null;
 
             string queryToSource = ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx);
 
@@ -135,7 +136,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             }
             else
             {
-                var data = provider.GetDataSet(queryToSource);
+
+                var data = provider.GetData();
                 var unifiedSearchValue = searchValue.ToUpper().Trim();
 
                 var evaluateKeyMethod = LookupAlternativeExpr.IsEmpty() 
