@@ -2,31 +2,26 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class ExcelDataSource : IDataSource
+    public class ExcelDataSource : DataSourceBase
     {
         public string DBPath { get; set; }
 
-        /// <summary>
-        /// Indicates in which row in file actual header located
-        /// </summary>
-        public int HeaderRowNumber { get; set; } = 1;
+      
 
         /// <summary>
         /// Indicates where in file actual data starts from
         /// </summary>
         public int DataStartRowNumber { get; set; } = 2;
 
-        public string Query { get; set; }
-
-        public bool IsDefault { get; set; }
-
-        public IEnumerable<IValuesObject> GetData()
+        protected override IEnumerable<IValuesObject> GetDataInternal()
         {
-            var filePath = $"{DBPath}\\{Query}";
+            var settings = Migrator.Current.MapConfig.GetDefaultSourceSettings<CsvSourceSettings>();
+            var filePath = $"{settings.Path}\\{Query}";
 
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
@@ -39,7 +34,7 @@ namespace XQ.DataMigration.Data
                         rowCounter++;
 
                         //init header row
-                        if (rowCounter == HeaderRowNumber)
+                        if (rowCounter == settings.HeaderRowNumber)
                         {
                             headerRow = new string[reader.FieldCount];
                             for (int i = 0; i < reader.FieldCount; i++)
@@ -48,29 +43,19 @@ namespace XQ.DataMigration.Data
                             continue;
                         }
 
-                        if (rowCounter < DataStartRowNumber)
+                        if (rowCounter < settings.DataStartRowNumber)
                             continue;
 
                         if (IsRowEmpty(reader))
                             continue;
 
-                        yield return GetObjectFromRow(reader, headerRow);
+                        yield return RowToValuesObject(reader, headerRow);
                     }
                 }
             }
         }
 
-        private bool IsRowEmpty(IExcelDataReader reader)
-        {
-            bool result = true;
-
-            for (int i = 0; i < reader.FieldCount; i++)
-                result &= string.IsNullOrWhiteSpace(reader.GetValue(i)?.ToString());
-
-            return result;
-        }
-
-        private IValuesObject GetObjectFromRow(IExcelDataReader reader, string [] headerRow)
+        private IValuesObject RowToValuesObject(IExcelDataReader reader, string[] headerRow)
         {
             //fill VlauesObject from row values
             var valuesObject = new ValuesObject();
@@ -83,6 +68,15 @@ namespace XQ.DataMigration.Data
             }
 
             return valuesObject;
+        }
+        private bool IsRowEmpty(IExcelDataReader reader)
+        {
+            bool result = true;
+
+            for (int i = 0; i < reader.FieldCount; i++)
+                result &= string.IsNullOrWhiteSpace(reader.GetValue(i)?.ToString());
+
+            return result;
         }
     }
 }

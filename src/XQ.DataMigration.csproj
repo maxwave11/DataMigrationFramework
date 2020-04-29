@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Providers\DataSourceBase.cs" />
+    <Compile Include="Data\Providers\IDataSourceSettings.cs" />
     <Compile Include="Data\Providers\SqlDataSource.cs" />
     <Compile Include="Data\Providers\CsvDataSource.cs" />
     <Compile Include="Data\Providers\ExcelDataSource.cs" />

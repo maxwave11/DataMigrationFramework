@@ -49,11 +49,9 @@ namespace XQ.DataMigration.MapConfig
         {
             var yamlInput = File.ReadAllText(_fileName);
 
-
             var types = new[] {
                 //providers
                 typeof(CsvDataSource),
-                typeof(ExcelDataSource),
                 typeof(SqlDataSource),
                 //transitions
                 typeof(KeyTransition),
@@ -69,23 +67,27 @@ namespace XQ.DataMigration.MapConfig
                 typeof(GlobalObjectTransition),
             };
 
+            var commandMapping = new Dictionary<string, Type>()
+            {
+                { "transit-data", typeof(TransitDataCommand) },
+                { "transit", typeof(TransitValueCommand) },
+                { "condition", typeof(Condition) },
+                { "lookup", typeof(LookupValueTransition) },
+                { "replace", typeof(ReplaceTransitUnit) },
+                { "csv", typeof(CsvDataSource) },
+                { "excel", typeof(ExcelDataSource) },
+                { "csv-settings", typeof(CsvSourceSettings) }
+            };
 
-            TranslateMapConfig(yamlInput);
-
-            //types
-            //    .Union(customTypes)
-            //    .ToList()
-            //    .ForEach(type => builder = builder.WithTagMapping("!" + type.Name, type));
             var builder = new DeserializerBuilder();
 
-            builder = builder
-                .WithTagMapping("!transit-data", typeof(TransitDataCommand))
-                .WithTagMapping("!transit", typeof(TransitValueCommand))
-                .WithTagMapping("!condition", typeof(Condition))
-                .WithTagMapping("!lookup", typeof(LookupValueTransition))
-                .WithTagMapping("!replace", typeof(ReplaceTransitUnit))
-                .WithTagMapping("!csv", typeof(CsvDataSource));
+            customTypes
+                .Select(type => new KeyValuePair<string, Type>(type.Name, type))
+                .Union(commandMapping)
+                .ToList()
+                .ForEach(type => builder = builder.WithTagMapping("!" + type.Key, type.Value));
 
+            //TranslateMapConfig(yamlInput);
 
             var deserializer = builder.Build();
 

@@ -8,21 +8,25 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class CsvSourceSettings 
+    public class CsvSourceSettings: IDataSourceSettings
     {
         public string Path { get; set; }
         public string Delimiter { get; set; } = ";";
-        public bool HasHeaderRow { get; set; }
-        public bool IsDefault { get; set; }
+
+        /// <summary>
+        /// Indicates in which row in file actual header located
+        /// </summary>
+        public int HeaderRowNumber { get; set; } = 1;
+        public int DataStartRowNumber { get; set; } = 2;
     }
 
     public class CsvDataSource : DataSourceBase
     {
-        public CsvSourceSettings Settings { get; set; }
+        //public CsvSourceSettings Settings { get; set; }
 
         protected override IEnumerable<IValuesObject> GetDataInternal()
         {
-            var settings = Settings ?? Migrator.Current.MapConfig.GetDefaultSourceSettings<CsvSourceSettings>();
+            var settings = Migrator.Current.MapConfig.GetDefaultSourceSettings<CsvSourceSettings>();
             var filePath = $"{settings.Path}\\{Query}";
 
             var txtReader = new StreamReader(filePath, Encoding.GetEncoding("Windows-1252"));
@@ -32,7 +36,7 @@ namespace XQ.DataMigration.Data
             csvReader.Configuration.TrimFields = true;
             csvReader.Configuration.IgnoreBlankLines = true;
             csvReader.Configuration.TrimHeaders = true;
-            csvReader.Configuration.HasHeaderRecord = settings.HasHeaderRow;
+            //csvReader.Configuration.HasHeaderRecord = settings.HasHeaderRowNUmber;
 
             using (txtReader)
             {

@@ -12,7 +12,7 @@ namespace XQ.DataMigration.MapConfig
 {
     public class MapConfig
     {
-        public Dictionary<string, object> SourceSettings { get; set; } = new Dictionary<string, object>();
+        public List<IDataSourceSettings> SourceSettings { get; set; } = new List<IDataSourceSettings>();
         public Dictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
         public List<TransitDataCommand> Pipeline { get; set; } = new List<TransitDataCommand>();
 
@@ -24,7 +24,7 @@ namespace XQ.DataMigration.MapConfig
 
         public T GetDefaultSourceSettings<T>()
         {
-            return (T)SourceSettings.First().Value;
+            return SourceSettings.OfType<T>().Single();
         }
 
         public ITargetProvider GetTargetProvider()

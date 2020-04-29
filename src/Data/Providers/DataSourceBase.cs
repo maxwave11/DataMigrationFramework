@@ -10,6 +10,8 @@ namespace XQ.DataMigration.Data
 
         public TransitValueCommand Key { get; set; }
 
+        public IDataSourceSettings Settings { get; set; }
+
         /// <summary>
         /// Set this value if you want to transit concrete range of DataSet objects from source system
         /// Example 1: 2-10
