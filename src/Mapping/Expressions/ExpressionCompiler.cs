@@ -73,6 +73,9 @@ namespace XQ.DataMigration.Mapping.Expressions
 
             var expression = migrationExpression;
 
+            //translate simplified global variable accessor directive '@': @variable => GLOBAL[variable]
+            expression = new Regex(@"@([^\W]*)").Replace(expression, "GLOBAL[$1]");
+
             //cast to concrete ObjectTransition type
             if (objTransitionType != null)
                 expression = expression.Replace(nameof(ExpressionContext.THIS), $"(({objTransitionType.Name}){nameof(ExpressionContext.THIS)})");
