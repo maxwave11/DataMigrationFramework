@@ -16,7 +16,7 @@ namespace XQ.DataMigration.Data
 
     public class ValuesObject : IValuesObject, IValueObjectsCollecion
     {
-        public object this[string name] => GetValue(name);
+        public object this[string name] { get => GetValue(name); set => SetValue(name, value); }
         public string[] FieldNames => _dataContainer.Keys.ToArray();
         public bool IsNew { get; }
         public string Key { get; set; }

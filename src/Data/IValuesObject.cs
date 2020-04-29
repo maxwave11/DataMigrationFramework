@@ -4,7 +4,7 @@ namespace XQ.DataMigration.Data
 {
     public interface IValuesObject
     {
-        object this[string name] { get; }
+        object this[string name] { get; set; }
         string[] FieldNames { get; }
         string Key { get; set; }
         object Native { get; }
