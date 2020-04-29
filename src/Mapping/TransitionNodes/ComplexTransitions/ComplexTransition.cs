@@ -11,11 +11,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
         /// List of nested transitions. 
         /// NOTE: generic parameter should be a class (not interface) since it will be not deserialized from XML
         /// </summary>
-        public List<TransitionNode> ChildTransitions { get; set; }
+        public List<TransitionNode> Pipeline { get; set; }
 
         public override void Initialize(TransitionNode parent)
         {
-            ChildTransitions?.ForEach(i => i.Initialize(this));
+            Pipeline?.ForEach(i => i.Initialize(this));
             base.Initialize(parent);
         }
 
@@ -29,10 +29,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
         protected TransitResult TransitChildren(ValueTransitContext ctx)
         {
-            if (ChildTransitions == null)
+            if (Pipeline == null)
                 return new TransitResult(TransitContinuation.Continue,"Transition is Empty");
 
-            foreach (var childTransition in ChildTransitions)
+            foreach (var childTransition in Pipeline)
             {
                 if (!childTransition.CanTransit(ctx))
                     continue;

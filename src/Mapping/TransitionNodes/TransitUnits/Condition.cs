@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Serialization;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
@@ -25,7 +25,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             //We can change this flow and run children before action but in may be extra complexity.
             //Also there is some idea to get rid of ActionOnTrue attribute and introduce new ChangeFlowUnit which will executed as 
             //child object
-            if (ActionOnTrue != TransitContinuation.Continue && ChildTransitions.Count > 0)
+            if (ActionOnTrue != TransitContinuation.Continue && Pipeline.Count > 0)
                 throw new Exception($"{nameof(Expression)} attribute is required for { nameof(Condition)} element");
 
             base.Initialize(parent);

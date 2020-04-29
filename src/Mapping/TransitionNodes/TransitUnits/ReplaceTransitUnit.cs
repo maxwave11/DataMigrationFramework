@@ -12,7 +12,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
     public class ReplaceTransitUnit : TransitUnit
     {
         [XmlAttribute]
-        public string ReplaceRules { get; set; }
+        public string ReplaceExpression { get; set; }
 
         [XmlArray("ReplaceUnits")]
         [XmlArrayItem(nameof(ReplaceStepUnit))]
@@ -20,15 +20,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
         public override void Initialize(TransitionNode parent)
         {
-            if (ReplaceRules.IsEmpty() && ReplaceUnits?.Any() != true)
-                throw new Exception($"Need to fill {nameof(ReplaceRules)} or {nameof(ReplaceUnits)}");
+            if (ReplaceExpression.IsEmpty() && ReplaceUnits?.Any() != true)
+                throw new Exception($"Need to fill {nameof(ReplaceExpression)} or {nameof(ReplaceUnits)}");
 
-            if (ReplaceRules.IsNotEmpty())
+            if (ReplaceExpression.IsNotEmpty())
             {
                 if (ReplaceUnits?.Any() == true)
                     throw new Exception(nameof(ReplaceTransitUnit) + "not allows not empty Rules property while having child rules collection");
 
-                var rules = ReplaceRules.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                var rules = ReplaceExpression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
                 ReplaceUnits = rules.Select(i => new ReplaceStepUnit { Rule = i }).ToList();
             }
@@ -66,7 +66,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
         public override string ToString()
         {
-            return base.ToString() + "ReplaceRules: " + ReplaceRules;
+            return base.ToString() + "ReplaceExpression: " + ReplaceExpression;
+        }
+
+        public static implicit operator ReplaceTransitUnit(string expression)
+        {
+            return new ReplaceTransitUnit() { ReplaceExpression = expression };
         }
     }
 }

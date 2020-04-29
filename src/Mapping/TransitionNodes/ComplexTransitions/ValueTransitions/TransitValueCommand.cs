@@ -8,7 +8,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions
 {
-    public class ValueTransition : ComplexTransition
+    public class TransitValueCommand : ComplexTransition
     {
         [XmlAttribute]
         public string From { get; set; }
@@ -33,8 +33,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
 
         public override void Initialize(TransitionNode parent)
         {
-            if (ChildTransitions == null)
-                ChildTransitions = new List<TransitionNode>();
+            if (Pipeline == null)
+                Pipeline = new List<TransitionNode>();
 
             Color = ConsoleColor.Green;
             
@@ -45,8 +45,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
 
         protected virtual void InitializeChildTransitions()
         {
-            var userDefinedTransitions = ChildTransitions.ToList();
-            ChildTransitions?.Clear();
+            var userDefinedTransitions = Pipeline.ToList();
+            Pipeline?.Clear();
 
             InsertReadTransitUnit();
             InsertCustomTransitions(userDefinedTransitions);
@@ -57,14 +57,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
 
         protected virtual void InsertCustomTransitions(List<TransitionNode> userDefinedTransitions)
         {
-            ChildTransitions.AddRange(userDefinedTransitions);
+            Pipeline.AddRange(userDefinedTransitions);
         }
 
         protected virtual void InsertReadTransitUnit()
         {
             if (From.IsNotEmpty())
             {
-                ChildTransitions.Add(new ReadTransitUnit() {From = From, OnError = this.OnError});
+                Pipeline.Add(new ReadTransitUnit() {From = From, OnError = this.OnError});
             }
         }
 
@@ -72,9 +72,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             if (Replace.IsNotEmpty())
             {
-                ChildTransitions.Add(new ReplaceTransitUnit
+                Pipeline.Add(new ReplaceTransitUnit
                 {
-                    ReplaceRules = Replace,
+                    ReplaceExpression = Replace,
                     OnError = this.OnError
                 });
             }
@@ -84,7 +84,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             if (DataType.IsNotEmpty())
             {
-                ChildTransitions.Add(new TypeConvertTransitUnit
+                Pipeline.Add(new TypeConvertTransitUnit
                 {
                     DataType = DataType,
                     DataTypeFormats = DataTypeFormat,
@@ -99,7 +99,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             if (To.IsNotEmpty())
             {
-                ChildTransitions.Add(new WriteTransitUnit()
+                Pipeline.Add(new WriteTransitUnit()
                 {
                     Expression = To,
                     OnError = this.OnError
@@ -111,6 +111,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         {
             attributes = $"From=\"{From}\" To=\"{To}\"";
             base.TraceStart(ctx, attributes);
+        }
+
+
+        public static implicit operator TransitValueCommand(string expression)
+        {
+            return new TransitValueCommand() { From = expression };
         }
     }
 }

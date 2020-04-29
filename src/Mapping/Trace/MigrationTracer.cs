@@ -67,7 +67,7 @@ namespace XQ.DataMigration.Mapping.Trace
                     doTrace = false;
                     break;
                 case TraceLevel.ObjectSet:
-                    if (node.HasParentOfType<ObjectSetTransition>() && !(node is ObjectSetTransition))
+                    if (node.HasParentOfType<TransitDataCommand>() && !(node is TransitDataCommand))
                         doTrace = false;
                     break;
                 case TraceLevel.Object:

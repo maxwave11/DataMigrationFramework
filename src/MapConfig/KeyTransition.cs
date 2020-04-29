@@ -48,14 +48,14 @@ namespace XQ.DataMigration.MapConfig
         /// if key definition is complex and SourceKey attribute is not enough
         /// </summary>
         [XmlElement]
-        public ValueTransition SourceKeyTransition { get; set; }
+        public TransitValueCommand SourceKeyTransition { get; set; }
 
         /// <summary>
         /// Defines a set of transitions which must get a unique migration key for target object of transition. Use this attribute 
         /// if key definition is complex and SourceKey attribute is not enough
         /// </summary>
         [XmlElement]
-        public ValueTransition TargetKeyTransition { get; set; }
+        public TransitValueCommand TargetKeyTransition { get; set; }
 
         private ObjectTransition _objectTransition;
 
@@ -75,14 +75,14 @@ namespace XQ.DataMigration.MapConfig
                 if (SourceKeyTransition != null)
                     throw new Exception($"Setting {nameof(SourceKey)} and nested {nameof(SourceKeyTransition)} are not allowed at the same time");
 
-                SourceKeyTransition = new ValueTransition { From = SourceKey};
+                SourceKeyTransition = new TransitValueCommand { From = SourceKey};
             }
             if (TargetKey.IsNotEmpty())
             {
                 if (TargetKeyTransition != null)
                     throw new Exception($"Setting {nameof(TargetKey)} and nested {nameof(TargetKeyTransition)} are not allowed at the same time");
 
-                TargetKeyTransition = new ValueTransition { From = TargetKey};
+                TargetKeyTransition = new TransitValueCommand { From = TargetKey};
             }
 
             _objectTransition = (ObjectTransition)parent;
@@ -107,7 +107,7 @@ namespace XQ.DataMigration.MapConfig
         private void SetColorRecursive(TransitionNode node, ConsoleColor color)
         {
             node.Color = color;
-            var children = (node as ComplexTransition)?.ChildTransitions;
+            var children = (node as ComplexTransition)?.Pipeline;
             if (children?.Any()  != true)
                 return;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
 using ExpressionCompiler = XQ.DataMigration.Mapping.Expressions.ExpressionCompiler;
@@ -31,7 +30,7 @@ namespace XQ.DataMigration.Mapping
             Tracer.TraceLine("====== Migration start ======");
 
             var ctx = new ValueTransitContext(null, null, null, null);
-            MapConfig.ChildTransitions?.ForEach(i => i.TransitCore(ctx));
+            MapConfig.Pipeline.ForEach(i => i.TransitCore(ctx));
 
             stopwatch.Stop();
             Tracer.TraceLine($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");

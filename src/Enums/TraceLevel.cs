@@ -9,7 +9,7 @@ namespace XQ.DataMigration.Enums
 
         Auto = 0,
         /// <summary>
-        /// Output information only about <see cref="ObjectSetTransition"/>. All nested nodes will be excluded from logging.
+        /// Output information only about <see cref="TransitDataCommand"/>. All nested nodes will be excluded from logging.
         /// </summary>
         ObjectSet = 1,
 

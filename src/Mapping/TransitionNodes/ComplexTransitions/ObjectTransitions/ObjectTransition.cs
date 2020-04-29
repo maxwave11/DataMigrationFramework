@@ -56,7 +56,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             if (KeyTransition != null)
             {
-                ChildTransitions.Insert(0, KeyTransition);
+                Pipeline.Insert(0, KeyTransition);
             }
 
             base.Initialize(parent);
@@ -73,7 +73,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             TraceEntries.Clear();
 
             if (ctx.Source == null)
-                throw new InvalidOperationException($"Can't transit NULL Source. Use {nameof(ObjectSetTransition)} to link to some source and use {nameof(ObjectTransition)} within parent {nameof(ObjectSetTransition)}");
+                throw new InvalidOperationException($"Can't transit NULL Source. Use {nameof(TransitDataCommand)} to link to some source and use {nameof(ObjectTransition)} within parent {nameof(TransitDataCommand)}");
 
             ctx.ObjectTransition = this;
             var result = base.Transit(ctx);

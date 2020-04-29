@@ -13,7 +13,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
     /// city id by city name or by any other condition. Lookup condition determined by LookupExpr migration expression. This transition 
     /// based on LookupValueTransitUnit
     // </summary>
-    public class LookupValueTransition : ValueTransition
+    public class LookupValueTransition : TransitValueCommand
     {
         [XmlAttribute]
         public string ReplaceBeforeLookup { get; set; }
@@ -74,7 +74,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
             var customLookupTransitions = new List<TransitionNode>();
 
             if (ReplaceBeforeLookup.IsNotEmpty())
-                customLookupTransitions.Add(new ReplaceTransitUnit { ReplaceRules = ReplaceBeforeLookup });
+                customLookupTransitions.Add(new ReplaceTransitUnit { ReplaceExpression = ReplaceBeforeLookup });
 
             customLookupTransitions.Add(new LookupValueTransitUnit
             {
@@ -95,7 +95,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
                 customLookupTransitions.Add(new TransitUnit { Expression = Return });
             }
 
-            ChildTransitions.AddRange(customLookupTransitions);
+            Pipeline.AddRange(customLookupTransitions);
         }
     }
 }
