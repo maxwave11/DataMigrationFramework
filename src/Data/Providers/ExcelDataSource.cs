@@ -2,39 +2,31 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
-using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class ExcelDataSource : TransitionNode, IDataSource
+    public class ExcelDataSource : IDataSource
     {
-        [XmlAttribute]
         public string DBPath { get; set; }
 
         /// <summary>
         /// Indicates in which row in file actual header located
         /// </summary>
-        [XmlAttribute]
         public int HeaderRowNumber { get; set; } = 1;
 
         /// <summary>
         /// Indicates where in file actual data starts from
         /// </summary>
-        [XmlAttribute]
         public int DataStartRowNumber { get; set; } = 2;
 
-        [XmlAttribute]
         public string Query { get; set; }
 
-        [XmlAttribute]
         public bool IsDefault { get; set; }
 
-        public IEnumerable<IValuesObject> GetDataSet(string fileRelativePath)
+        public IEnumerable<IValuesObject> GetData()
         {
-            var filePath = $"{DBPath}\\{fileRelativePath}";
+            var filePath = $"{DBPath}\\{Query}";
 
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
@@ -91,13 +83,6 @@ namespace XQ.DataMigration.Data
             }
 
             return valuesObject;
-        }
-
-        public override TransitResult Transit(ValueTransitContext ctx)
-        {
-            var actualQuery = ExpressionEvaluator.EvaluateString(Query, ctx);
-            DBPath = ExpressionEvaluator.EvaluateString(DBPath, ctx);
-            return new TransitResult(GetDataSet(actualQuery));
         }
     }
 }

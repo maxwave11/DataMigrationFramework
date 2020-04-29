@@ -8,9 +8,6 @@ namespace XQ.DataMigration.Data
     /// particular DataSet of this provider
     /// </summary>
     public interface IDataSource { 
-        string Name { get; set; }
-        bool IsDefault { get; set; }
-        string Query { get; set; }
-        IEnumerable<IValuesObject> GetDataSet(string dataSourceQuery);
+        IEnumerable<IValuesObject> GetData();
     }
 }

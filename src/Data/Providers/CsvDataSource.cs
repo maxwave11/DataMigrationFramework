@@ -1,45 +1,38 @@
 ﻿using CsvHelper;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
-using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.TransitionNodes;
+using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class CsvDataSource : TransitionNode, IDataSource
+    public class CsvSourceSettings 
     {
-        [XmlAttribute]
-        public string DBPath { get;  set; }
-
-        [XmlAttribute]
+        public string Path { get; set; }
         public string Delimiter { get; set; } = ";";
-
-        [XmlAttribute]
-        public string Query { get; set; }
-
-        [XmlAttribute]
-        public bool IsDefault { get; set; }
-
-        [XmlAttribute]
         public bool HasHeaderRow { get; set; }
+        public bool IsDefault { get; set; }
+    }
 
-        public IEnumerable<IValuesObject> GetDataSet(string fileRelativePath)
+    public class CsvDataSource : DataSourceBase
+    {
+        public CsvSourceSettings Settings { get; set; }
+
+        protected override IEnumerable<IValuesObject> GetDataInternal()
         {
-            var filePath = $"{DBPath}\\{fileRelativePath}";
+            var settings = Settings ?? Migrator.Current.MapConfig.GetDefaultSourceSettings<CsvSourceSettings>();
+            var filePath = $"{settings.Path}\\{Query}";
 
             var txtReader = new StreamReader(filePath, Encoding.GetEncoding("Windows-1252"));
             var csvReader = new CsvReader(txtReader);
-            csvReader.Configuration.Delimiter = Delimiter;
+            csvReader.Configuration.Delimiter = settings.Delimiter;
             csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
             csvReader.Configuration.TrimFields = true;
             csvReader.Configuration.IgnoreBlankLines = true;
             csvReader.Configuration.TrimHeaders = true;
-            csvReader.Configuration.HasHeaderRecord = HasHeaderRow;
+            csvReader.Configuration.HasHeaderRecord = settings.HasHeaderRow;
 
             using (txtReader)
             {
@@ -47,25 +40,20 @@ namespace XQ.DataMigration.Data
                 {
                     while (csvReader.Read())
                     {
-                        ValuesObject result = new ValuesObject();
+                        var result = new ValuesObject();
                         csvReader.FieldHeaders.ToList().ForEach(i =>
                         {
                             if (i.IsNotEmpty())
                                 result.SetValue(i, csvReader[i]);
                         });
 
+                        
+
                         yield return result;
                     }
                 }
             }
-
-        }
-
-        public override TransitResult Transit(ValueTransitContext ctx)
-        {
-            var actualQuery = ExpressionEvaluator.EvaluateString(Query, ctx);
-            DBPath = ExpressionEvaluator.EvaluateString(DBPath, ctx);
-            return new TransitResult(GetDataSet(actualQuery));
         }
     }
+
 }

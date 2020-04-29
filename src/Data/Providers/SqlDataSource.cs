@@ -8,23 +8,22 @@ using XQ.DataMigration.Mapping.TransitionNodes;
 
 namespace XQ.DataMigration.Data
 {
-    public class SqlDataSource : TransitionNode, IDataSource
+    public class SqlDataSource : IDataSource //INHERIT FROM DataSourceBase
     {
-        [XmlAttribute]
         public string ConnectionString { get; set; }
 
-        [XmlAttribute]
         public bool IsDefault { get; set; }
 
-        [XmlAttribute]
         public string Query { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IEnumerable<IValuesObject> GetDataSet(string queryString)
+       
+
+        public IEnumerable<IValuesObject> GetData()
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
                 SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = new SqlCommand(queryString, connection);
+                adapter.SelectCommand = new SqlCommand(Query, connection);
                 DataSet dataset = new DataSet();
                 adapter.Fill(dataset);
                 using (DataTableReader reader = dataset.CreateDataReader())
@@ -43,11 +42,11 @@ namespace XQ.DataMigration.Data
             }
         }
 
-        public override TransitResult Transit(ValueTransitContext ctx)
-        {
-            var actualQuery =  ExpressionEvaluator.EvaluateString(Query, ctx);
-            ConnectionString = ExpressionEvaluator.EvaluateString(ConnectionString, ctx);
-            return new TransitResult(GetDataSet(actualQuery));
-        }
+        //public override TransitResult Transit(ValueTransitContext ctx)
+        //{
+        //    var actualQuery =  ExpressionEvaluator.EvaluateString(Query, ctx);
+        //    ConnectionString = ExpressionEvaluator.EvaluateString(ConnectionString, ctx);
+        //    return new TransitResult(GetDataSet(actualQuery));
+        //}
     }
 }

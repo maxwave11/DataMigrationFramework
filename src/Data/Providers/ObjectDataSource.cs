@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class ObjectDataSource : TransitionNode, IDataSource
+    public class ObjectDataSource //INHERIT FROM DataSourceBase!
     {
         [XmlAttribute]
         public string From { get; set; }
@@ -25,23 +24,23 @@ namespace XQ.DataMigration.Data
         }
 
 
-        public override void Initialize(TransitionNode parent)
+        public  void Initialize(TransitionNode parent)
         {
-            base.Initialize(parent);
+           // base.Initialize(parent);
         }
 
 
-        public override TransitResult Transit(ValueTransitContext ctx)
-        {
-            var actualFrom = From.IsEmpty() ? "{VALUE}" : From;
-            var sourceObject = ExpressionEvaluator.Evaluate(actualFrom, ctx);
-            if (!(sourceObject is IValuesObject))
-                throw new InvalidOperationException($"Source object returned by {nameof(From)} expression should implement {nameof(IValuesObject)}");
+        //public override TransitResult Transit(ValueTransitContext ctx)
+        //{
+        //    var actualFrom = From.IsEmpty() ? "{VALUE}" : From;
+        //    var sourceObject = ExpressionEvaluator.Evaluate(actualFrom, ctx);
+        //    if (!(sourceObject is IValuesObject))
+        //        throw new InvalidOperationException($"Source object returned by {nameof(From)} expression should implement {nameof(IValuesObject)}");
 
-            var actualQuery = ExpressionEvaluator.EvaluateString(Query, ctx);
-            var result = GetObjects(actualQuery, (IValuesObject)sourceObject);
-            return new TransitResult(result);
-        }
+        //    var actualQuery = ExpressionEvaluator.EvaluateString(Query, ctx);
+        //    var result = GetObjects(actualQuery, (IValuesObject)sourceObject);
+        //    return new TransitResult(result);
+        //}
 
         public IEnumerable<IValuesObject> GetObjects(string query, IValuesObject sourceObject)
         {
@@ -63,7 +62,6 @@ namespace XQ.DataMigration.Data
                     {
                         var columnNames = sourceObject.FieldNames.Select(i => $"'{i}'").Join();
                         var warningMsg = $"No pivoted columns found by pattern '{pivotPattern}'! All column names: {columnNames}";
-                        TraceLine(warningMsg);
                     }
 
                     if (result == null)
