@@ -11,11 +11,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
         /// List of nested transitions. 
         /// NOTE: generic parameter should be a class (not interface) since it will be not deserialized from XML
         /// </summary>
-        public List<TransitionNode> Pipeline { get; set; }
+        public List<TransitionNode> Pipeline { get; set; } = new List<TransitionNode>();
 
         public override void Initialize(TransitionNode parent)
         {
-            Pipeline?.ForEach(i => i.Initialize(this));
+            Pipeline.ForEach(i => i.Initialize(this));
             base.Initialize(parent);
         }
 
@@ -29,21 +29,27 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
         protected TransitResult TransitChildren(ValueTransitContext ctx)
         {
-            if (Pipeline == null)
-                return new TransitResult(TransitContinuation.Continue,"Transition is Empty");
-
-            foreach (var childTransition in Pipeline)
+            try
             {
-                if (!childTransition.CanTransit(ctx))
-                    continue;
-
-                var childTransitResult = TransitChild(childTransition, ctx);
-
-                if (childTransitResult.Continuation != TransitContinuation.Continue)
+                Migrator.Current.Tracer.Indent();
+                
+                foreach (var childTransition in Pipeline)
                 {
-                    TraceLine($"Breaking {this.GetType().Name}");
-                    return childTransitResult;
+                    if (!childTransition.CanTransit(ctx))
+                        continue;
+
+                    var childTransitResult = TransitChild(childTransition, ctx);
+
+                    if (childTransitResult.Continuation != TransitContinuation.Continue)
+                    {
+                        TraceLine($"Breaking {this.GetType().Name}");
+                        return childTransitResult;
+                    }
                 }
+            }
+            finally
+            {
+                Migrator.Current.Tracer.IndentBack();
             }
 
             return new TransitResult(ctx.TransitValue);

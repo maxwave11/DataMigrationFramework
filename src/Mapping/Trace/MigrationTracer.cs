@@ -33,7 +33,9 @@ namespace XQ.DataMigration.Mapping.Trace
         /// </summary>
         public event EventHandler<IValuesObject> OnObjectSkipped;
 
-        internal const string IndentUnit = "  ";
+        internal const string IndentUnit = "\t";
+
+        internal int _identLevel = 0;
 
         public void TraceLine(string message)
         {
@@ -116,12 +118,17 @@ namespace XQ.DataMigration.Mapping.Trace
         private string FormatMessage(string msg, TransitionNode node)
         {
             var indent = "";
-            TransitionNode nextParent = node.Parent;
-            while (nextParent != null)
+            // TransitionNode nextParent = node.Parent;
+
+            for (int i = 0; i < _identLevel; i++)
             {
-                nextParent = nextParent.Parent;
                 indent += IndentUnit;
             }
+            // while (nextParent != null)
+            // {
+            //     nextParent = nextParent.Parent;
+            //     indent += IndentUnit;
+            // }
 
             return '\n' + msg.Split('\n').Select(i => indent + i).Join("\n");
         }
@@ -138,6 +145,16 @@ namespace XQ.DataMigration.Mapping.Trace
                 return null;
 
             return  (transitionNode as ObjectTransition) ?? FindObjectTransition(transitionNode.Parent);
+        }
+
+        public void Indent()
+        {
+            _identLevel++;
+        }
+        
+        public void IndentBack()
+        {
+            _identLevel--;
         }
     }
 }

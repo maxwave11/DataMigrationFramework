@@ -5,8 +5,10 @@ using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping;
+using XQ.DataMigration.Mapping.Expressions;
 using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 
 namespace XQ.DataMigration.MapConfig
 {
@@ -15,7 +17,7 @@ namespace XQ.DataMigration.MapConfig
         public List<IDataSourceSettings> SourceSettings { get; set; } = new List<IDataSourceSettings>();
         public Dictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
         public List<TransitDataCommand> Pipeline { get; set; } = new List<TransitDataCommand>();
-
+        public Dictionary<string, MigrationExpression> _examples { get; set; }
 
         internal void Initialize()
         { 
@@ -27,11 +29,11 @@ namespace XQ.DataMigration.MapConfig
             return SourceSettings.OfType<T>().Single();
         }
 
-        public ITargetProvider GetTargetProvider()
-        {
-            //Only one TargetProvider allowed at current moment!
-            //return DataSources.OfType<ITargetProvider>().Single();
-            return null;
-        }
+        // public ITargetProvider GetTargetProvider()
+        // {
+        //     //Only one TargetProvider allowed at current moment!
+        //     //return DataSources.OfType<ITargetProvider>().Single();
+        //     return null;
+        // }
     }
 }

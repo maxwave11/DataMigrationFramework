@@ -15,23 +15,23 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             
         }
 
-        protected override void TraceEnd(ValueTransitContext ctx)
-        {
-            var tagName = this.GetType().Name;
-            var returnValue = ctx.TransitValue?.ToString();
-            var returnValueType = ctx.TransitValue?.GetType().Name;
-            var traceMsg = $"<{tagName} Value=\"({returnValueType.Truncate(30)}){returnValue.Truncate(40)}\" To=\"{ctx.Target}.{Expression}\"/>";
-            TraceLine(traceMsg);
-        }
-
-        // public override TransitResult Transit(ValueTransitContext ctx)
+        // protected override void TraceEnd(ValueTransitContext ctx)
         // {
-        //     if (Expression.Contains("{"))
-        //         ExpressionEvaluator.Evaluate(Expression, ctx);
-        //     else
-        //         ctx.Target.SetValue(Expression, ctx.TransitValue);
-        //
-        //     return new TransitResult(ctx.TransitValue);
+        //     var tagName = this.GetType().Name;
+        //     var returnValue = ctx.TransitValue?.ToString();
+        //     var returnValueType = ctx.TransitValue?.GetType().Name;
+        //     var traceMsg = $"{tagName} Value: ({returnValueType.Truncate(30)}){returnValue.Truncate(40)}, To: {ctx.Target}.{Expression} ";
+        //     TraceLine(traceMsg);
         // }
+
+        public override TransitResult Transit(ValueTransitContext ctx)
+        {
+            if (Expression.IsJustString)
+                ctx.Target.SetValue(Expression.Expression, ctx.TransitValue);
+            else
+                Expression.Evaluate(ctx);
+            
+            return new TransitResult(ctx.TransitValue);
+        }
     }   
 }

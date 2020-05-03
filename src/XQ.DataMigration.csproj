@@ -122,7 +122,6 @@
     <Compile Include="Mapping\Trace\MigrationTracer.cs" />
     <Compile Include="Mapping\Migrator.cs" />
     <Compile Include="Mapping\Expressions\ExpressionCompiler.cs" />
-    <Compile Include="Mapping\Expressions\ExpressionEvaluator.cs" />
     <Compile Include="Mapping\Trace\TraceMessage.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\GlobalObjectTransition.cs" />
     <Compile Include="Enums\ObjectTransitMode.cs" />
@@ -131,6 +130,7 @@
     <Compile Include="Data\Providers\ObjectDataSource.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\TargetObjectsSaver.cs" />
+    <Compile Include="Mapping\Expressions\MigrationExpression.cs" />
     <Compile Include="Mapping\TransitionNodes\Validation\RequiredIfAttribute.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\Condition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\CustomTransitionNode.cs" />

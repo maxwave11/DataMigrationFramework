@@ -9,12 +9,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 {
     public class TargetObjectsSaver 
     {
+        private readonly ITargetProvider _targetProvider;
+
         /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value
         /// </summary>
         public int SaveLimit { get; set; } = 10;
 
         private readonly List<IValuesObject> _transittedObjects = new List<IValuesObject>();
+
+        public TargetObjectsSaver(ITargetProvider targetProvider)
+        {
+            _targetProvider = targetProvider;
+        }
 
 
         internal void Push(IEnumerable<IValuesObject> objectsToSave)
@@ -40,7 +47,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                Migrator.Current.MapConfig.GetTargetProvider().SaveObjects(targetObjects);
+                _targetProvider.SaveObjects(targetObjects);
                 stopWath.Stop();
 
 

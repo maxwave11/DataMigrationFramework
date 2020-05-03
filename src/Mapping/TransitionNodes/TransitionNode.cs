@@ -29,9 +29,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public bool TraceWarnings { get; set; } = true;
 
         [XmlAttribute]
-        public string TraceMessage { get; set; }
-
-        [XmlAttribute]
         public virtual ConsoleColor Color { get; set; } = ConsoleColor.White;
 
         /// <summary>
@@ -42,7 +39,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         internal TraceLevel ActualTrace => TraceLevel == TraceLevel.Auto ? Parent?.ActualTrace ?? TraceLevel : TraceLevel;
 
-        protected Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
+        //protected Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
 
         [XmlIgnore]
         public TransitionNode Parent { get; private set; }
@@ -57,6 +54,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         {
             Parent = parent;
             Validate();
+
         }
 
         void Validate()
@@ -133,16 +131,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             var incomingValue = ctx.TransitValue?.ToString();
             var incomingValueType = ctx.TransitValue?.GetType().Name;
 
-            var traceMsg = $"<{tagName}{attributes}>";
+            var traceMsg = $"-> {tagName}{attributes}";
             TraceLine(traceMsg);
 
-            TraceLine($"{MigrationTracer.IndentUnit}<Input Value=\"({incomingValueType.Truncate(30)}){incomingValue}\"/>");
-
-            if (TraceMessage.IsNotEmpty())
-            {
-                var userMessage = $"Trace Massage: '{ ExpressionEvaluator.Evaluate(TraceMessage, ctx) }'";
-                TraceLine(userMessage);
-            }
+            TraceLine($"{MigrationTracer.IndentUnit} Input: ({incomingValueType.Truncate(30)}){incomingValue}");
         }
 
         protected virtual void TraceEnd(ValueTransitContext ctx)
@@ -151,10 +143,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             var returnValue = ctx.TransitValue?.ToString();
             var returnValueType = ctx.TransitValue?.GetType().Name;
 
-            var traceMsg = $"{MigrationTracer.IndentUnit}<Output Value=\"({returnValueType.Truncate(30)}){returnValue}\"/>";
+            var traceMsg = $"{MigrationTracer.IndentUnit} Output: ({returnValueType.Truncate(30)}){returnValue}";
             TraceLine(traceMsg);
 
-            traceMsg = $"</{tagName}>";
+            traceMsg = $"<- {tagName}";
             TraceLine(traceMsg);
         }
 

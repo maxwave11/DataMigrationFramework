@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
+using XQ.DataMigration.Mapping.Expressions;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
@@ -79,8 +80,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             if (LookupKeyExpr == null && LookupAlternativeExpr.IsEmpty())
                 throw new Exception($"Field {nameof(LookupKeyExpr)} or {nameof(LookupAlternativeExpr)}  should be filled to search lookup object");
 
-            if (!LookupKeyExpr.Contains("{"))
-                LookupKeyExpr = $"{{ VALUE[{ LookupKeyExpr }] }}";
+            // if (!LookupKeyExpr.Contains("{"))
+            //     LookupKeyExpr = $"{{ VALUE[{ LookupKeyExpr }] }}";
 
             base.Initialize(parent);
         }

@@ -93,10 +93,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                 return regex.IsMatch(transitValue);
             }
 
-            if (Condition.StartsWith("{"))
-            {
-                return (bool)ExpressionEvaluator.Evaluate(Condition, ctx);
-            }
+            //if (Condition.StartsWith("{"))
+            //{
+            //    return (bool)ExpressionEvaluator.Evaluate(Condition, ctx);
+            //}
 
             return transitValue?.Contains(Condition) ?? false;
         }

@@ -18,17 +18,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public ITargetProvider Target { get; set; }
 
         public TargetObjectsSaver Saver { get; set; }
-
-        #region Members
-
+        
+        public ObjectTransitMode TransitMode { get; set; }
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
-
-        private IValuesObject _currentSourceObject;
-
-        #endregion
-
-        #region Methods
 
         public override void Initialize(TransitionNode parent)
         {
@@ -36,8 +29,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             //if (string.IsNullOrEmpty(QueryToSource))
             //    throw new Exception($"{nameof(QueryToSource)} can't be empty in {nameof(TransitDataCommand)}");
-            if (Saver == null)
+            
+         
+            
+            if (Target == null)
                 throw new ArgumentNullException();
+            
+            if (Source == null)
+                throw new ArgumentNullException();
+
+            Saver = new TargetObjectsSaver(Target);
+            
             base.Initialize(parent);
         }
 
@@ -79,18 +81,30 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             var srcDataSet = Source.GetData();
 
             int completedObjects = 0;
-            var totalObjects = srcDataSet.Count();
+           // var totalObjects = srcDataSet.Count();
 
             foreach (var sourceObject in srcDataSet)
             {
-                _currentSourceObject = sourceObject;
+                // _currentSourceObject = sourceObject;
 
-                ctx.Target = Target.GetObjectByKey(sourceObject.Key);;
+                if (sourceObject == null)
+                    continue;
+
+                ctx.Source = sourceObject;
+                ctx.Target = GetTargetObject(sourceObject.Key);
                 
                 var result = TransitChildren(ctx);
-
-                if (result.Continuation == TransitContinuation.SkipObject)
+                
+                if (result.Continuation == TransitContinuation.SkipObject && ctx.Target?.IsNew == true)
+                {
+                    //If object just created and skipped by migration logic - need to remove it from cache
+                    //becaus it's invalid and must be removed from cache to avoid any referencing to this object
+                    //by any migration logic (lookups, key ytansitions, etc.)
+                    //If object is not new, it means that it's already saved and passed by migration validation
+                    Target.RemoveObjectFromCache(ctx.Target.Key);
                     continue;
+
+                }
 
                 if (result.Continuation == TransitContinuation.SkipObjectSet)
                     return new TransitResult(ctx.TransitValue);
@@ -101,44 +115,68 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                     return result;
                 }
                 completedObjects++;
-
-                TraceLine($"Completed {completedObjects / totalObjects:P1} ({completedObjects} of {totalObjects})");
+                Saver.Push(new[]{ctx.Target});
+                //TraceLine($"Completed {completedObjects / totalObjects:P1} ({completedObjects} of {totalObjects})");
             }
-
-           // Saver.Save();
+            
+            Saver.TrySave();
 
             return new TransitResult(null);
         }
-
-        protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+        
+        private  IValuesObject GetTargetObject(string key)
         {
-            ctx.Source = _currentSourceObject;
-            //reset cached source key because different nesetd transitions 
-            //can use different source key evaluation logic
-            //ctx.Source.Key = String.Empty;
+           // var provider = Migrator.Current.MapConfig.GetTargetProvider();
 
-            var result =  base.TransitChild(childNode, ctx);
+            var existedObject = Target.GetObjectByKey(key);
 
-            if (result.Continuation == TransitContinuation.SkipObject || result.Continuation == TransitContinuation.SkipObjectSet)
-                return result;
 
-            var targetObjects = new List<IValuesObject>();
-
-            var target = ctx.Target;
-            if (target is IEnumerable<IValuesObject>)
+            if (TransitMode == ObjectTransitMode.OnlyExistedObjects)
             {
-                targetObjects.AddRange((IEnumerable<IValuesObject>)target);
+                return existedObject;
             }
-            else
+
+            if (TransitMode == ObjectTransitMode.OnlyNewObjects && existedObject != null)
             {
-                if (target != null)//target can be null if SkipObject activated
-                    targetObjects.Add((IValuesObject)target);
+                TraceLine($"Object already exist, skipping, because TransitMode = TransitMode.OnlyNewObjects");
+                return null;
             }
-            Saver.Push(targetObjects);
-            
-            return result;
+
+            if (existedObject != null)
+                return existedObject;
+
+            var newObject = Target.CreateObject(key);
+            return newObject;
         }
+        
 
-        #endregion
+        // protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+        // {
+        //     ctx.Source = _currentSourceObject;
+        //     //reset cached source key because different nesetd transitions 
+        //     //can use different source key evaluation logic
+        //     //ctx.Source.Key = String.Empty;
+        //
+        //     var result =  base.TransitChild(childNode, ctx);
+        //
+        //     if (result.Continuation == TransitContinuation.SkipObject || result.Continuation == TransitContinuation.SkipObjectSet)
+        //         return result;
+        //
+        //     var targetObjects = new List<IValuesObject>();
+        //
+        //     var target = ctx.Target;
+        //     if (target is IEnumerable<IValuesObject>)
+        //     {
+        //         targetObjects.AddRange((IEnumerable<IValuesObject>)target);
+        //     }
+        //     else
+        //     {
+        //         if (target != null)//target can be null if SkipObject activated
+        //             targetObjects.Add((IValuesObject)target);
+        //     }
+        //     Saver.Push(targetObjects);
+        //     
+        //     return result;
+        // }
     }
 }

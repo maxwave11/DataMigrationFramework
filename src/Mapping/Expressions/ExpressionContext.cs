@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Mapping.Logic;
@@ -23,7 +24,9 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// </summary>
         public object VALUE => _ctx.TransitValue;
         
-        public IValuesObject GLOBAL => GlobalObjectTransition.GlobalObject;
+        public IValuesObject VALUE_OBJECT => (IValuesObject)_ctx.TransitValue;
+        
+        public Dictionary<string, object> Variables => Migrator.Current.MapConfig.Variables;
         
         //Object for temporary storing any IValuesObject during migration which avalilable during whole migration process
         public IValuesObject CUSTOM { 

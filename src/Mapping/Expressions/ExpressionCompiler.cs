@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using XQ.DataMigration.Data;
 
@@ -14,32 +15,6 @@ namespace XQ.DataMigration.Mapping.Expressions
     public class ExpressionCompiler
     {
         //private readonly List<Type> _customTypes = new List<Type>();
-
-        /// <summary>
-        /// Compiles migration expression to delegate
-        /// </summary>
-        /// <param name="migrationExpression">Migration expression from mapping configuration</param>
-        /// <param name="objTransitionType">The type of ObjectTransition from which expression should be executed</param>
-        /// <returns>Compiled delegate</returns>
-        internal static ScriptRunner<object> Compile(string migrationExpression, List<Type> customTypes) 
-        {
-            var translatedExpression = TranslateExpression(migrationExpression);
-
-            var importTypes = new List<Type>();
-            importTypes.Add(typeof(IValuesObject));
-            importTypes.AddRange(customTypes.ToArray());
-
-           
-            var scriptOptions = ScriptOptions.Default
-                .WithReferences(importTypes.Select(t => t.Assembly))
-                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text"));
-               
-            var script = CSharpScript.Create<object>(translatedExpression, options: scriptOptions,  globalsType: typeof(ExpressionContext));
-            
-            ScriptRunner<object> runner = script.CreateDelegate();
-           
-            return runner;
-        }
 
         /// <summary>
         ///Translates migration expression to C# compilable expression
@@ -62,16 +37,34 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// </summary>
         /// <param name="migrationExpression">Migration expression from mapping configuration</param>
         /// <returns>C# expression string</returns>
-        private static  string TranslateExpression(string migrationExpression)
+        public static  string TranslateExpression(string migrationExpression)
         {
+            bool isCode = false, isStringTemplate = false;
+            string expression = null;
+
+            if (migrationExpression.StartsWith("=>"))
+            {
+                isCode = true;
+                expression = migrationExpression.TrimStart('=', '>');
+            }
+            
+            if (migrationExpression.StartsWith("$"))
+            {
+                isStringTemplate = true;
+                expression = migrationExpression.TrimStart('$');
+            }
+
+            if (expression == null)
+                throw new InvalidOperationException("Expression should be eiter codeexpression (starts from '@') or string temlate (starts from '$')");
+            
             //check that count of open and close curly braces are equal
             if (migrationExpression.Count(c => c == '{') != migrationExpression.Count(c => c == '}'))
                 throw new Exception($"Expression {migrationExpression} is not valid. Check open and close brackets");
 
-            var expression = migrationExpression;
+          
 
             //translate simplified global variable accessor directive '@': @variable => GLOBAL[variable]
-            expression = new Regex(@"@([^\W]*)").Replace(expression, "GLOBAL[$1]");
+            expression = new Regex(@"@([^\W]*)").Replace(expression, $"{nameof(ExpressionContext.Variables)}[$1]");
             
             //quotes conversion: 
             //'some text' => "some text"
@@ -90,28 +83,21 @@ namespace XQ.DataMigration.Mapping.Expressions
                 nameof(ExpressionContext.SRC),
                 nameof(ExpressionContext.TARGET),
                 nameof(ExpressionContext.VALUE),
+                nameof(ExpressionContext.VALUE_OBJECT),
                 nameof(ExpressionContext.CUSTOM),
-                nameof(ExpressionContext.GLOBAL),
+                nameof(ExpressionContext.Variables),
                 $@"{nameof(ExpressionContext.HISTORY)}.*?\)"
             };
+            
             //braces regex wich define expression like [.....] or with nested braces [..[...]...]
             //nested braces can be for some nested queries instead of field name
             //Example with simple field name: 1. [field_name] => ["field_name"]
             //Example with expression (query): 2. [$.parent[?(@.jll_propertyid)].jll_propertyid] => ["$.parent[?(@.jll_propertyid)].jll_propertyid"]
             var bracesRegex = @"(\??)\s*\[(\s*(([^\[\]]*)?(\[[^\[\]]{1,}\])?([^\[\]]*)?)*\s*)\]";
             var regexp = new Regex($@"({ string.Join("|", valuesObjectPrefixes) }){ bracesRegex }");
-            expression = regexp.Replace(expression, $"(({nameof(IValuesObject)})$1)$2[\"$3\"]");
+            expression = regexp.Replace(expression, $"$1$2[\"$3\"]");
 
-          
-            //determine type of exression. Expression like '{...}' should return pure value (no interpolation to string)
-            if (new Regex(@"^{[^}]*}$").IsMatch(expression))
-                return expression.Trim('{', '}');
-
-            
-            //convert plain string to C# string template
-            //also trim $ symbol which force to convert expression to interpolated string
-            expression = "$\"" + expression.Trim('$') + "\"";
-            return expression;
+            return isCode ? expression : "$\"" + expression + "\"";
         }
     }
 }

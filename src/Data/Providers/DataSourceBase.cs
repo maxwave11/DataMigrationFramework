@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using XQ.DataMigration.MapConfig;
@@ -55,7 +55,14 @@ namespace XQ.DataMigration.Data
                     if (IsRowEmpty(reader))
                         continue;
                 
-                    yield return RowToValuesObject(reader, headerRow);
+
+                    var valuesObject = RowToValuesObject(reader, headerRow);
+
+                    //skiping objects with empty keys
+                    if (valuesObject.Key.IsEmpty())
+                        continue;
+
+                    yield return valuesObject;
                 }
             }
         }
@@ -83,9 +90,6 @@ namespace XQ.DataMigration.Data
             }
 
             valuesObject.Key = Key.GetKeyForObject(valuesObject);
-
-            if (valuesObject.Key.IsEmpty())
-                throw new InvalidOperationException("Object key can't be empty");
 
             return valuesObject;
         }
