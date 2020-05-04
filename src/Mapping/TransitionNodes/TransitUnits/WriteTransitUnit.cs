@@ -33,5 +33,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             
             return new TransitResult(ctx.TransitValue);
         }
+        
+        public static implicit operator WriteTransitUnit(string expression)
+        {
+            return new WriteTransitUnit() { Expression = expression };
+        }
     }   
 }

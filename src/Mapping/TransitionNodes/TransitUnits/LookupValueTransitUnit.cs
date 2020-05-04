@@ -92,7 +92,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             string message = "";
             var continuation = TransitContinuation.Continue;
 
-            var valueToFind = base.Transit(ctx).Value?.ToString();
+            var valueToFind = ctx.TransitValue?.ToString();
 
             if (valueToFind.IsNotEmpty())
             {
@@ -161,8 +161,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
        
         private bool IsObjectLookupKeyEquals(IValuesObject lookupObject, string lookupValue)
         {
-            var ctx = new ValueTransitContext(lookupObject, lookupObject, lookupObject);
-            return LookupKeyExpr.EvaluateString(ctx).ToUpper().Trim() == lookupValue.ToUpper().Trim();
+            return lookupObject.Key.ToUpper().Trim() == lookupValue.ToUpper().Trim();
         }
 
         // private string EvaluateAlternativeObjectKey(IValuesObject lookupObject)

@@ -75,7 +75,7 @@ namespace XQ.DataMigration.Data
 
         public override string ToString()
         {
-            return GetType().Name.Truncate(30, "*");
+            return $"key: { Key }, dataObject: { _dataContainer.GetType().Name.Truncate(30, "*") } ";
         }
 
         public void Dispose()

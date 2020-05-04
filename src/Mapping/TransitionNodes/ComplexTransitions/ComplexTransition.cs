@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
-    public abstract class ComplexTransition : TransitionNode
+    public abstract class ComplexTransition : TransitionNode, IList<TransitionNode>
     {
         /// <summary>
         /// List of nested transitions. 
@@ -68,6 +69,66 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
                 return new TransitResult(result.Value);
 
             return result;
+        }
+
+        public IEnumerator<TransitionNode> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+    
+
+        public void Add(TransitionNode item)
+        {
+            Pipeline.Add(item);
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(TransitionNode item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(TransitionNode[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(TransitionNode item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Count { get; }
+        public bool IsReadOnly { get; }
+        public int IndexOf(TransitionNode item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(int index, TransitionNode item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveAt(int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        public TransitionNode this[int index]
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
         }
     }
 }

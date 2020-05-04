@@ -19,7 +19,7 @@ namespace XQ.DataMigration.Mapping.Expressions
         {
             Expression = expression;
 
-            if (Expression.StartsWith("$") || Expression.StartsWith("=>"))
+            if (IsExpression(Expression))
             {
                 _scriptRunner = Compile(Expression, new List<Type>());
                 IsJustString = false;
@@ -45,7 +45,12 @@ namespace XQ.DataMigration.Mapping.Expressions
                 throw;
             }
         }
-        
+
+        public static bool IsExpression(string expression)
+        {
+            return expression.StartsWith("$") || expression.StartsWith("=>");
+        }
+
         public string EvaluateString(ValueTransitContext ctx)
         {
             return Expression.IsEmpty() ? Expression : Evaluate(ctx)?.ToString();
@@ -86,7 +91,7 @@ namespace XQ.DataMigration.Mapping.Expressions
 
         public override string ToString()
         {
-            return  $"{Expression}  ~~  {_translatedExpression}";
+            return  $"{Expression}";
         }
 
         public static implicit operator MigrationExpression(string expression)

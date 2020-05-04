@@ -10,6 +10,7 @@ using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
+using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.MapConfig
@@ -58,8 +59,10 @@ namespace XQ.DataMigration.MapConfig
         
         public static implicit operator KeyTransition(string expression)
         {
-            return new KeyTransition() { From = expression };
+            return new KeyTransition() { new ReadTransitUnit() { Expression = expression } };
         }
+        
+        
     }
 
 

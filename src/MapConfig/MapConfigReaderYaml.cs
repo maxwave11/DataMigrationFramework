@@ -70,14 +70,16 @@ namespace XQ.DataMigration.MapConfig
 
             var commandMapping = new Dictionary<string, Type>()
             {
-                { "transit-data", typeof(TransitDataCommand) },
-                { "transit", typeof(TransitValueCommand) },
+                // { "transit-data", typeof(TransitDataCommand) },
+                // { "transit", typeof(TransitValueCommand) },
                 { "condition", typeof(Condition) },
                 { "replace", typeof(ReplaceTransitUnit) },
-                { "lookup", typeof(LookupValueTransition) },
+                { "LOOKUP", typeof(LookupValueTransitUnit) },
                 { "csv", typeof(CsvDataSource) },
                 { "excel", typeof(ExcelDataSource) },
-                { "csv-settings", typeof(CsvSourceSettings) }
+                { "csv-settings", typeof(CsvSourceSettings) },
+                { "GET", typeof(TransitUnit) },
+                { "SET", typeof(WriteTransitUnit) }
             };
 
             var builder = new DeserializerBuilder();
@@ -97,4 +99,5 @@ namespace XQ.DataMigration.MapConfig
             return mapConfig;
         }
     }
+   
 }

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using XQ.DataMigration.MapConfig;
 using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Utils;
 
@@ -20,50 +21,49 @@ namespace XQ.DataMigration.Data
         /// Indicates in which row in file actual header located
         /// </summary>
         public int HeaderRowNumber { get; set; } = 1;
+        
         public int DataStartRowNumber { get; set; } = 2;
     }
 
-    public class CsvDataSource : DataSourceBase
+    public class CsvDataSource : IDataSource
     {
-        //public CsvSourceSettings Settings { get; set; }
+        public string Query { get; set; }
+        
+        public KeyTransition Key { get; set; }
 
-        protected override IDataReader GetDataReader()
+        public IEnumerable<IValuesObject> GetData()
         {
             var settings = Migrator.Current.MapConfig.GetDefaultSourceSettings<CsvSourceSettings>();
             string filePath = $"{settings.Path}\\{Query}";
-
             var txtReader = new StreamReader(filePath, Encoding.GetEncoding("Windows-1252"));
-            
-            var readerConfiguration = new CsvConfiguration(CultureInfo.CurrentCulture)
+            var csvReader = new CsvReader(txtReader);
+            csvReader.Configuration.Delimiter = settings.Delimiter;
+            csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
+            csvReader.Configuration.TrimFields = true;
+            csvReader.Configuration.IgnoreBlankLines = true;
+
+            using (txtReader)
             {
-                Delimiter = settings.Delimiter,
-                Encoding = Encoding.GetEncoding("Windows-1252"),
-                TrimOptions = TrimOptions.Trim,
-                IgnoreBlankLines = true,
-                PrepareHeaderForMatch = (header,i)=> header.Trim()
-            };
-            
-            var csvReader = new CsvDataReader(new CsvReader(txtReader,readerConfiguration));
+                using (csvReader)
+                {
+                    while (csvReader.Read())
+                    {
+                        ValuesObject result = new ValuesObject();
+                        csvReader.FieldHeaders.ToList().ForEach(i =>
+                        {
+                            if (i.IsNotEmpty())
+                                result.SetValue(i, csvReader[i]);
+                        });
+                        
+                        result.Key = Key.GetKeyForObject(result);
 
-            return csvReader;
+                        if (result.Key.IsEmpty())
+                            continue;
 
-            // using (txtReader)
-            // {
-            //     using (csvReader)
-            //     {
-            //         while (csvReader.Read())
-            //         {
-            //             var result = new ValuesObject();
-            //             csvReader.FieldHeaders.ToList().ForEach(i =>
-            //             {
-            //                 if (i.IsNotEmpty())
-            //                     result.SetValue(i, csvReader[i]);
-            //             });
-            //
-            //             yield return result;
-            //         }
-            //     }
-            // }
+                        yield return result;
+                    }
+                }
+            }
         }
     }
 

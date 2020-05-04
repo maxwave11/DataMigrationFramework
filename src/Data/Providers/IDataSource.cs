@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using XQ.DataMigration.MapConfig;
 
 namespace XQ.DataMigration.Data
 {
@@ -9,5 +10,6 @@ namespace XQ.DataMigration.Data
     /// </summary>
     public interface IDataSource { 
         IEnumerable<IValuesObject> GetData();
+        //KeyTransition Key { get; }
     }
 }

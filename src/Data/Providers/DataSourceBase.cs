@@ -26,8 +26,10 @@ namespace XQ.DataMigration.Data
 
         protected abstract IDataReader GetDataReader();
 
-        public IEnumerable<IValuesObject> GetData()
+        public virtual IEnumerable<IValuesObject> GetData()
         {
+            Key.Color = ConsoleColor.Green;
+            
             var reader = GetDataReader();
 
 
@@ -40,7 +42,7 @@ namespace XQ.DataMigration.Data
                     rowCounter++;
                 
                     //init header row
-                    if (rowCounter == 1)
+                    if (rowCounter == Settings.HeaderRowNumber)
                     {
                         headerRow = new string[reader.FieldCount];
                         for (int i = 0; i < reader.FieldCount; i++)
@@ -48,8 +50,9 @@ namespace XQ.DataMigration.Data
                 
                         continue;
                     }
-                
-                    if (rowCounter < 2)
+                    
+                  
+                    if (rowCounter < Settings.DataStartRowNumber)
                         continue;
                 
                     if (IsRowEmpty(reader))

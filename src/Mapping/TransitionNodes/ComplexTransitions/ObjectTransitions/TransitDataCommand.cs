@@ -6,13 +6,14 @@ using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
+using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions
 {
     /// <summary>
     /// Transition which transit objects data from DataSet of source system to DataSet of target system
     /// </summary>
-    public class TransitDataCommand : ComplexTransition
+    public class TransitDataCommand : TransitionNode
     {
         public IDataSource Source { get; set; }
         public ITargetProvider Target { get; set; }
@@ -20,6 +21,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         public TargetObjectsSaver Saver { get; set; }
         
         public ObjectTransitMode TransitMode { get; set; }
+        
+        public List<TransitValueCommand> Transitions { get; set; }
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 
@@ -29,8 +32,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             //if (string.IsNullOrEmpty(QueryToSource))
             //    throw new Exception($"{nameof(QueryToSource)} can't be empty in {nameof(TransitDataCommand)}");
-            
-         
             
             if (Target == null)
                 throw new ArgumentNullException();
@@ -92,7 +93,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
                 ctx.Source = sourceObject;
                 ctx.Target = GetTargetObject(sourceObject.Key);
-                
                 var result = TransitChildren(ctx);
                 
                 if (result.Continuation == TransitContinuation.SkipObject && ctx.Target?.IsNew == true)
@@ -123,6 +123,56 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             return new TransitResult(null);
         }
+        
+        protected TransitResult TransitChildren(ValueTransitContext ctx)
+        {
+            try
+            {
+                Migrator.Current.Tracer.Indent();
+
+
+                foreach (var childTransition in Transitions)
+                {
+                    if (!childTransition.CanTransit(ctx))
+                        continue;
+
+                    //every time after value transition finishes - reset current value to Source object
+                    ctx.SetCurrentValue(this.Name, ctx.Source);
+
+
+                    var childTransitResult = TransitChild(childTransition, ctx);
+
+                    if (childTransitResult.Continuation != TransitContinuation.Continue)
+                    {
+                        TraceLine($"Breaking {this.GetType().Name}");
+                        return childTransitResult;
+                    }
+                }
+            }
+            finally
+            {
+                Migrator.Current.Tracer.IndentBack();
+            }
+
+            return new TransitResult(ctx.TransitValue);
+        }
+        
+        protected virtual TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+        {
+            childNode.Color = ConsoleColor.Yellow;
+            var childTransitResult =  childNode.TransitCore(ctx);
+            childTransitResult = EndTransitChild(childTransitResult, ctx);
+            return childTransitResult;
+        }
+        
+        protected virtual TransitResult EndTransitChild(TransitResult result, ValueTransitContext ctx)
+        {
+            if (result.Continuation == TransitContinuation.SkipUnit)
+                return new TransitResult(result.Value);
+
+            return result;
+        }
+        
         
         private  IValuesObject GetTargetObject(string key)
         {

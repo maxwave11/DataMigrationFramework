@@ -28,7 +28,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         public string QueryToTarget { get; set; }
     
         //имя ключевого поля в категории, в которой находится элемент, на который ссылается значение этогополя (для ссылочных полей)
-        public MigrationExpression LookupKeyExpr { get; set; }
+        public string LookupKeyExpr { get; set; }
     
         //Use this propery to try to find object not by key but by other unique sequence. 
         //NOTE:Currently used in Avant ppe importing.
