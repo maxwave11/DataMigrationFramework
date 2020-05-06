@@ -30,7 +30,7 @@ namespace XQ.DataMigration.Data
         }
 
 
-        //public override TransitResult Transit(ValueTransitContext ctx)
+        //public override TransitResult TransitInternal(ValueTransitContext ctx)
         //{
         //    var actualFrom = From.IsEmpty() ? "{VALUE}" : From;
         //    var sourceObject = ExpressionEvaluator.Evaluate(actualFrom, ctx);

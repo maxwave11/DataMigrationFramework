@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 
@@ -7,9 +8,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     public class FlowTransition: TransitionNode
     {
         public TransitionFlow Flow { get; set; } = TransitionFlow.Continue;
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
-            return new TransitResult(Flow, null);
+            if (Flow == TransitionFlow.Debug)
+            {
+                Debugger.Break();
+                Flow = TransitionFlow.Continue;
+            }
+            
+            return new TransitResult(Flow, ctx.TransitValue);
         }
         
         public static implicit operator FlowTransition(string expression)

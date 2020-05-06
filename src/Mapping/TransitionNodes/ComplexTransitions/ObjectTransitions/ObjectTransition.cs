@@ -68,7 +68,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     //             throw new Exception($"{nameof(KeyTransition)} is required for {nameof(ObjectTransition)} element");
     //     }
     //
-    //     public override TransitResult Transit(ValueTransitContext ctx)
+    //     public override TransitResult TransitInternal(ValueTransitContext ctx)
     //     {
     //         TraceEntries.Clear();
     //
@@ -76,7 +76,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     //             throw new InvalidOperationException($"Can't transit NULL Source. Use {nameof(TransitDataCommand)} to link to some source and use {nameof(ObjectTransition)} within parent {nameof(TransitDataCommand)}");
     //
     //       //  ctx.ObjectTransition = this;
-    //         var result = base.Transit(ctx);
+    //         var result = base.TransitInternal(ctx);
     //
     //         //if (result.Flow == TransitionFlow.SkipObject && ctx.Target?.IsNew == true)
     //         //{

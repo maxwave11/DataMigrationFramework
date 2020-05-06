@@ -9,39 +9,34 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
-    public class ReplaceTransitUnit : TransitUnit
+    public class ReplaceTransitUnit : ComplexTransition<ReplaceStepUnit>
     {
-        [XmlAttribute]
         public string ReplaceExpression { get; set; }
 
-        [XmlArray("ReplaceUnits")]
-        [XmlArrayItem(nameof(ReplaceStepUnit))]
-        public List<ReplaceStepUnit> ReplaceUnits { get; set; }
+        // public override void Initialize(TransitionNode parent)
+        // {
+        //     if (ReplaceExpression.IsEmpty() && Pipeline?.Any() != true)
+        //         throw new Exception($"Need to fill {nameof(ReplaceExpression)} or {nameof(Pipeline)}");
+        //
+        //     if (ReplaceExpression.IsNotEmpty())
+        //     {
+        //         if (Pipeline?.Any() == true)
+        //             throw new Exception(nameof(ReplaceTransitUnit) + "not allows not empty Rules property while having child rules collection");
+        //
+        //         var rules = ReplaceExpression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+        //
+        //         Pipeline = rules.Select(i => new ReplaceStepUnit { Rule = i }).ToList();
+        //     }
+        //
+        //     Pipeline.ForEach(r => r.Initialize(this));
+        //
+        //     base.Initialize(parent);
+        // }
 
-        public override void Initialize(TransitionNode parent)
-        {
-            if (ReplaceExpression.IsEmpty() && ReplaceUnits?.Any() != true)
-                throw new Exception($"Need to fill {nameof(ReplaceExpression)} or {nameof(ReplaceUnits)}");
-
-            if (ReplaceExpression.IsNotEmpty())
-            {
-                if (ReplaceUnits?.Any() == true)
-                    throw new Exception(nameof(ReplaceTransitUnit) + "not allows not empty Rules property while having child rules collection");
-
-                var rules = ReplaceExpression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-                ReplaceUnits = rules.Select(i => new ReplaceStepUnit { Rule = i }).ToList();
-            }
-
-            ReplaceUnits.ForEach(r => r.Initialize(this));
-
-            base.Initialize(parent);
-        }
-
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             TransitResult replaceResult = null;
-            foreach (var childTransition in ReplaceUnits)
+            foreach (var childTransition in Pipeline)
             {
                 replaceResult = childTransition.Transit(ctx);
                 
@@ -63,12 +58,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
         public override string ToString()
         {
-            return base.ToString() + "ReplaceExpression: " + ReplaceExpression;
+            return base.ToString() + "ReplaceValue: " + ReplaceExpression;
         }
 
         public static implicit operator ReplaceTransitUnit(string expression)
         {
-            return new ReplaceTransitUnit() { ReplaceExpression = expression };
+            if (expression.IsEmpty())
+                throw new Exception("Replace expression cant be empty");
+
+            var rules = expression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            return new ReplaceTransitUnit() { Pipeline = rules.Select(i=> (ReplaceStepUnit)i).ToList()};
         }
     }
 }

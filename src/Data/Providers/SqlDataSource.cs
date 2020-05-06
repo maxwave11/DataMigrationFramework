@@ -42,7 +42,7 @@ namespace XQ.DataMigration.Data
             }
         }
 
-        //public override TransitResult Transit(ValueTransitContext ctx)
+        //public override TransitResult TransitInternal(ValueTransitContext ctx)
         //{
         //    var actualQuery =  ExpressionEvaluator.EvaluateString(Query, ctx);
         //    ConnectionString = ExpressionEvaluator.EvaluateString(ConnectionString, ctx);

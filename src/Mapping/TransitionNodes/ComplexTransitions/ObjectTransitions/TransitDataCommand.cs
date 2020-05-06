@@ -184,7 +184,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         protected virtual TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
         {
             childNode.Color = ConsoleColor.Yellow;
-            var childTransitResult =  childNode.TransitCore(ctx);
+            var childTransitResult =  childNode.Transit(ctx);
           //  childTransitResult = EndTransitChild(childTransitResult, ctx);
             return childTransitResult;
         }

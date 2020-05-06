@@ -45,22 +45,6 @@ namespace XQ.DataMigration.MapConfiguration
         {
             var yamlInput = File.ReadAllText(_fileName);
 
-            var types = new[] {
-                //providers
-                typeof(CsvDataSource),
-                typeof(SqlDataSource),
-                //transitions
-                typeof(KeyTransition),
-                typeof(LookupValueTransitUnit),
-                typeof(TransitUnit),
-                typeof(IfTransition),
-                typeof(TypeConvertTransitUnit),
-                typeof(ReplaceTransitUnit),
-                typeof(WriteMessageUnit),
-                typeof(TransitDataCommand),
-                typeof(TargetObjectsSaver),
-            };
-
             var commandMapping = new Dictionary<string, Type>()
             {
                 // { "transit-data", typeof(TransitDataCommand) },

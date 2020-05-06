@@ -47,11 +47,11 @@ namespace XQ.DataMigration.Mapping.Trace
             if (!string.IsNullOrEmpty(message))
                 message = FormatMessage(message);
 
-            if (node.HasParentOfType<KeyTransition>() && node.ActualTrace == false)
-            {
-                //don't add KeyTransition's TraceEntries to log if it's disabled
-            }
-            else
+            // if (node.HasParentOfType<KeyTransition>() && node.ActualTrace == false)
+            // {
+            //     //don't add KeyTransition's TraceEntries to log if it's disabled
+            // }
+            // else
             {
                 ctx?.AddTraceEntry(message, node.Color);
             }

@@ -38,7 +38,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         //    //Pipeline.Insert(0, new TransitUnit() { Expression = From, OnError = this.OnError });
 
         //    if (Replace.IsNotEmpty())
-        //        Pipeline.Add(new ReplaceTransitUnit { ReplaceExpression = Replace, OnError = this.OnError });
+        //        Pipeline.Add(new ReplaceTransitUnit { ReplaceValue = Replace, OnError = this.OnError });
 
         //    if (DataType.IsNotEmpty())
         //        Pipeline.Add(new TypeConvertTransitUnit { 

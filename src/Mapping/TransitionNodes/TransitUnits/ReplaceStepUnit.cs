@@ -10,45 +10,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
     public class ReplaceStepUnit : TransitUnit
     {
-        [XmlAttribute]
-        public string Rule { get; set; }
-
-        [XmlAttribute]
         public bool Important { get; set; }
 
-        [XmlAttribute]
         public string Condition { get; set; }
 
-        [XmlAttribute]
-        public string ReplaceExpression { get; set; }
+        public string ReplaceValue { get; set; }
 
-        public override void Initialize(TransitionNode parent)
-        {
-            if (Rule.IsEmpty())
-                return;
-
-            if (!Rule.Contains('='))
-                throw new Exception("Replace rule should contains condition and replace expression splitted by '='");
-
-            Condition = Rule.Split('=')[0].Trim();
-            if (Condition.StartsWith("!"))
-            {
-                Condition = Condition.TrimStart('!');
-                Important = true;
-            }
-            ReplaceExpression = Rule.Split('=')[1];
-
-            base.Initialize(parent);
-        }
-
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected  override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             var continuation = TransitionFlow.Continue;
             var value = ctx.TransitValue?.ToString();
 
             if (ConditionIsTrue(ctx))
             {
-                value = ReplaceValue(ctx);
+                value = Replace(ctx);
                 ctx.SetCurrentValue(this.Name, value);
                 //continuation = Important ? TransitionFlow.SkipUnit : TransitionFlow.Continue;
             }
@@ -56,24 +31,24 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             return new TransitResult(continuation, value);
         }
 
-        private string ReplaceValue(ValueTransitContext ctx)
+        private string Replace(ValueTransitContext ctx)
         {
-            // if (ReplaceExpression.Contains("{"))
+            // if (ReplaceValue.Contains("{"))
             // {
-            //     return ExpressionEvaluator.EvaluateString(ReplaceExpression, ctx); 
+            //     return ExpressionEvaluator.EvaluateString(ReplaceValue, ctx); 
             // }
             if (Condition.StartsWith("@regexp:"))
             {
                 var regex = new Regex(Condition.Replace("@regexp:", ""), RegexOptions.IgnoreCase);
-                return regex.Replace(ctx.TransitValue.ToString(), ReplaceExpression);
+                return regex.Replace(ctx.TransitValue.ToString(), ReplaceValue);
             }
 
             if (Condition == "@empty" || Condition == "@any")
             {
-                return ReplaceExpression;
+                return ReplaceValue;
             }
 
-            return ctx.TransitValue?.ToString().Replace(Condition, ReplaceExpression);
+            return ctx.TransitValue?.ToString().Replace(Condition, ReplaceValue);
         }
         private bool ConditionIsTrue(ValueTransitContext ctx)
         {
@@ -103,7 +78,23 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override string ToString()
         {
-            return base.ToString() + "Rule: " + Rule;
+            return base.ToString() + $"Condition: { Condition }, ReplaceValue: { ReplaceValue }";
+        }
+        
+        public static implicit operator ReplaceStepUnit(string replaceExpression)
+        {
+            if (replaceExpression.IsEmpty())
+                throw new Exception("Replace expression cant be empty");
+
+            if (!replaceExpression.Contains('='))
+                throw new Exception("Replace rule should contains condition and replace value splitted by '='");
+
+            return new ReplaceStepUnit()
+            {
+                Important = replaceExpression.StartsWith("!"),
+                Condition = replaceExpression.Split('=')[0].Trim().TrimStart('!'),
+                ReplaceValue = replaceExpression.Split('=')[1],
+            };
         }
     }
 }

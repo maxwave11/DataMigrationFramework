@@ -23,7 +23,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.Initialize(parent);
         }
 
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             var boolValue = Expression.Evaluate(ctx) as bool?;
 

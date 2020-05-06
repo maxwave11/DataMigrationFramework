@@ -53,10 +53,10 @@
 //            base.Initialize(parent);
 //        }
 
-//        public override TransitResult Transit(ValueTransitContext ctx)
+//        public override TransitResult TransitInternal(ValueTransitContext ctx)
 //        {
 //            var dataProvider = (IDataSource)DataSourceObject ?? null;
-//            var srcDataSet = (IEnumerable<IValuesObject>)DataSourceObject.TransitCore(ctx).Value;
+//            var srcDataSet = (IEnumerable<IValuesObject>)DataSourceObject.Transit(ctx).Value;
 
 //            if (srcDataSet == null)
 //                return new TransitResult(null);

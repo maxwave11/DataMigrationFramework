@@ -6,5 +6,6 @@
         Stop,
         SkipValue,
         SkipObject,
+        Debug
     }
 }

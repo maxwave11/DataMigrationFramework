@@ -40,7 +40,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.Initialize(parent);
         }
 
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             var value = ctx.TransitValue;
             var typedValue = GetTypedValue(_typeCode, value, DataTypeFormats.IsNotEmpty() ? DataTypeFormats.Split(',') : null);

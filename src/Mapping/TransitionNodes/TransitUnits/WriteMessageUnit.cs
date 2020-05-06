@@ -20,9 +20,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             //don't trace start and end of this TranstitUnit    
         }
 
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected  override TransitResult TransitInternal(ValueTransitContext ctx)
         {
-            var result =  base.Transit(ctx);
+            var result =  base.TransitInternal(ctx);
             if (result.Flow == TransitionFlow.Continue)
                 TraceLine(result.Value?.ToString(), ctx);
             return result;

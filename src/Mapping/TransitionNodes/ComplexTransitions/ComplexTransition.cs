@@ -16,7 +16,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             base.Initialize(parent);
         }
 
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected  override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             foreach (var childTransition in Pipeline)
             {
@@ -34,7 +34,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 
         protected virtual TransitResult TransitChild(T childTransition, ValueTransitContext ctx)
         {
-            return childTransition.TransitCore(ctx);
+            return childTransition.Transit(ctx);
         }
 
         #region IList

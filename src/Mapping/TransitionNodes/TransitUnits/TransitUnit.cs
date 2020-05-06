@@ -10,13 +10,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
 
     /// <summary>
-    /// Transit unit is a node which can't contains nesting elements
+    /// TransitInternal unit is a node which can't contains nesting elements
     /// </summary>
     public class TransitUnit: TransitionNode
     {
         public MigrationExpression Expression { get; set; }
 
-        public override TransitResult Transit(ValueTransitContext ctx)
+        protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             var  returnValue = Expression.Evaluate(ctx);
             return new TransitResult(returnValue);

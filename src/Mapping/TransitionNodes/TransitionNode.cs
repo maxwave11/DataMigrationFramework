@@ -59,7 +59,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         /// Main (core) transition method which wraps node transition logic by logging and next flow control
         /// Generally used by DataMigration classes to construct transition flow
         /// </summary>
-        internal TransitResult TransitCore(ValueTransitContext ctx)
+        public TransitResult Transit(ValueTransitContext ctx)
         {
             if (ctx == null)
                 throw new ArgumentNullException(nameof(ctx));
@@ -76,7 +76,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             string message = "";
             try
             {
-                var result = Transit(ctx);
+                var result = TransitInternal(ctx);
                 resultValue = result.Value;
                 continuation = result.Flow;
                 message = result.Message;
@@ -108,11 +108,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         /// Method to override in client's code for custom transitions. Allow to use custom logic inside own transitino nodes
         /// inherited from TransitionNode class
         /// Don't use this method inside XQ.DataMigration tool - use
-        /// <code>TransitCore</code> instead
+        /// <code>Transit</code> instead
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public abstract TransitResult Transit(ValueTransitContext ctx);
+        protected abstract TransitResult TransitInternal(ValueTransitContext ctx);
 
         protected virtual void TraceStart(ValueTransitContext ctx, string attributes = "")
         {

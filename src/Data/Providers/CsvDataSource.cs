@@ -1,4 +1,5 @@
-﻿using CsvHelper;
+﻿using System;
+using CsvHelper;
 using CsvHelper.Configuration;
 using System.Collections.Generic;
 using System.Data;
@@ -67,7 +68,12 @@ namespace XQ.DataMigration.Data
             csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
             csvReader.Configuration.TrimFields = true;
             csvReader.Configuration.IgnoreBlankLines = true;
+            csvReader.Configuration.TrimHeaders = true;
+
             Key.Initialize(null);
+            Key.Color = ConsoleColor.Green;
+            Key.Trace = MapConfig.Current.TraceKeyTransition;
+            
             using (txtReader)
             {
                 using (csvReader)
@@ -78,7 +84,7 @@ namespace XQ.DataMigration.Data
                         csvReader.FieldHeaders.ToList().ForEach(i =>
                         {
                             if (i.IsNotEmpty())
-                                result.SetValue(i, csvReader[i]);
+                                result.SetValue(i.Trim(), csvReader[i.Trim()]);
                         });
                         
                         yield return result;
