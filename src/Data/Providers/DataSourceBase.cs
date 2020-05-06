@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using XQ.DataMigration.MapConfig;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
+using XQ.DataMigration.MapConfiguration;
+using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
@@ -11,7 +11,7 @@ namespace XQ.DataMigration.Data
     {
         public string Query { get; set; }
 
-        public KeyTransition Key { get; set; }
+        public ReadKeyTransition Key { get; set; }
 
         public IDataSourceSettings Settings { get; set; }
 
@@ -26,76 +26,78 @@ namespace XQ.DataMigration.Data
 
         protected abstract IDataReader GetDataReader();
 
-        public virtual IEnumerable<IValuesObject> GetData()
-        {
-            Key.Color = ConsoleColor.Green;
+        public abstract IEnumerable<IValuesObject> GetData();
+
+        //public virtual IEnumerable<IValuesObject> GetData()
+        //{
+        //    Key.Color = ConsoleColor.Green;
             
-            var reader = GetDataReader();
+        //    var reader = GetDataReader();
 
 
-            using (reader)
-            {
-                string[] headerRow = null;
-                int rowCounter = 0;
-                while (reader.Read())
-                {
-                    rowCounter++;
+        //    using (reader)
+        //    {
+        //        string[] headerRow = null;
+        //        int rowCounter = 0;
+        //        while (reader.Read())
+        //        {
+        //            rowCounter++;
                 
-                    //init header row
-                    if (rowCounter == Settings.HeaderRowNumber)
-                    {
-                        headerRow = new string[reader.FieldCount];
-                        for (int i = 0; i < reader.FieldCount; i++)
-                            headerRow[i] = reader.GetString(i)?.Replace("\n", " ").Replace("\r", String.Empty);
+        //            //init header row
+        //            if (rowCounter == Settings.HeaderRowNumber)
+        //            {
+        //                headerRow = new string[reader.FieldCount];
+        //                for (int i = 0; i < reader.FieldCount; i++)
+        //                    headerRow[i] = reader.GetString(i)?.Replace("\n", " ").Replace("\r", String.Empty);
                 
-                        continue;
-                    }
+        //                continue;
+        //            }
                     
                   
-                    if (rowCounter < Settings.DataStartRowNumber)
-                        continue;
+        //            if (rowCounter < Settings.DataStartRowNumber)
+        //                continue;
                 
-                    if (IsRowEmpty(reader))
-                        continue;
+        //            if (IsRowEmpty(reader))
+        //                continue;
                 
 
-                    var valuesObject = RowToValuesObject(reader, headerRow);
+        //            var valuesObject = RowToValuesObject(reader, headerRow);
 
-                    //skiping objects with empty keys
-                    if (valuesObject.Key.IsEmpty())
-                        continue;
+        //            //skiping objects with empty keys
+        //            if (valuesObject.Key.IsEmpty())
+        //                continue;
 
-                    yield return valuesObject;
-                }
-            }
-        }
+        //            yield return valuesObject;
+        //        }
+        //    }
+        //}
         
-        private bool IsRowEmpty(IDataReader reader)
-        {
-            bool result = true;
+        //private bool IsRowEmpty(IDataReader reader)
+        //{
+        //    bool result = true;
 
-            for (int i = 0; i < reader.FieldCount; i++)
-                result &= string.IsNullOrWhiteSpace(reader.GetValue(i)?.ToString());
+        //    for (int i = 0; i < reader.FieldCount; i++)
+        //        result &= string.IsNullOrWhiteSpace(reader.GetValue(i)?.ToString());
 
-            return result;
-        }
+        //    return result;
+        //}
         
-        private IValuesObject RowToValuesObject(IDataReader reader, string[] headerRow)
-        {
-            //fill VlauesObject from row values
-            var valuesObject = new ValuesObject();
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                if (headerRow[i].IsEmpty())
-                    continue;
+        //private IValuesObject RowToValuesObject(IDataReader reader, string[] headerRow)
+        //{
+        //    //fill VlauesObject from row values
+        //    var valuesObject = new ValuesObject();
+        //    for (int i = 0; i < reader.FieldCount; i++)
+        //    {
+        //        if (headerRow[i].IsEmpty())
+        //            continue;
 
-                valuesObject.SetValue(headerRow[i], reader.GetValue(i));
-            }
+        //        valuesObject.SetValue(headerRow[i], reader.GetValue(i));
+        //    }
 
-            valuesObject.Key = Key.GetKeyForObject(valuesObject);
+        //    valuesObject.Key = Key.GetKeyForObject(valuesObject);
 
-            return valuesObject;
-        }
+        //    return valuesObject;
+        //}
         
 
         //private bool IsRowIndexInRange(int rowIndex)

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Globalization;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.MapConfiguration;
 using XQ.DataMigration.Mapping.Logic;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Utils;
+
 
 namespace XQ.DataMigration.Mapping.Expressions
 {
@@ -26,18 +28,9 @@ namespace XQ.DataMigration.Mapping.Expressions
         
         public IValuesObject VALUE_OBJECT => (IValuesObject)_ctx.TransitValue;
         
-        public Dictionary<string, object> Variables => Migrator.Current.MapConfig.Variables;
+        public Dictionary<string, object> Variables => MapConfig.Current.Variables;
         
-        //Object for temporary storing any IValuesObject during migration which avalilable during whole migration process
-        public IValuesObject CUSTOM { 
-            get => GlobalObjectTransition.CustomObject; 
-            set => GlobalObjectTransition.CustomObject = value; 
-        }
-
-        //Need to remove it and use just dynamic ObjectTransition methods invocation from new Context.Cmd method
-        [Obsolete]
-        public ObjectTransition THIS => _ctx.ObjectTransition;        
-        
+      
         private readonly ValueTransitContext _ctx;
 
         public ExpressionContext(ValueTransitContext ctx)
@@ -58,6 +51,13 @@ namespace XQ.DataMigration.Mapping.Expressions
         {
             return value?.ToString() ?? "";
         }
+        
+        //public object CMD(object[] args)
+        //{
+        //    return value?.ToString() ?? "";
+        //}
+
+
 
         public string Format(string format, object argument)
         {
@@ -82,7 +82,7 @@ namespace XQ.DataMigration.Mapping.Expressions
             return str.IsNotEmpty();
         }
 
-        public bool IsNullOrEmptyString(object obj)
+        public bool IsEmpty(object obj)
         {
             if (obj == null)
                 return true;
@@ -102,5 +102,6 @@ namespace XQ.DataMigration.Mapping.Expressions
             TextInfo myTI = new CultureInfo("en-US", false).TextInfo;
             return myTI.ToTitleCase(str.ToString().ToLower());
         }
+
     }
 }

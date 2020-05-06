@@ -141,5 +141,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             attributes = $"TargetType=\"{ DataType }\"";
             base.TraceStart(ctx, attributes);
         }
+        
+        public static implicit operator TypeConvertTransitUnit(string expression)
+        {
+            return new TypeConvertTransitUnit() { DataType = expression };
+        }
     }
 }

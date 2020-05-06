@@ -10,11 +10,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     /// </summary>
     public class WriteTransitUnit : TransitUnit
     {
-        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
-        {
-            
-        }
-
         // protected override void TraceEnd(ValueTransitContext ctx)
         // {
         //     var tagName = this.GetType().Name;

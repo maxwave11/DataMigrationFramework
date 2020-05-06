@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
-using XQ.DataMigration.MapConfig;
+using XQ.DataMigration.MapConfiguration;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
@@ -31,121 +31,92 @@ namespace XQ.DataMigration.Mapping.Trace
         /// <summary>
         /// Event fires each time when any unhandled error occured while migration process
         /// </summary>
-        public event EventHandler<IValuesObject> OnObjectSkipped;
 
-        internal const string IndentUnit = "\t";
+        internal const string IndentUnit = "   ";
 
         internal int _identLevel = 0;
 
         public void TraceLine(string message)
         {
-            Trace?.Invoke(this, new TraceMessage('\n' + message, ConsoleColor.White, null));
+            message = FormatMessage(message);
+            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.White));
         }
 
-        public void TraceLine(string message, TransitionNode node)
-        {
-            TraceLine(message, node, node.Color);
-        }
-
-        public void TraceLine(string message, TransitionNode node, ConsoleColor color)
+        public void TraceLine(string message, TransitionNode node, ValueTransitContext ctx)
         {
             if (!string.IsNullOrEmpty(message))
-                message = FormatMessage(message, node);
+                message = FormatMessage(message);
 
-            if (node.HasParentOfType<KeyTransition>() && node.ActualTrace == TraceLevel.None)
+            if (node.HasParentOfType<KeyTransition>() && node.ActualTrace == false)
             {
                 //don't add KeyTransition's TraceEntries to log if it's disabled
             }
             else
             {
-                AddTraceEntryToObjectTransition(node, message, color);
+                ctx?.AddTraceEntry(message, node.Color);
             }
 
-            var doTrace = true;
+            var doTrace = node.ActualTrace;
 
-            switch (node.ActualTrace)
-            {
-                case TraceLevel.None:
-                    doTrace = false;
-                    break;
-                case TraceLevel.ObjectSet:
-                    if (node.HasParentOfType<TransitDataCommand>() && !(node is TransitDataCommand))
-                        doTrace = false;
-                    break;
-                case TraceLevel.Object:
-                    if (node.HasParentOfType<ObjectTransition>() && !(node is ObjectTransition))
-                        doTrace = false;
-                    break;
-                default:
-                    break;
-            }
+            //switch (node.ActualTrace)
+            //{
+            //    case TraceLevel.None:
+            //        doTrace = false;
+            //        break;
+            //    case TraceLevel.ObjectSet:
+            //        if (node.HasParentOfType<TransitDataCommand>() && !(node is TransitDataCommand))
+            //            doTrace = false;
+            //        break;
+            //    case TraceLevel.Object:
+            //        if (node.HasParentOfType<ObjectTransition>() && !(node is ObjectTransition))
+            //            doTrace = false;
+            //        break;
+            //    default:
+            //        break;
+            //}
             
             if (doTrace)
-                Trace?.Invoke(this, new TraceMessage(message, color, node));
+                Trace?.Invoke(this, new TraceMessage(message, node.Color));
         }
 
-        public void TraceWarning(string message, TransitionNode node)
+        public void TraceWarning(string message)
         {
-            if (!node.TraceWarnings)
-                return;
-            
             if (!string.IsNullOrEmpty(message))
-                message = FormatMessage("WARNING:" + message, node);
+                message = FormatMessage("WARNING:" + message);
 
-            AddTraceEntryToObjectTransition(node, message, ConsoleColor.Yellow);
 
-            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.Yellow, node));
+            //ctx.AddTraceEntry(message, ConsoleColor.Yellow);
+
+            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.Yellow));
         }
 
-        public void TraceSkipObject(string text, TransitionNode node, IValuesObject sourceObject)
+        public void TraceError(string message, TransitionNode node, ValueTransitContext ctx)
         {
-            TraceLine(text, node, ConsoleColor.Yellow);
-            OnObjectSkipped?.Invoke(this, sourceObject);
-        }
+            var msg = FormatMessage(message);
+            ctx.AddTraceEntry(msg, ConsoleColor.Yellow);
 
-        public TransitContinuation TraceError(string message, TransitionNode node, ValueTransitContext ctx)
-        {
-            var msg = FormatMessage(message, node);
-            AddTraceEntryToObjectTransition(node, msg, ConsoleColor.Yellow);
-
-            Trace?.Invoke(this, new TraceMessage(msg, ConsoleColor.Red, node));
+            Trace?.Invoke(this, new TraceMessage(msg, ConsoleColor.Red));
 
             var args = new TransitErrorEventArgs(node, ctx);
             OnValueTransitError?.Invoke(node, args);
-            return args.Continue ? TransitContinuation.Continue : TransitContinuation.Stop;
         }
 
-        private string FormatMessage(string msg, TransitionNode node)
+        private string FormatMessage(string msg)
         {
             var indent = "";
-            // TransitionNode nextParent = node.Parent;
-
             for (int i = 0; i < _identLevel; i++)
-            {
                 indent += IndentUnit;
-            }
-            // while (nextParent != null)
-            // {
-            //     nextParent = nextParent.Parent;
-            //     indent += IndentUnit;
-            // }
-
+          
             return '\n' + msg.Split('\n').Select(i => indent + i).Join("\n");
         }
 
-        private void AddTraceEntryToObjectTransition(TransitionNode node, string message, ConsoleColor color)
-        {
-            var objectTransition = FindObjectTransition(node);
-            objectTransition?.AddTraceEntry(message, color);
-        }
-
-        private ObjectTransition FindObjectTransition(TransitionNode transitionNode)
-        {
-            if (transitionNode == null)
-                return null;
-
-            return  (transitionNode as ObjectTransition) ?? FindObjectTransition(transitionNode.Parent);
-        }
+        // private ObjectTransition FindObjectTransition(TransitionNode transitionNode)
+        // {
+        //     if (transitionNode == null)
+        //         return null;
+        //
+        //     return  (transitionNode as ObjectTransition) ?? FindObjectTransition(transitionNode.Parent);
+        // }
 
         public void Indent()
         {

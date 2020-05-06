@@ -9,27 +9,26 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 {
     public class TargetObjectsSaver 
     {
-        private readonly ITargetProvider _targetProvider;
+        public  ITargetProvider TargetProvider { get; set; }
 
         /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value
         /// </summary>
-        public int SaveLimit { get; set; } = 10;
+        public int SaveCount { get; set; } = 10;
 
         private readonly List<IValuesObject> _transittedObjects = new List<IValuesObject>();
 
         public TargetObjectsSaver(ITargetProvider targetProvider)
         {
-            _targetProvider = targetProvider;
+            TargetProvider = targetProvider;
         }
-
 
         internal void Push(IEnumerable<IValuesObject> objectsToSave)
         {
             _transittedObjects.AddRange(objectsToSave.Where(obj => !obj.IsEmpty() && !obj.Key.IsEmpty()));
 
             //need to save after each child transition to avoid referencing to unsaved data
-            if (_transittedObjects.Count >= SaveLimit)
+            if (_transittedObjects.Count >= SaveCount)
                 SaveTargetObjects(_transittedObjects);
         }
 
@@ -47,7 +46,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                _targetProvider.SaveObjects(targetObjects);
+                TargetProvider.SaveObjects(targetObjects);
                 stopWath.Stop();
 
 
@@ -56,7 +55,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             catch (Exception ex)
             {
                 var objectsInfo = targetObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
-                Migrator.Current.Tracer.TraceLine("=====Error while saving transitted objects: " + ex + objectsInfo, null, ConsoleColor.Red);
+                Migrator.Current.Tracer.TraceLine("=====Error while saving transitted objects: " + ex + objectsInfo);
                 throw;
             }
 

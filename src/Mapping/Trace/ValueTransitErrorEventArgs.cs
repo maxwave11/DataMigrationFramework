@@ -28,7 +28,7 @@ namespace XQ.DataMigration.Mapping.Trace
                 string errorMsg = 
 $@"Error description:
 ============ TRACE ========== 
-{ Context.ObjectTransition?.TraceEntries.Select(t=>t.Mesage).Join("") }
+{ Context.TraceEntries.Select(t=>t.Mesage).Join("") }
 
 ==============SRC==============
 { Context.Source?.GetInfo() }

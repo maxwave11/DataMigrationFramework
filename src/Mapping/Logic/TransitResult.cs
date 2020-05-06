@@ -11,14 +11,14 @@ namespace XQ.DataMigration.Mapping.Logic
             Value = value;
         }
 
-        public TransitResult(TransitContinuation continuation, object value, string message ="")
+        public TransitResult(TransitionFlow flow, object value, string message ="")
         {
-            Continuation = continuation;
+            Flow = flow;
             Value = value;
             Message = message;
         }
 
-        public TransitContinuation Continuation { get; } = TransitContinuation.Continue;
+        public TransitionFlow Flow { get; } = TransitionFlow.Continue;
         public object Value { get; }
         public string Message { get; }
     }

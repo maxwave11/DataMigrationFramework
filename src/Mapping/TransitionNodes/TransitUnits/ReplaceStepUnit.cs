@@ -43,14 +43,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override TransitResult Transit(ValueTransitContext ctx)
         {
-            var continuation = TransitContinuation.Continue;
+            var continuation = TransitionFlow.Continue;
             var value = ctx.TransitValue?.ToString();
 
             if (ConditionIsTrue(ctx))
             {
                 value = ReplaceValue(ctx);
                 ctx.SetCurrentValue(this.Name, value);
-                continuation = Important ? TransitContinuation.SkipUnit : TransitContinuation.Continue;
+                //continuation = Important ? TransitionFlow.SkipUnit : TransitionFlow.Continue;
             }
 
             return new TransitResult(continuation, value);

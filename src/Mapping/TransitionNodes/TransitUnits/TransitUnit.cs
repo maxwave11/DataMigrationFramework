@@ -28,9 +28,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.TraceStart(ctx, attributes);
         }
         
-        public static implicit operator TransitUnit(string expression)
+        public override string ToString()
         {
-            return new TransitUnit() { Expression = expression };
+            return $"Type: {GetType().Name}, Expresion: { Expression }";
         }
+       
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
+using XQ.DataMigration.MapConfiguration;
 using XQ.DataMigration.Mapping.Expressions;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
@@ -37,14 +38,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         /// transition) will be hosted in local cache by this key.
         /// NOTE: If you want to find an object by another way (not by its key) then you should to use <c>LookupAlternativeExpr</c> attribue
         /// </summary>
-        public MigrationExpression LookupKeyExpr { get; set; }
+        //public MigrationExpression LookupKeyExpr { get; set; }
 
         /// <summary>
         /// By using this attribute lookup logic will try to find a specific object by alternative expression (not by <c>LookupKeyExpr</c>). 
         /// But anyway <c>LookupKeyExpr</c> is required for correct objects caching.
         /// WARNING: Searching an object by this way is pretty slow! Use this attribute only if you have't data to find object by its key
         /// </summary>
-        public string LookupAlternativeExpr { get; set; }
+        //public string LookupAlternativeExpr { get; set; }
 
         //Set this poperty to true to allow search in data sets where multiple objects can have same search lookup expression
         //NOTE: used only when LookupAlternativeExpr is used
@@ -64,9 +65,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         /// <summary>
         /// Specifies migration behavior in case when lookup object wasn't found
         /// </summary>
-        public TransitContinuation OnNotFound { get; set; } = TransitContinuation.RaiseError;
+        public TransitionFlow OnNotFound { get; set; } = TransitionFlow.Stop;
 
-        private readonly ObjectTransition _currentObjectTransition;
+        // private readonly ObjectTransition _currentObjectTransition;
 
         public override void Initialize(TransitionNode parent)
         {
@@ -77,8 +78,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             if (Source == null)
                 throw new Exception($"{ nameof(Source)}  is required");
 
-            if (LookupKeyExpr == null && LookupAlternativeExpr.IsEmpty())
-                throw new Exception($"Field {nameof(LookupKeyExpr)} or {nameof(LookupAlternativeExpr)}  should be filled to search lookup object");
+            //if (LookupKeyExpr == null && LookupAlternativeExpr.IsEmpty())
+            //    throw new Exception($"Field {nameof(LookupKeyExpr)} or {nameof(LookupAlternativeExpr)}  should be filled to search lookup object");
 
             // if (!LookupKeyExpr.Contains("{"))
             //     LookupKeyExpr = $"{{ VALUE[{ LookupKeyExpr }] }}";
@@ -90,7 +91,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         {
             IValuesObject lookupObject = null;
             string message = "";
-            var continuation = TransitContinuation.Continue;
+            var continuation = TransitionFlow.Continue;
 
             var valueToFind = ctx.TransitValue?.ToString();
 
@@ -100,10 +101,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
                 if (lookupObject == null)
                 {
-                    Migrator.Current.Tracer.TraceWarning($"Lookup object not found by key '{valueToFind}'\n", this);
+                    Migrator.Current.Tracer.TraceWarning($"Lookup object not found by key '{valueToFind}'\n");
 
                     continuation = this.OnNotFound;
-                    if (continuation != TransitContinuation.Continue)
+                    if (continuation != TransitionFlow.Continue)
                         message = "Value transition interuppted because of empty value of transition " + this.Name;
                 }
             }
@@ -113,8 +114,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         private IValuesObject FindLookupObject(string searchValue, ValueTransitContext ctx)
         {
-            var mapConfig = Migrator.Current.MapConfig;
-
             //var provider = ProviderName.IsEmpty()
             //                    ? mapConfig.GetTargetProvider()
             //                    : mapConfig.GetDataProvider(ProviderName);
@@ -123,9 +122,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
            // string queryToSource = ExpressionEvaluator.EvaluateString(LookupDataSetId, ctx);
 
             // IValuesObject lookupObject = null;
-            var allObjects = Source.GetData();
-
-            IValuesObject lookupObject = allObjects.SingleOrDefault(i=> IsObjectLookupKeyEquals(i, searchValue));
+           
 
             //if (provider is ITargetProvider targetProvider && LookupAlternativeExpr.IsEmpty())
             //{
@@ -147,14 +144,19 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             //        ? (Func<IValuesObject, string>)EvaluateObjectKey 
             //        : EvaluateAlternativeObjectKey;
 
-            //    var searchMethod = FindFirstOccurence 
-            //        ? (Func<IEnumerable<IValuesObject>, Func<IValuesObject, bool>, IValuesObject >)Enumerable.FirstOrDefault
-            //        : Enumerable.SingleOrDefault;
+            
 
             //    //slow search (simple iteration, O(N))
             //    lookupObject = searchMethod(data, i => evaluateKeyMethod(i).ToUpper().Trim() == unifiedSearchValue);
             //}
+            
+            var allObjects = Source.GetData();
+            
+            var searchMethod = FindFirstOccurence 
+                ? (Func<IEnumerable<IValuesObject>, Func<IValuesObject, bool>, IValuesObject >)Enumerable.FirstOrDefault
+                : Enumerable.SingleOrDefault;
 
+            var lookupObject = searchMethod(allObjects, i => IsObjectLookupKeyEquals(i, searchValue));
             return lookupObject;
         }
 

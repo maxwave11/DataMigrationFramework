@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using XQ.DataMigration.MapConfig;
 
 namespace XQ.DataMigration.Data
 {

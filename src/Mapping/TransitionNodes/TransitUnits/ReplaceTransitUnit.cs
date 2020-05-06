@@ -43,20 +43,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             TransitResult replaceResult = null;
             foreach (var childTransition in ReplaceUnits)
             {
-                if (!childTransition.CanTransit(ctx))
-                    continue;
-
                 replaceResult = childTransition.Transit(ctx);
                 
-                if (replaceResult.Continuation == TransitContinuation.SkipUnit)
-                {
-                    //if ReplaceUnit returned SkipUnit then need to stop replacing sequence
-                    break;
-                }
+                //if (replaceResult.Flow == TransitionFlow.SkipUnit)
+                //{
+                //    //if ReplaceUnit returned SkipUnit then need to stop replacing sequence
+                //    break;
+                //}
 
-                if (replaceResult.Continuation != TransitContinuation.Continue)
+                if (replaceResult.Flow != TransitionFlow.Continue)
                 {
-                    TraceLine($"Breaking {this.GetType().Name}");
+                    TraceLine($"Breaking {this.GetType().Name}", ctx);
                     return replaceResult;
                 }
             }

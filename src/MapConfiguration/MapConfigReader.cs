@@ -1,16 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Serialization;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Mapping.TransitionNodes;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
-using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
-
-namespace XQ.DataMigration.MapConfig
+namespace XQ.DataMigration.MapConfiguration
 {
     //public class MapConfigReader
     //{

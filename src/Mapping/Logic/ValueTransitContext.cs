@@ -11,17 +11,25 @@ namespace XQ.DataMigration.Mapping.Logic
         public IValuesObject Source { get; set; }
         public IValuesObject Target { get; set; }
         public object TransitValue { get; private set; }
-        public ObjectTransition ObjectTransition { get; set; }
+        
+        public TransitDataCommand TransitDataCommand { get; set; }
         public Type ValueType { get; }
 
         public readonly Dictionary<string, object> _valuesHistory = new Dictionary<string, object>();
+
+        public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
+
+        internal void AddTraceEntry(string msg, ConsoleColor color)
+        {
+            TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
+        }
+
 
         public ValueTransitContext(IValuesObject source, IValuesObject target, object transitValue)
         {
             Source = source;
             Target = target;
             TransitValue = transitValue;
-            //ObjectTransition = objTransition;
             ValueType = transitValue?.GetType();
         }
 

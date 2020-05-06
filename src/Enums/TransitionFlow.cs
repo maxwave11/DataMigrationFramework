@@ -1,13 +1,10 @@
 ﻿namespace XQ.DataMigration.Enums
 {
-    public enum TransitContinuation
+    public enum TransitionFlow
     {
         Continue,
         Stop,
-        RaiseError,
-        SkipUnit,
         SkipValue,
         SkipObject,
-        SkipObjectSet,
     }
 }

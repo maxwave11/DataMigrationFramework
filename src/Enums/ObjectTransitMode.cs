@@ -1,4 +1,3 @@
-using XQ.DataMigration.MapConfig;
 
 namespace XQ.DataMigration.Enums
 {

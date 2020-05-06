@@ -63,8 +63,11 @@ namespace XQ.DataMigration.Mapping.Expressions
 
           
 
-            //translate simplified global variable accessor directive '@': @variable => GLOBAL[variable]
-            expression = new Regex(@"@([^\W]*)").Replace(expression, $"{nameof(ExpressionContext.Variables)}[$1]");
+            //translate simplified global variable accessor directive '%': %variable% => Variables[variable]
+            expression = new Regex(@"%([^%]*)%").Replace(expression, $"{nameof(ExpressionContext.Variables)}[$1]");
+            
+            //translate simplified values object accessor '@': @field_name => VALUES_OBJECT[field_name]
+            expression = expression.Replace("@[",$"{nameof(ExpressionContext.VALUE_OBJECT)}[");
             
             //quotes conversion: 
             //'some text' => "some text"
@@ -77,14 +80,12 @@ namespace XQ.DataMigration.Mapping.Expressions
             //which can contains curly braces
             //expression = expression.Replace("\\{", "#open").Replace("\\}", "#close");
 
-            //convertion  SOME_EXPRESSION[fieldname] => ((IValuesObject)SOME_EXPRESSION)["fieldname"]
+            //convertion  SOME_EXPRESSION[fieldname] => SOME_EXPRESSION["fieldname"]
             var valuesObjectPrefixes = new[]
             {
                 nameof(ExpressionContext.SRC),
                 nameof(ExpressionContext.TARGET),
-                nameof(ExpressionContext.VALUE),
                 nameof(ExpressionContext.VALUE_OBJECT),
-                nameof(ExpressionContext.CUSTOM),
                 nameof(ExpressionContext.Variables),
                 $@"{nameof(ExpressionContext.HISTORY)}.*?\)"
             };

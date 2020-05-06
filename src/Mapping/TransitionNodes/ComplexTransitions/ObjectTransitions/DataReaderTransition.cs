@@ -79,10 +79,10 @@
 //                ctx.SetCurrentValue(this.Name, sourceObject);
 //                var result = TransitChildren(ctx);
 
-//                if (result.Continuation == TransitContinuation.SkipObject)
+//                if (result.Flow == TransitionFlow.SkipObject)
 //                    continue;
 
-//                if (result.Continuation != TransitContinuation.Continue)
+//                if (result.Flow != TransitionFlow.Continue)
 //                {
 //                    TraceLine($"Breaking {nameof(DataReaderTransition)}");
 //                    return result;

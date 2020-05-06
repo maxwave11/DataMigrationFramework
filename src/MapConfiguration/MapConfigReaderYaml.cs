@@ -1,21 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml.Serialization;
 using XQ.DataMigration.Data;
-using XQ.DataMigration.Mapping.Expressions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
-using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 
-namespace XQ.DataMigration.MapConfig
+namespace XQ.DataMigration.MapConfiguration
 {
 
     class nnn : INodeTypeResolver
@@ -56,30 +51,32 @@ namespace XQ.DataMigration.MapConfig
                 typeof(SqlDataSource),
                 //transitions
                 typeof(KeyTransition),
-                typeof(TransitValueCommand),
                 typeof(LookupValueTransitUnit),
                 typeof(TransitUnit),
-                typeof(Condition),
+                typeof(IfTransition),
                 typeof(TypeConvertTransitUnit),
                 typeof(ReplaceTransitUnit),
                 typeof(WriteMessageUnit),
-                typeof(ObjectTransition),
                 typeof(TransitDataCommand),
-                typeof(GlobalObjectTransition),
+                typeof(TargetObjectsSaver),
             };
 
             var commandMapping = new Dictionary<string, Type>()
             {
                 // { "transit-data", typeof(TransitDataCommand) },
                 // { "transit", typeof(TransitValueCommand) },
-                { "condition", typeof(Condition) },
-                { "replace", typeof(ReplaceTransitUnit) },
+                { "condition", typeof(IfTransition) },
+                { "REPLACE", typeof(ReplaceTransitUnit) },
+                { "FLOW", typeof(FlowTransition) },
                 { "LOOKUP", typeof(LookupValueTransitUnit) },
+                { "TYPE", typeof(TypeConvertTransitUnit) },
                 { "csv", typeof(CsvDataSource) },
                 { "excel", typeof(ExcelDataSource) },
                 { "csv-settings", typeof(CsvSourceSettings) },
-                { "GET", typeof(TransitUnit) },
-                { "SET", typeof(WriteTransitUnit) }
+                { "GET", typeof(ReadTransitUnit) },
+                { "KEY", typeof(ReadKeyTransition) },
+                { "SET", typeof(WriteTransitUnit) },
+                { "IF", typeof(IfTransition) }
             };
 
             var builder = new DeserializerBuilder();

@@ -9,8 +9,8 @@ using XQ.DataMigration.Utils;
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions
 {
 
-    public class TransitValueCommand : ComplexTransition
-    {
+   // public class TransitValueCommand : ComplexTransition
+  //  {
         // public MigrationExpression From { get; set; }
 
         //public string Replace { get; set; }
@@ -64,5 +64,5 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTrans
         // {
         //     return new TransitValueCommand() { new TransitUnit() { Expression = expression } };
         // }
-    }
+    //}
 }

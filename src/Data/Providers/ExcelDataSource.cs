@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using XQ.DataMigration.MapConfiguration;
 using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Utils;
 
@@ -10,9 +11,14 @@ namespace XQ.DataMigration.Data
 {
     public class ExcelDataSource : DataSourceBase
     {
+        public override IEnumerable<IValuesObject> GetData()
+        {
+            throw new NotImplementedException();
+        }
+
         protected override IDataReader GetDataReader()
         {
-            var settings = Migrator.Current.MapConfig.GetDefaultSourceSettings<CsvSourceSettings>();
+            var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
             Settings = settings;
             var filePath = $"{settings.Path}\\{Query}";
             var stream = File.Open(filePath, FileMode.Open, FileAccess.Read);

@@ -16,45 +16,33 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
     /// </summary>
     public abstract class TransitionNode
     {
-        [XmlAttribute]
         public string Name { get; set; }
 
-        [XmlAttribute]
-        public bool Enabled { get; set; } = true;
 
-        [XmlAttribute]
-        public TraceLevel TraceLevel { get; set; }
+        public bool Trace { get; set; }
 
-        [XmlAttribute]
         public bool TraceWarnings { get; set; } = true;
 
-        [XmlAttribute]
         public virtual ConsoleColor Color { get; set; } = ConsoleColor.White;
 
         /// <summary>
         /// Mark element by this attribute to fast debug particular TransitionNode
         /// </summary>
-        [XmlAttribute]
         public bool Break { get; set; }
 
-        internal TraceLevel ActualTrace => TraceLevel == TraceLevel.Auto ? Parent?.ActualTrace ?? TraceLevel : TraceLevel;
+        internal bool ActualTrace => (Parent?.ActualTrace ?? false) || Trace;
 
-        //protected Expressions.ExpressionEvaluator ExpressionEvaluator { get; } = new Expressions.ExpressionEvaluator();
-
-        [XmlIgnore]
         public TransitionNode Parent { get; private set; }
 
         /// <summary>
         /// Specify what to do if some error occured while current transition processing
         /// </summary>
-        [XmlAttribute]
-        public TransitContinuation OnError { get; set; } = TransitContinuation.RaiseError;
+        public TransitionFlow OnError { get; set; } = TransitionFlow.Stop;
 
         public virtual void Initialize(TransitionNode parent)
         {
             Parent = parent;
             Validate();
-
         }
 
         void Validate()
@@ -76,36 +64,42 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             if (ctx == null)
                 throw new ArgumentNullException(nameof(ctx));
 
+            Migrator.Current.Tracer.Indent();
+
             TraceStart(ctx);
 
             if (Break)
                 Debugger.Break();
 
             object resultValue = null;
-            TransitContinuation continuation;
+            TransitionFlow continuation;
             string message = "";
             try
             {
                 var result = Transit(ctx);
                 resultValue = result.Value;
-                continuation = result.Continuation;
+                continuation = result.Flow;
                 message = result.Message;
             }
             catch (Exception ex)
             {
                 continuation = OnError;
-                Migrator.Current.Tracer.TraceWarning(ex.ToString(), this);
+                Migrator.Current.Tracer.TraceWarning(ex.ToString());
             }
 
-            if (continuation == TransitContinuation.RaiseError)
+            if (continuation == TransitionFlow.Stop)
             {
                 message = $"Transition stopped, message: {message}";
-                continuation = Migrator.Current.Tracer.TraceError(message, this, ctx);
+                Migrator.Current.Tracer.TraceError(message, this, ctx);
+                return new TransitResult(continuation, null);
             }
 
             ctx.SetCurrentValue(Name, resultValue);
 
             TraceEnd(ctx);
+
+            Migrator.Current.Tracer.IndentBack();
+
 
             return new TransitResult(continuation, ctx.TransitValue, message);
         }
@@ -132,9 +126,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             var incomingValueType = ctx.TransitValue?.GetType().Name;
 
             var traceMsg = $"-> {tagName}{attributes}";
-            TraceLine(traceMsg);
+            TraceLine(traceMsg, ctx);
 
-            TraceLine($"{MigrationTracer.IndentUnit} Input: ({incomingValueType.Truncate(30)}){incomingValue}");
+            TraceLine($"   Input: ({incomingValueType.Truncate(30)}){incomingValue}",ctx);
         }
 
         protected virtual void TraceEnd(ValueTransitContext ctx)
@@ -143,16 +137,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             var returnValue = ctx.TransitValue?.ToString();
             var returnValueType = ctx.TransitValue?.GetType().Name;
 
-            var traceMsg = $"{MigrationTracer.IndentUnit} Output: ({returnValueType.Truncate(30)}){returnValue}";
-            TraceLine(traceMsg);
-
-            traceMsg = $"<- {tagName}";
-            TraceLine(traceMsg);
+            var traceMsg = $"   Output: ({returnValueType.Truncate(30)}){returnValue}\n";
+            TraceLine(traceMsg,ctx);
+            //traceMsg = $"<- {tagName}";
+            //TraceLine(traceMsg);
         }
 
-        protected virtual void TraceLine(string message)
+        protected virtual void TraceLine(string message, ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.TraceLine(message, this);
+            Migrator.Current.Tracer.TraceLine(message, this, ctx);
         }
 
         public bool HasParent(TransitionNode node)
@@ -171,14 +164,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             return Parent?.HasParentOfType<T>() ?? false;
         }
 
-        public virtual bool CanTransit(ValueTransitContext ctx)
-        {
-            return Enabled;
-        }
-
         public override string ToString()
         {
-            return $"Type={GetType().Name} Name={Name}";
+            return $"Type={GetType().Name}";
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using XQ.DataMigration.MapConfiguration;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
 using ExpressionCompiler = XQ.DataMigration.Mapping.Expressions.ExpressionCompiler;
@@ -13,11 +14,11 @@ namespace XQ.DataMigration.Mapping
 
         public static Migrator Current  {get; private set; }
 
-        public MapConfig.MapConfig MapConfig { get; private set; }
+        private MapConfig _mapConfig;
 
-        public Migrator(MapConfig.MapConfig mapConfig)
+        public Migrator(MapConfig mapConfig)
         {
-            MapConfig = mapConfig;
+            _mapConfig = mapConfig;
             Current = this;
             Tracer = new MigrationTracer();
         }
@@ -30,8 +31,16 @@ namespace XQ.DataMigration.Mapping
             Tracer.TraceLine("====== Migration start ======");
 
             var ctx = new ValueTransitContext(null, null, null);
-            MapConfig.Pipeline.Where(i=>i.Enabled).ToList().ForEach(i => i.TransitCore(ctx));
 
+            try
+            {
+                _mapConfig.Pipeline.Where(i=>i.Enabled).ToList().ForEach(i=>i.Run());
+            }
+            catch (Exception e)
+            {
+                Tracer.TraceLine(e.Message);
+            }
+                
             stopwatch.Stop();
             Tracer.TraceLine($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
         }

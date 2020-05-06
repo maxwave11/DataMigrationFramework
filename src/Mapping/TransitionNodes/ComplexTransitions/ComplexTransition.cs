@@ -6,13 +6,9 @@ using XQ.DataMigration.Mapping.Logic;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
-    public abstract class ComplexTransition : TransitionNode, IList<TransitionNode>
+    public class ComplexTransition<T> : TransitionNode, IList<T>  where T : TransitionNode
     {
-        /// <summary>
-        /// List of nested transitions. 
-        /// NOTE: generic parameter should be a class (not interface) since it will be not deserialized from XML
-        /// </summary>
-        public List<TransitionNode> Pipeline { get; set; } = new List<TransitionNode>();
+        public List<T> Pipeline { get; set; } = new List<T>();
 
         public override void Initialize(TransitionNode parent)
         {
@@ -20,67 +16,37 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             base.Initialize(parent);
         }
 
-        public override TransitResult Transit(ValueTransitContext transitContext)
+        public override TransitResult Transit(ValueTransitContext ctx)
         {
-            if (transitContext == null)
-                throw new ArgumentNullException($"{nameof(transitContext)} can't be null in {nameof(ComplexTransition)}");
-
-            return TransitChildren(transitContext);
-        }
-
-        protected TransitResult TransitChildren(ValueTransitContext ctx)
-        {
-            try
+            foreach (var childTransition in Pipeline)
             {
-                Migrator.Current.Tracer.Indent();
-                
-                foreach (var childTransition in Pipeline)
+                var childTransitResult = TransitChild(childTransition, ctx);
+
+                if (childTransitResult.Flow != TransitionFlow.Continue)
                 {
-                    if (!childTransition.CanTransit(ctx))
-                        continue;
-
-                    var childTransitResult = TransitChild(childTransition, ctx);
-
-                    if (childTransitResult.Continuation != TransitContinuation.Continue)
-                    {
-                        TraceLine($"Breaking {this.GetType().Name}");
-                        return childTransitResult;
-                    }
+                    TraceLine($"Breaking {this.GetType().Name}", ctx);
+                    return childTransitResult;
                 }
-            }
-            finally
-            {
-                Migrator.Current.Tracer.IndentBack();
             }
 
             return new TransitResult(ctx.TransitValue);
         }
 
-        protected virtual TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+        protected virtual TransitResult TransitChild(T childTransition, ValueTransitContext ctx)
         {
-            var childTransitResult =  childNode.TransitCore(ctx);
-            childTransitResult = EndTransitChild(childTransitResult, ctx);
-            return childTransitResult;
+            return childTransition.TransitCore(ctx);
         }
 
-        protected virtual TransitResult EndTransitChild(TransitResult result, ValueTransitContext ctx)
-        {
-            if (result.Continuation == TransitContinuation.SkipUnit)
-                return new TransitResult(result.Value);
+        #region IList
 
-            return result;
-        }
-
-        public IEnumerator<TransitionNode> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-    
-
-        public void Add(TransitionNode item)
+        public void Add(T item)
         {
             Pipeline.Add(item);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
 
         public void Clear()
@@ -88,29 +54,35 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             throw new NotImplementedException();
         }
 
-        public bool Contains(TransitionNode item)
+        public bool Contains(T item)
         {
             throw new NotImplementedException();
         }
 
-        public void CopyTo(TransitionNode[] array, int arrayIndex)
+        public void CopyTo(T[] array, int arrayIndex)
         {
             throw new NotImplementedException();
         }
 
-        public bool Remove(TransitionNode item)
+        public bool Remove(T item)
         {
             throw new NotImplementedException();
         }
 
         public int Count { get; }
         public bool IsReadOnly { get; }
-        public int IndexOf(TransitionNode item)
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public int IndexOf(T item)
         {
             throw new NotImplementedException();
         }
 
-        public void Insert(int index, TransitionNode item)
+        public void Insert(int index, T item)
         {
             throw new NotImplementedException();
         }
@@ -120,15 +92,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             throw new NotImplementedException();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        public TransitionNode this[int index]
+        public T this[int index]
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
         }
+        
+        #endregion
     }
 }

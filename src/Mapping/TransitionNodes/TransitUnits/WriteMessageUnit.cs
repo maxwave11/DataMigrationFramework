@@ -23,8 +23,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public override TransitResult Transit(ValueTransitContext ctx)
         {
             var result =  base.Transit(ctx);
-            if (result.Continuation == TransitContinuation.Continue)
-                TraceLine(result.Value?.ToString());
+            if (result.Flow == TransitionFlow.Continue)
+                TraceLine(result.Value?.ToString(), ctx);
             return result;
         }
     }
