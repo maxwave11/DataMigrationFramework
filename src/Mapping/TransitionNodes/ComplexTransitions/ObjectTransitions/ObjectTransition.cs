@@ -108,14 +108,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     //         return result;
     //     }
     //
-    //     protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+    //     protected override TransitResult TransitValue(TransitionNode childNode, ValueTransitContext ctx)
     //     {
     //         //Reset TransitValue by Source object before any children begins inside ObjectTrastition
     //         //Notice: if you want to pass TransitValue between transitions you have to place your
     //         //'connected' transition nodes inside ValueTransition
     //         ctx.SetCurrentValue(childNode.Name, ctx.Source);
     //
-    //         var result = base.TransitChild(childNode, ctx);
+    //         var result = base.TransitValue(childNode, ctx);
     //         if (childNode is KeyTransition)
     //             TraceLine("Key: " + ctx.Source.Key, ctx);
     //         return result;

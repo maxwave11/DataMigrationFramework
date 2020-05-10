@@ -69,7 +69,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
                     if (strValue.Contains(DecimalSeparator))
                         return Convert.ToInt64(GetTypedValue(TypeCode.Double, value, DataTypeFormats), CultureInfo.InvariantCulture);
 
-                    return Convert.ToInt64(value, CultureInfo.InvariantCulture);
+                    return Convert.ToInt64(strValue.Replace(" ",""), CultureInfo.InvariantCulture);
 
                 case TypeCode.Single:
                     return Convert.ToSingle(PrepareDecimalValue(value), CultureInfo.InvariantCulture);
@@ -115,7 +115,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             {
                 return Convert.ToBoolean(value);
             }
-            catch (Exception ex)
+            catch
             {
                 return Convert.ToBoolean(Convert.ToInt32(value));
             }
@@ -126,7 +126,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             
             var strValue = Convert.ToString(value, CultureInfo.InvariantCulture);
             if (DecimalSeparator.Trim() == ".")
-                strValue = strValue.Replace(",", String.Empty);
+                strValue = strValue.Replace(",", "").Replace(" ","");
             else
             {
                 strValue = strValue.Replace(DecimalSeparator.Trim(), ".");

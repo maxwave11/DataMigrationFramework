@@ -40,7 +40,7 @@ namespace XQ.DataMigration.Mapping.Expressions
                 
                 return  task.Result;
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }

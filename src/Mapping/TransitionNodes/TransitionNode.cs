@@ -18,19 +18,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
     {
         public string Name { get; set; }
 
-
-        public bool Trace { get; set; }
-
         public bool TraceWarnings { get; set; } = true;
 
-        public virtual ConsoleColor Color { get; set; } = ConsoleColor.White;
-
-        /// <summary>
-        /// Mark element by this attribute to fast debug particular TransitionNode
-        /// </summary>
-        public bool Break { get; set; }
-
-        internal bool ActualTrace => (Parent?.ActualTrace ?? false) || Trace;
+        public virtual ConsoleColor TraceColor { get; set; } = ConsoleColor.White;
 
         public TransitionNode Parent { get; private set; }
 
@@ -61,15 +51,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         /// </summary>
         public TransitResult Transit(ValueTransitContext ctx)
         {
-            if (ctx == null)
-                throw new ArgumentNullException(nameof(ctx));
-
             Migrator.Current.Tracer.Indent();
 
+            ctx.CurrentNode = this;
             TraceStart(ctx);
-
-            if (Break)
-                Debugger.Break();
 
             object resultValue = null;
             TransitionFlow continuation;
@@ -84,13 +69,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             catch (Exception ex)
             {
                 continuation = OnError;
-                Migrator.Current.Tracer.TraceWarning(ex.ToString());
+                Migrator.Current.Tracer.TraceError(ex.ToString(), ctx);
             }
 
-            if (continuation == TransitionFlow.Stop)
+            if (continuation != TransitionFlow.Continue)
             {
                 message = $"Transition stopped, message: {message}";
-                Migrator.Current.Tracer.TraceError(message, this, ctx);
+                Migrator.Current.Tracer.TraceWarning(message,ctx);
+                Migrator.Current.Tracer.IndentBack();
                 return new TransitResult(continuation, null);
             }
 
@@ -145,7 +131,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         protected virtual void TraceLine(string message, ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.TraceLine(message, this, ctx);
+            Migrator.Current.Tracer.TraceLine(message, this.TraceColor, ctx);
         }
 
         public bool HasParent(TransitionNode node)

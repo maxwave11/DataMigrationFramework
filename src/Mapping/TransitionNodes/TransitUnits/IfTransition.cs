@@ -13,7 +13,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     public class IfTransition: TransitUnit
     {
         public TransitionNode OnTrue { get; set; } = new FlowTransition() { Flow = TransitionFlow.Continue };
-        public TransitionNode OnFalse { get; set; } = new FlowTransition() { Flow = TransitionFlow.SkipValue };
+        //public TransitionNode OnFalse { get; set; } = new FlowTransition() { Flow = TransitionFlow.Continue };
         
         public override void Initialize(TransitionNode parent)
         {
@@ -29,9 +29,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             if (!boolValue.HasValue)
                 throw new Exception($"Result of Expression execution in {nameof(IfTransition)} node must be boolean");
-            
 
-            return boolValue.Value ? OnTrue.Transit(ctx) : OnFalse.Transit(ctx);
+            return boolValue.Value ?
+                OnTrue.Transit(ctx) :
+                new TransitResult(TransitionFlow.Continue, ctx.TransitValue);
         }
 
         public static implicit operator IfTransition(string expression)
@@ -45,14 +46,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         //    base.TraceStart(ctx, attributes);
         //}
 
-        //protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+        //protected override TransitResult TransitValue(TransitionNode childNode, ValueTransitContext ctx)
         //{
         //    //Reset TransitValue by Source object before any children begins inside ObjectTrastition
         //    //Notice: if you want to pass TransitValue between transitions you have to place your
         //    //'connected' transition nodes inside ValueTransition
         //    ctx.SetCurrentValue(childNode.Name, ctx.Source);
 
-        //    return base.TransitChild(childNode, ctx);
+        //    return base.TransitValue(childNode, ctx);
         //}
     }
 }

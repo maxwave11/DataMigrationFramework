@@ -30,15 +30,16 @@ namespace XQ.DataMigration.Mapping
 
             Tracer.TraceLine("====== Migration start ======");
 
-            var ctx = new ValueTransitContext(null, null, null);
-
             try
             {
-                _mapConfig.Pipeline.Where(i=>i.Enabled).ToList().ForEach(i=>i.Run());
+                foreach (var node in _mapConfig.Pipeline.Where(i => i.Enabled)) 
+                {
+                    node.Run();
+                }
             }
             catch (Exception e)
             {
-                Tracer.TraceLine(e.Message);
+                Tracer.TraceLine(e.ToString());
             }
                 
             stopwatch.Stop();

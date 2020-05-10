@@ -39,7 +39,7 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// <returns>C# expression string</returns>
         public static  string TranslateExpression(string migrationExpression)
         {
-            bool isCode = false, isStringTemplate = false;
+            bool isCode = false;
             string expression = null;
 
             if (migrationExpression.StartsWith("=>"))
@@ -50,7 +50,6 @@ namespace XQ.DataMigration.Mapping.Expressions
             
             if (migrationExpression.StartsWith("$"))
             {
-                isStringTemplate = true;
                 expression = migrationExpression.TrimStart('$');
             }
 

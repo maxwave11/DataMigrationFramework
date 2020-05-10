@@ -26,18 +26,11 @@ namespace XQ.DataMigration.Data
         public int DataStartRowNumber { get; set; } = 2;
     }
 
-    public class CsvDataSource : IDataSource
+    public class CsvDataSource : DataSourceBase
     {
-        public string Query { get; set; }
-        
-        public ReadKeyTransition Key { get; set; }
-        
-        // public KeyTransition ComplexKey { get; set; }
-
-        public IEnumerable<IValuesObject> GetData()
+        protected override IEnumerable<IValuesObject> GetDataInternal()
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
-
 
             var subQueries = Query.Split('|');
             foreach (string subQuery in subQueries)
@@ -46,13 +39,6 @@ namespace XQ.DataMigration.Data
 
                 foreach (var valuesObject in GetDataFromFile(filePath))
                 {
-                   var result =  Key.Transit(new ValueTransitContext(valuesObject,null, valuesObject));
-
-                   valuesObject.Key = result.Value.ToString();
-                   
-                    if (valuesObject.Key.IsEmpty())
-                        continue;
-                    
                     yield return valuesObject;
                 }
             }
@@ -71,8 +57,7 @@ namespace XQ.DataMigration.Data
             csvReader.Configuration.TrimHeaders = true;
 
             Key.Initialize(null);
-            Key.Color = ConsoleColor.Green;
-            Key.Trace = MapConfig.Current.TraceKeyTransition;
+            Key.TraceColor = ConsoleColor.Green;
             
             using (txtReader)
             {
@@ -80,7 +65,7 @@ namespace XQ.DataMigration.Data
                 {
                     while (csvReader.Read())
                     {
-                        ValuesObject result = new ValuesObject();
+                        var result = new ValuesObject();
                         csvReader.FieldHeaders.ToList().ForEach(i =>
                         {
                             if (i.IsNotEmpty())

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 
 namespace XQ.DataMigration.Data
 {
-    public interface ITargetProvider : IDataSource
+    public interface ITargetProvider
     {
-        void SaveObjects(ICollection<IValuesObject> objects);
         IValuesObject CreateObject(string key);
-        void RemoveObjectFromCache(string key);
-        IValuesObject GetObjectByKey(string objectKey);
+        
+        void SaveObjects(IEnumerable<IValuesObject> objects);
     }
 }

@@ -1,0 +1,20 @@
+using System;
+using XQ.DataMigration.Mapping.Logic;
+
+namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
+{
+    public class TraceTransitUnit : TransitionNode
+    {
+        public bool Trace { get; set; }
+        protected override TransitResult TransitInternal(ValueTransitContext ctx)
+        {
+            ctx.Trace = this.Trace;
+            return new TransitResult(ctx.TransitValue);
+        }
+        
+        public static implicit operator TraceTransitUnit(string expression)
+        {
+            return new TraceTransitUnit() { Trace = bool.Parse(expression)  };
+        }
+    }
+}

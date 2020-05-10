@@ -9,13 +9,11 @@ namespace XQ.DataMigration.Mapping.Trace
 {
     public class TransitErrorEventArgs
     {
-        public TransitionNode ValueTransition { get; private set; }
         public ValueTransitContext Context { get; private set; }
         public bool Continue { get; set; }
 
-        public TransitErrorEventArgs(TransitionNode valueTransition, ValueTransitContext context)
+        public TransitErrorEventArgs(ValueTransitContext context)
         {
-            ValueTransition = valueTransition;
             Context = context;
         }
 
@@ -39,7 +37,7 @@ $@"Error description:
 ==============TransitValue=====
 { ((Context.TransitValue as IValuesObject)?.GetInfo().Truncate(1024) ?? Context.TransitValue) }
 
-==============ValueType: {Context.ValueType}";
+==============ValueType: {Context.TransitValue?.GetType()}";
 
                 return errorMsg;
             }

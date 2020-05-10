@@ -1,7 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection.Emit;
 using XQ.DataMigration.MapConfiguration;
+using XQ.DataMigration.Mapping;
+using XQ.DataMigration.Mapping.Expressions;
+using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
@@ -11,9 +17,11 @@ namespace XQ.DataMigration.Data
     {
         public string Query { get; set; }
 
-        public ReadKeyTransition Key { get; set; }
+        public ConcatReadTransition Key { get; set; }
 
         public IDataSourceSettings Settings { get; set; }
+        
+        private Dictionary<string, List<IValuesObject>> _cache;
 
         /// <summary>
         /// Set this value if you want to transit concrete range of DataSet objects from source system
@@ -24,81 +32,79 @@ namespace XQ.DataMigration.Data
 
         //private Dictionary<int, int> _allowedRanges;
 
-        protected abstract IDataReader GetDataReader();
+        protected abstract IEnumerable<IValuesObject> GetDataInternal();
 
-        public abstract IEnumerable<IValuesObject> GetData();
+        public IEnumerable<IValuesObject> GetData()
+        {
+            if (_cache == null)
+                LoadObjectsToCache();
 
-        //public virtual IEnumerable<IValuesObject> GetData()
-        //{
-        //    Key.Color = ConsoleColor.Green;
+            return _cache.Values.SelectMany(i => i);
+        }
+
+        public IEnumerable<IValuesObject> GetObjectsByKey(string key)
+        {
+            if (_cache == null)
+                LoadObjectsToCache();
+
+            string unifiedKey = UnifyKey(key);
+            return _cache.ContainsKey(unifiedKey) ? _cache[unifiedKey] : null;
+        }
+
+        private void LoadObjectsToCache()
+        {
+            Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Loading objects...");
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var targetObjects = GetDataInternal().ToList();
+            stopwatch.Stop();
+
+            Migrator.Current.Tracer.TraceLine($"Loading {targetObjects.Count} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
+
+            Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Put {targetObjects.Count} objects to cache...");
+
+            stopwatch.Reset();
+            stopwatch.Start();
+
+            targetObjects.ForEach(SetObjectKey);
             
-        //    var reader = GetDataReader();
+            _cache = targetObjects
+                .Where(i => i.Key.IsNotEmpty())
+                .GroupBy(i => i.Key)
+                .ToDictionary(i => i.Key, i => i.ToList());
+            
+            stopwatch.Stop();
 
+            Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Put {targetObjects.Count} objects to cache completed in { stopwatch.Elapsed.TotalSeconds } sec");
+        }
 
-        //    using (reader)
-        //    {
-        //        string[] headerRow = null;
-        //        int rowCounter = 0;
-        //        while (reader.Read())
-        //        {
-        //            rowCounter++;
-                
-        //            //init header row
-        //            if (rowCounter == Settings.HeaderRowNumber)
-        //            {
-        //                headerRow = new string[reader.FieldCount];
-        //                for (int i = 0; i < reader.FieldCount; i++)
-        //                    headerRow[i] = reader.GetString(i)?.Replace("\n", " ").Replace("\r", String.Empty);
-                
-        //                continue;
-        //            }
-                    
-                  
-        //            if (rowCounter < Settings.DataStartRowNumber)
-        //                continue;
-                
-        //            if (IsRowEmpty(reader))
-        //                continue;
-                
+        protected void PutObjectToCache(IValuesObject tObject)
+        {
+            if (tObject.IsEmpty())
+                return;
 
-        //            var valuesObject = RowToValuesObject(reader, headerRow);
-
-        //            //skiping objects with empty keys
-        //            if (valuesObject.Key.IsEmpty())
-        //                continue;
-
-        //            yield return valuesObject;
-        //        }
-        //    }
-        //}
+            if (_cache[tObject.Key].Contains(tObject))
+                return;
+            
+            _cache[tObject.Key].Add(tObject);
+        }
         
-        //private bool IsRowEmpty(IDataReader reader)
-        //{
-        //    bool result = true;
+        private void SetObjectKey(IValuesObject valuesObject)
+        {
+            var result =  Key.Transit(new ValueTransitContext(valuesObject,null, valuesObject));
+            valuesObject.Key = UnifyKey(result.Value?.ToString()); 
+        }
 
-        //    for (int i = 0; i < reader.FieldCount; i++)
-        //        result &= string.IsNullOrWhiteSpace(reader.GetValue(i)?.ToString());
+        private static string UnifyKey(string key)
+        {
+            return key.Trim().ToUpper();
+        }
 
-        //    return result;
-        //}
-        
-        //private IValuesObject RowToValuesObject(IDataReader reader, string[] headerRow)
-        //{
-        //    //fill VlauesObject from row values
-        //    var valuesObject = new ValuesObject();
-        //    for (int i = 0; i < reader.FieldCount; i++)
-        //    {
-        //        if (headerRow[i].IsEmpty())
-        //            continue;
-
-        //        valuesObject.SetValue(headerRow[i], reader.GetValue(i));
-        //    }
-
-        //    valuesObject.Key = Key.GetKeyForObject(valuesObject);
-
-        //    return valuesObject;
-        //}
-        
+        public override string ToString()
+        {
+            return $"Query: { Query }, Key: { Key }";
+        }
 
         //private bool IsRowIndexInRange(int rowIndex)
         //{

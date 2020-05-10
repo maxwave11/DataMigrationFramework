@@ -20,6 +20,7 @@ namespace XQ.DataMigration.Mapping.Expressions
     {
         public IValuesObject SRC => _ctx.Source;
         public IValuesObject TARGET => _ctx.Target;
+        public IValuesObject BAG => _ctx.Target;
         
         /// <summary>
         /// Current transit value. Use this property in expressions to handle value on transit pipeline
@@ -29,6 +30,7 @@ namespace XQ.DataMigration.Mapping.Expressions
         public IValuesObject VALUE_OBJECT => (IValuesObject)_ctx.TransitValue;
         
         public Dictionary<string, object> Variables => MapConfig.Current.Variables;
+        public bool TRACE { get => _ctx.Trace; set => _ctx.Trace = value; }
         
       
         private readonly ValueTransitContext _ctx;
@@ -51,13 +53,6 @@ namespace XQ.DataMigration.Mapping.Expressions
         {
             return value?.ToString() ?? "";
         }
-        
-        //public object CMD(object[] args)
-        //{
-        //    return value?.ToString() ?? "";
-        //}
-
-
 
         public string Format(string format, object argument)
         {

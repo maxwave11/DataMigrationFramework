@@ -54,13 +54,17 @@ namespace XQ.DataMigration.MapConfiguration
                 { "FLOW", typeof(FlowTransition) },
                 { "LOOKUP", typeof(LookupValueTransitUnit) },
                 { "TYPE", typeof(TypeConvertTransitUnit) },
+                { "CONCAT", typeof(ConcatReadTransition) },
+                { "SET", typeof(WriteTransitUnit) },
+                { "GET", typeof(ReadTransitUnit) },
+                { "IF", typeof(IfTransition) },
+                { "TRACE", typeof(TraceTransitUnit) },
+
+
                 { "csv", typeof(CsvDataSource) },
                 { "excel", typeof(ExcelDataSource) },
                 { "csv-settings", typeof(CsvSourceSettings) },
-                { "GET", typeof(ReadTransitUnit) },
-                { "KEY", typeof(ReadKeyTransition) },
-                { "SET", typeof(WriteTransitUnit) },
-                { "IF", typeof(IfTransition) }
+            
             };
 
             var builder = new DeserializerBuilder();

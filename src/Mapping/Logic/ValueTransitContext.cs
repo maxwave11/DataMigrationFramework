@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Utils;
 
@@ -10,10 +12,17 @@ namespace XQ.DataMigration.Mapping.Logic
     {
         public IValuesObject Source { get; set; }
         public IValuesObject Target { get; set; }
+
+        //enables trace from any place of configuration (change it by expression). Should reset after value transition stop
+        public bool Trace { get; set; }
+        
+        public FlowControl Flow { get; set; }
+
         public object TransitValue { get; private set; }
         
         public TransitDataCommand TransitDataCommand { get; set; }
-        public Type ValueType { get; }
+        
+        public TransitionNode CurrentNode { get; set; }
 
         public readonly Dictionary<string, object> _valuesHistory = new Dictionary<string, object>();
 
@@ -30,7 +39,6 @@ namespace XQ.DataMigration.Mapping.Logic
             Source = source;
             Target = target;
             TransitValue = transitValue;
-            ValueType = transitValue?.GetType();
         }
 
         public void SetCurrentValue(string transitionName, object value)

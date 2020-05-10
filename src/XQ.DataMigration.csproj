@@ -131,13 +131,14 @@
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\TargetObjectsSaver.cs" />
     <Compile Include="Mapping\Expressions\MigrationExpression.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\ConcatReadTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\FlowTransition.cs" />
+    <Compile Include="Mapping\TransitionNodes\TransitUnits\TraceTransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\Validation\RequiredIfAttribute.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\IfTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceStepUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\ReplaceTransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\WriteMessageUnit.cs" />
-    <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ValueTransitions\LookupValueTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitionNode.cs" />
     <Compile Include="Mapping\Logic\TransitResult.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\LookupValueTransitUnit.cs" />

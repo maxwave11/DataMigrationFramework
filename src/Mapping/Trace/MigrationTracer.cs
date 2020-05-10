@@ -1,11 +1,7 @@
 using System;
 using System.Linq;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.MapConfiguration;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
-using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.Trace
@@ -42,63 +38,36 @@ namespace XQ.DataMigration.Mapping.Trace
             Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.White));
         }
 
-        public void TraceLine(string message, TransitionNode node, ValueTransitContext ctx)
+        public void TraceLine(string message, ConsoleColor color, ValueTransitContext ctx)
         {
             if (!string.IsNullOrEmpty(message))
                 message = FormatMessage(message);
-
-            // if (node.HasParentOfType<KeyTransition>() && node.ActualTrace == false)
-            // {
-            //     //don't add KeyTransition's TraceEntries to log if it's disabled
-            // }
-            // else
-            {
-                ctx?.AddTraceEntry(message, node.Color);
-            }
-
-            var doTrace = node.ActualTrace;
-
-            //switch (node.ActualTrace)
-            //{
-            //    case TraceLevel.None:
-            //        doTrace = false;
-            //        break;
-            //    case TraceLevel.ObjectSet:
-            //        if (node.HasParentOfType<TransitDataCommand>() && !(node is TransitDataCommand))
-            //            doTrace = false;
-            //        break;
-            //    case TraceLevel.Object:
-            //        if (node.HasParentOfType<ObjectTransition>() && !(node is ObjectTransition))
-            //            doTrace = false;
-            //        break;
-            //    default:
-            //        break;
-            //}
+        
+            ctx?.AddTraceEntry(message, color);
             
-            if (doTrace)
-                Trace?.Invoke(this, new TraceMessage(message, node.Color));
+            if (ctx.Trace)
+                Trace?.Invoke(this, new TraceMessage(message, color));
         }
 
-        public void TraceWarning(string message)
+        public void TraceWarning(string message, ValueTransitContext ctx)
         {
             if (!string.IsNullOrEmpty(message))
                 message = FormatMessage("WARNING:" + message);
 
-
-            //ctx.AddTraceEntry(message, ConsoleColor.Yellow);
+            ctx.AddTraceEntry(message, ConsoleColor.Yellow);
 
             Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.Yellow));
         }
 
-        public void TraceError(string message, TransitionNode node, ValueTransitContext ctx)
+        public void TraceError(string message, ValueTransitContext ctx)
         {
             var msg = FormatMessage(message);
             ctx.AddTraceEntry(msg, ConsoleColor.Yellow);
 
             Trace?.Invoke(this, new TraceMessage(msg, ConsoleColor.Red));
 
-            var args = new TransitErrorEventArgs(node, ctx);
-            OnValueTransitError?.Invoke(node, args);
+            var args = new TransitErrorEventArgs(ctx);
+            OnValueTransitError?.Invoke(ctx, args);
         }
 
         private string FormatMessage(string msg)
@@ -109,14 +78,6 @@ namespace XQ.DataMigration.Mapping.Trace
           
             return '\n' + msg.Split('\n').Select(i => indent + i).Join("\n");
         }
-
-        // private ObjectTransition FindObjectTransition(TransitionNode transitionNode)
-        // {
-        //     if (transitionNode == null)
-        //         return null;
-        //
-        //     return  (transitionNode as ObjectTransition) ?? FindObjectTransition(transitionNode.Parent);
-        // }
 
         public void Indent()
         {

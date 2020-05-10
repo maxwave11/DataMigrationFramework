@@ -8,17 +8,11 @@ using XQ.DataMigration.Mapping.TransitionNodes;
 
 namespace XQ.DataMigration.Data
 {
-    public class SqlDataSource : IDataSource //INHERIT FROM DataSourceBase
+    public class SqlDataSource : DataSourceBase 
     {
         public string ConnectionString { get; set; }
 
-        public bool IsDefault { get; set; }
-
-        public string Query { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-       
-
-        public IEnumerable<IValuesObject> GetData()
+        protected override IEnumerable<IValuesObject> GetDataInternal()
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -41,12 +35,5 @@ namespace XQ.DataMigration.Data
                 }
             }
         }
-
-        //public override TransitResult TransitInternal(ValueTransitContext ctx)
-        //{
-        //    var actualQuery =  ExpressionEvaluator.EvaluateString(Query, ctx);
-        //    ConnectionString = ExpressionEvaluator.EvaluateString(ConnectionString, ctx);
-        //    return new TransitResult(GetDataSet(actualQuery));
-        //}
     }
 }

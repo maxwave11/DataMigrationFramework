@@ -77,7 +77,7 @@
 
 //                _currentSourceObject = sourceObject;
 //                ctx.SetCurrentValue(this.Name, sourceObject);
-//                var result = TransitChildren(ctx);
+//                var result = TransitValues(ctx);
 
 //                if (result.Flow == TransitionFlow.SkipObject)
 //                    continue;
@@ -94,14 +94,14 @@
 //            return new TransitResult(null);
 //        }
 
-//        protected override TransitResult TransitChild(TransitionNode childNode, ValueTransitContext ctx)
+//        protected override TransitResult TransitValue(TransitionNode childNode, ValueTransitContext ctx)
 //        {
 //            ctx.Source = _currentSourceObject;
 //            //reset cached source key because different nesetd transitions 
 //            //can use different source key evaluation logic
 //            ctx.Source.Key = String.Empty;
 
-//            return base.TransitChild(childNode, ctx);
+//            return base.TransitValue(childNode, ctx);
 //        }
 
 //        #endregion
