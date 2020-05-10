@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using XQ.DataMigration.MapConfiguration;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Utils;
 
@@ -10,18 +11,18 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
     public class TypeConvertTransitUnit : TransitionNode
     {
-        [XmlAttribute]
         public string DataTypeFormats { get; set; }
 
-        [XmlAttribute]
         public string DataType { get; set; }
 
-        [XmlAttribute]
-        public string DecimalSeparator { get; set; } = ".";
+        public char DecimalSeparator { get; set; }
 
         private TypeCode _typeCode;
         public override void Initialize(TransitionNode parent)
         {
+            if (DecimalSeparator == 0)
+                DecimalSeparator = MapConfig.Current.DefaultDecimalSeparator;
+                
             if (DataType.ToLower() == "int")
                 DataType = "int32";
 
@@ -125,23 +126,22 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         {
             
             var strValue = Convert.ToString(value, CultureInfo.InvariantCulture);
-            if (DecimalSeparator.Trim() == ".")
+            if (DecimalSeparator == '.')
                 strValue = strValue.Replace(",", "").Replace(" ","");
             else
             {
-                strValue = strValue.Replace(DecimalSeparator.Trim(), ".");
+                strValue = strValue.Replace(DecimalSeparator.ToString(), ".");
             }
             
             //return string without any white spaces (don't use String.Replace for that)
             return Regex.Replace(strValue, @"\s+", "");
         }
 
-        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
+        public override string ToString()
         {
-            attributes = $"TargetType=\"{ DataType }\"";
-            base.TraceStart(ctx, attributes);
+            return $"TargetType=\"{ DataType }\"";
         }
-        
+
         public static implicit operator TypeConvertTransitUnit(string expression)
         {
             return new TypeConvertTransitUnit() { DataType = expression };

@@ -25,7 +25,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             {
                 value = Replace(ctx);
                 ctx.SetCurrentValue(this.Name, value);
-                //continuation = Important ? TransitionFlow.SkipUnit : TransitionFlow.Continue;
+                continuation = Important ? TransitionFlow.SkipValue : TransitionFlow.Continue;
             }
 
             return new TransitResult(continuation, value);

@@ -24,11 +24,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         public TransitionNode Parent { get; private set; }
 
-        /// <summary>
-        /// Specify what to do if some error occured while current transition processing
-        /// </summary>
-        public TransitionFlow OnError { get; set; } = TransitionFlow.Stop;
-
         public virtual void Initialize(TransitionNode parent)
         {
             Parent = parent;
@@ -56,38 +51,32 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             ctx.CurrentNode = this;
             TraceStart(ctx);
 
-            object resultValue = null;
-            TransitionFlow continuation;
-            string message = "";
+            TransitResult result = null;
             try
             {
-                var result = TransitInternal(ctx);
-                resultValue = result.Value;
-                continuation = result.Flow;
-                message = result.Message;
+                result = TransitInternal(ctx);
             }
             catch (Exception ex)
             {
-                continuation = OnError;
                 Migrator.Current.Tracer.TraceError(ex.ToString(), ctx);
+                throw;
             }
+            
+            ctx.SetCurrentValue(Name, result.Value);
 
-            if (continuation != TransitionFlow.Continue)
+            if (result.Flow != TransitionFlow.Continue)
             {
-                message = $"Transition stopped, message: {message}";
+                string message = $"Transition interrupted, message: {result.Message}";
                 Migrator.Current.Tracer.TraceWarning(message,ctx);
                 Migrator.Current.Tracer.IndentBack();
-                return new TransitResult(continuation, null);
+                return new TransitResult(result.Flow, result.Value, message);
             }
-
-            ctx.SetCurrentValue(Name, resultValue);
 
             TraceEnd(ctx);
 
             Migrator.Current.Tracer.IndentBack();
 
-
-            return new TransitResult(continuation, ctx.TransitValue, message);
+            return new TransitResult(TransitionFlow.Continue, ctx.TransitValue);
         }
 
         /// <summary>
@@ -100,24 +89,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         /// <returns></returns>
         protected abstract TransitResult TransitInternal(ValueTransitContext ctx);
 
-        protected virtual void TraceStart(ValueTransitContext ctx, string attributes = "")
+        private void TraceStart(ValueTransitContext ctx)
         {
             var tagName = GetType().Name;
-
-
-            if (!string.IsNullOrEmpty(attributes))
-                attributes = " " + attributes;
 
             var incomingValue = ctx.TransitValue?.ToString();
             var incomingValueType = ctx.TransitValue?.GetType().Name;
 
-            var traceMsg = $"-> {tagName}{attributes}";
+            var traceMsg = $"-> {tagName} { this.ToString() }";
             TraceLine(traceMsg, ctx);
 
             TraceLine($"   Input: ({incomingValueType.Truncate(30)}){incomingValue}",ctx);
         }
 
-        protected virtual void TraceEnd(ValueTransitContext ctx)
+        private void TraceEnd(ValueTransitContext ctx)
         {
             var tagName = GetType().Name;
             var returnValue = ctx.TransitValue?.ToString();

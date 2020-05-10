@@ -1,5 +1,6 @@
 using System;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
@@ -14,7 +15,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         
         public static implicit operator TraceTransitUnit(string expression)
         {
-            return new TraceTransitUnit() { Trace = bool.Parse(expression)  };
+            return new TraceTransitUnit() { Trace = !expression.IsNotEmpty() || bool.Parse(expression)  };
         }
     }
 }

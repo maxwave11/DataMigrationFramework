@@ -21,16 +21,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             var  returnValue = Expression.Evaluate(ctx);
             return new TransitResult(returnValue);
         }
-
-        protected override void TraceStart(ValueTransitContext ctx, string attributes = "")
-        {
-            attributes += $" Expression: { Expression }";
-            base.TraceStart(ctx, attributes);
-        }
         
         public override string ToString()
         {
-            return $"Type: {GetType().Name}, Expresion: { Expression }";
+            return $"Expresion: { Expression }";
         }
        
     }

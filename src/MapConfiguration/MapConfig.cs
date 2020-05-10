@@ -16,6 +16,7 @@ namespace XQ.DataMigration.MapConfiguration
         
         public static MapConfig Current  {get; private set; }
 
+        public char DefaultDecimalSeparator { get; set; } = '.';
         public bool TraceKeyTransition { get; set; }
         public bool TraceValueTransition { get; set; }
         public bool TraceObjectTransition { get; set; }

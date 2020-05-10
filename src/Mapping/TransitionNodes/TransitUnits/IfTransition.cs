@@ -13,12 +13,15 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     public class IfTransition: TransitUnit
     {
         public TransitionNode OnTrue { get; set; } = new FlowTransition() { Flow = TransitionFlow.Continue };
+        public ComplexTransition<TransitionNode> OnTrueComplex { get; set; }
         //public TransitionNode OnFalse { get; set; } = new FlowTransition() { Flow = TransitionFlow.Continue };
         
         public override void Initialize(TransitionNode parent)
         {
             if (Expression == null)
                 throw new Exception($"{nameof(Expression)} is required for { nameof(IfTransition)}");
+            if (OnTrueComplex != null)
+                OnTrue = OnTrueComplex;
 
             base.Initialize(parent);
         }
