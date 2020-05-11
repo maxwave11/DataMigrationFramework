@@ -19,7 +19,6 @@ namespace XQ.DataMigration.Data
 
         public ConcatReadTransition Key { get; set; }
 
-        public IDataSourceSettings Settings { get; set; }
         
         private Dictionary<string, List<IValuesObject>> _cache;
 

@@ -11,6 +11,8 @@ namespace XQ.DataMigration.Data
 {
     public class ExcelDataSource : DataSourceBase
     {
+        public IDataSourceSettings Settings { get; set; }
+
         protected override IEnumerable<IValuesObject> GetDataInternal()
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
