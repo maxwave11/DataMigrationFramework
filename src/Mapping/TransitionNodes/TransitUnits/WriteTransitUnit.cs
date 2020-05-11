@@ -1,4 +1,6 @@
-﻿using XQ.DataMigration.Mapping.Logic;
+﻿using System;
+using XQ.DataMigration.Mapping.Expressions;
+using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
@@ -10,19 +12,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     /// </summary>
     public class WriteTransitUnit : TransitUnit
     {
-        // protected override void TraceEnd(ValueTransitContext ctx)
-        // {
-        //     var tagName = this.GetType().Name;
-        //     var returnValue = ctx.TransitValue?.ToString();
-        //     var returnValueType = ctx.TransitValue?.GetType().Name;
-        //     var traceMsg = $"{tagName} Value: ({returnValueType.Truncate(30)}){returnValue.Truncate(40)}, To: {ctx.Target}.{Expression} ";
-        //     TraceLine(traceMsg);
-        // }
+        public string ToField { get; set; }
 
         protected  override TransitResult TransitInternal(ValueTransitContext ctx)
         {
-            if (Expression.IsJustString)
-                ctx.Target.SetValue(Expression.Expression, ctx.TransitValue);
+            if (ToField.IsNotEmpty())
+                ctx.Target.SetValue(ToField, ctx.TransitValue);
             else
                 Expression.Evaluate(ctx);
             
@@ -31,7 +26,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         
         public static implicit operator WriteTransitUnit(string expression)
         {
-            return new WriteTransitUnit() { Expression = expression };
+            if (expression.IsEmpty())
+                throw new InvalidOperationException("Expression can't be empty");
+            
+            if (MigrationExpression.IsExpression(expression))
+                return new WriteTransitUnit() { Expression = expression };
+            
+            return new WriteTransitUnit() { ToField = expression };
         }
     }   
 }

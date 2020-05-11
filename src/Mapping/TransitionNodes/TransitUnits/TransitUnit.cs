@@ -8,13 +8,15 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-
+    public class TransitUnit : TransitUnit<object>
+    {
+    }
     /// <summary>
     /// TransitInternal unit is a node which can't contains nesting elements
     /// </summary>
-    public class TransitUnit: TransitionNode
+    public class TransitUnit<T>: TransitionNode
     {
-        public MigrationExpression Expression { get; set; }
+        public MigrationExpression<T> Expression { get; set; }
 
         protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
@@ -26,6 +28,5 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         {
             return $"Expresion: { Expression }";
         }
-       
     }
 }

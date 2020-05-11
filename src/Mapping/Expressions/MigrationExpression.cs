@@ -9,28 +9,32 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.Expressions
 {
-    public class MigrationExpression
+    public class MigrationExpression: MigrationExpression<object>
+    {
+        public static implicit operator MigrationExpression(string expression)
+        {
+             return new MigrationExpression(expression);
+        }
+
+        public MigrationExpression(string expression) : base(expression)
+        {
+        }
+    }
+
+    public class MigrationExpression<T>
     {
         public string Expression { get; }
         private string _translatedExpression;
-        private readonly ScriptRunner<object> _scriptRunner;
-        public bool IsJustString { get; } = true;
+        private readonly ScriptRunner<T> _scriptRunner;
         public MigrationExpression(string expression)
         {
             Expression = expression;
-
-            if (IsExpression(Expression))
-            {
-                _scriptRunner = Compile(Expression, new List<Type>());
-                IsJustString = false;
-            }
+            ValidateExpression(expression);
+            _scriptRunner = Compile(Expression, new List<Type>());
         }
 
-        public object Evaluate(ValueTransitContext ctx)
+        public T Evaluate(ValueTransitContext ctx)
         {
-            if (_scriptRunner == null)
-                return Expression;
-            
             try
             {
                 var exprContext = new ExpressionContext(ctx);
@@ -46,14 +50,15 @@ namespace XQ.DataMigration.Mapping.Expressions
             }
         }
 
+        public static void ValidateExpression(string expression)
+        {
+            if(!IsExpression(expression))
+                throw new Exception($"String '{expression}' must be an expression with return type { typeof(T) } ");
+        }
+
         public static bool IsExpression(string expression)
         {
             return expression.StartsWith("$") || expression.StartsWith("=>");
-        }
-
-        public string EvaluateString(ValueTransitContext ctx)
-        {
-            return Expression.IsEmpty() ? Expression : Evaluate(ctx)?.ToString();
         }
 
         /// <summary>
@@ -62,7 +67,7 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// <param name="migrationExpression">Migration expression from mapping configuration</param>
         /// <param name="objTransitionType">The type of ObjectTransition from which expression should be executed</param>
         /// <returns>Compiled delegate</returns>
-        private ScriptRunner<object> Compile(string migrationExpression, List<Type> customTypes)
+        private ScriptRunner<T> Compile(string migrationExpression, List<Type> customTypes)
         {
             _translatedExpression = ExpressionCompiler.TranslateExpression(migrationExpression);
 
@@ -75,13 +80,12 @@ namespace XQ.DataMigration.Mapping.Expressions
                 .WithReferences(importTypes.Select(t => t.Assembly))
                 .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text"));
 
-            var script = CSharpScript.Create<object>(_translatedExpression, options: scriptOptions, globalsType: typeof(ExpressionContext));
+            var script = CSharpScript.Create<T>(_translatedExpression, options: scriptOptions, globalsType: typeof(ExpressionContext));
 
             try
             {
-                ScriptRunner<object> runner = script.CreateDelegate();
+                ScriptRunner<T> runner = script.CreateDelegate();
                 return runner;
-
             }
             catch
             {
@@ -93,10 +97,11 @@ namespace XQ.DataMigration.Mapping.Expressions
         {
             return  $"{Expression}";
         }
-
-        public static implicit operator MigrationExpression(string expression)
+        
+        public static implicit operator MigrationExpression<T>(string expression)
         {
-            return new MigrationExpression(expression);
+            ValidateExpression(expression);
+            return new MigrationExpression<T>(expression);
         }
     }
 }

@@ -4,14 +4,25 @@ using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransiti
 
 namespace XQ.DataMigration.Mapping.Logic
 {
-    public class TransitResult
+    public class TransitResult: TransitResult<object>
     {
-        public TransitResult(object value)
+        public TransitResult(object value) : base(value)
+        {
+        }
+
+        public TransitResult(TransitionFlow flow, object value, string message = "") : base(flow, value, message)
+        {
+        }
+    }
+
+    public class TransitResult<T>
+    {
+        public TransitResult(T value)
         {
             Value = value;
         }
 
-        public TransitResult(TransitionFlow flow, object value, string message ="")
+        public TransitResult(TransitionFlow flow, T value, string message ="")
         {
             Flow = flow;
             Value = value;
@@ -19,7 +30,7 @@ namespace XQ.DataMigration.Mapping.Logic
         }
 
         public TransitionFlow Flow { get; } = TransitionFlow.Continue;
-        public object Value { get; }
+        public T Value { get; }
         public string Message { get; }
     }
 }

@@ -10,7 +10,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class IfTransition: TransitUnit
+    public class IfTransition: TransitUnit<bool>
     {
         public TransitionNode OnTrue { get; set; } = new FlowTransition() { Flow = TransitionFlow.Continue };
         public ComplexTransition<TransitionNode> OnTrueComplex { get; set; }
@@ -28,14 +28,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
-            var boolValue = Expression.Evaluate(ctx) as bool?;
+            bool boolValue = Expression.Evaluate(ctx);
 
-            if (!boolValue.HasValue)
-                throw new Exception($"Result of Expression execution in {nameof(IfTransition)} node must be boolean");
-
-            return boolValue.Value ?
-                OnTrue.Transit(ctx) :
-                new TransitResult(TransitionFlow.Continue, ctx.TransitValue);
+            return boolValue
+                ? OnTrue.Transit(ctx)
+                : new TransitResult(TransitionFlow.Continue, ctx.TransitValue);
         }
 
         public static implicit operator IfTransition(string expression)

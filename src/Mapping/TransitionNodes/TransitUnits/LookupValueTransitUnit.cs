@@ -19,7 +19,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     /// by asset's id or find a city id by city name or by any other condition. Lookup condition determined by <c>LookupKeyExpr</c> or 
     /// <c>LookupAlternativeExpr</c> migration expression.
     /// </summary>
-    internal class LookupValueTransitUnit: TransitUnit
+    internal class LookupValueTransitUnit: TransitionNode
     {
         
         /// <summary>
@@ -58,9 +58,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override void Initialize(TransitionNode parent)
         {
-            if (Expression == null)
-                Expression = "{ VALUE }";
-
             if (Source == null)
                 throw new Exception($"{ nameof(Source)}  is required");
 
