@@ -38,7 +38,6 @@ namespace XQ.DataMigration.MapConfiguration
                 { "FLOW", typeof(FlowTransition) },
                 { "LOOKUP", typeof(LookupValueTransitUnit) },
                 { "TYPE", typeof(TypeConvertTransitUnit) },
-                { "CONCAT", typeof(ConcatReadTransition) },
                 { "SET", typeof(WriteTransitUnit) },
                 { "GET", typeof(ReadTransitUnit) },
                 { "IF", typeof(IfTransition) },

@@ -29,7 +29,6 @@ namespace XQ.DataMigration.Mapping.Expressions
         public MigrationExpression(string expression)
         {
             Expression = expression;
-            ValidateExpression(expression);
             _scriptRunner = Compile(Expression, new List<Type>());
         }
 
@@ -100,7 +99,6 @@ namespace XQ.DataMigration.Mapping.Expressions
         
         public static implicit operator MigrationExpression<T>(string expression)
         {
-            ValidateExpression(expression);
             return new MigrationExpression<T>(expression);
         }
     }

@@ -131,7 +131,6 @@
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\ObjectTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\ComplexTransitions\ObjectTransitions\TargetObjectsSaver.cs" />
     <Compile Include="Mapping\Expressions\MigrationExpression.cs" />
-    <Compile Include="Mapping\TransitionNodes\TransitUnits\ConcatReadTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\FlowTransition.cs" />
     <Compile Include="Mapping\TransitionNodes\TransitUnits\TraceTransitUnit.cs" />
     <Compile Include="Mapping\TransitionNodes\Validation\RequiredIfAttribute.cs" />

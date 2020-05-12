@@ -8,6 +8,7 @@ using XQ.DataMigration.MapConfiguration;
 using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Mapping.Expressions;
 using XQ.DataMigration.Mapping.Logic;
+using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
@@ -17,7 +18,7 @@ namespace XQ.DataMigration.Data
     {
         public string Query { get; set; }
 
-        public ConcatReadTransition Key { get; set; }
+        public TransitionNode Key { get; set; }
 
         
         private Dictionary<string, List<IValuesObject>> _cache;

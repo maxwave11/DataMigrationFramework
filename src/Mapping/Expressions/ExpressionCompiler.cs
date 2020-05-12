@@ -39,28 +39,19 @@ namespace XQ.DataMigration.Mapping.Expressions
         /// <returns>C# expression string</returns>
         public static  string TranslateExpression(string migrationExpression)
         {
-            bool isCode = false;
-            string expression = null;
+            string expression = migrationExpression;
 
-            if (migrationExpression.StartsWith("=>"))
-            {
-                isCode = true;
-                expression = migrationExpression.TrimStart('=', '>');
-            }
-            
+            bool isString = false;
             if (migrationExpression.StartsWith("$"))
             {
-                expression = migrationExpression.TrimStart('$');
+                expression = expression.TrimStart('$');
+                isString = true;
             }
 
-            if (expression == null)
-                throw new InvalidOperationException("Expression should be eiter codeexpression (starts from '@') or string temlate (starts from '$')");
-            
             //check that count of open and close curly braces are equal
             if (migrationExpression.Count(c => c == '{') != migrationExpression.Count(c => c == '}'))
                 throw new Exception($"Expression {migrationExpression} is not valid. Check open and close brackets");
 
-          
 
             //translate simplified global variable accessor directive '%': %variable% => Variables[variable]
             expression = new Regex(@"%([^%]*)%").Replace(expression, $"{nameof(ExpressionContext.Variables)}[$1]");
@@ -98,7 +89,7 @@ namespace XQ.DataMigration.Mapping.Expressions
             var regexp = new Regex($@"({ string.Join("|", valuesObjectPrefixes) }){ bracesRegex }");
             expression = regexp.Replace(expression, $"$1$2[\"$3\"]");
 
-            return isCode ? expression : "$\"" + expression + "\"";
+            return isString ? "$\"" + expression + "\"" : expression;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.Trace;
+using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 using TraceLevel = XQ.DataMigration.Enums.TraceLevel;
 
@@ -132,6 +133,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
                 return true;
 
             return Parent?.HasParentOfType<T>() ?? false;
+        }
+
+        public static implicit operator TransitionNode(string expression)
+        {
+            return new ReadTransitUnit() { Expression = expression };
         }
 
         public override string ToString()
