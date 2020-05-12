@@ -83,6 +83,9 @@ namespace XQ.DataMigration.Data
             if (tObject.IsEmpty())
                 return;
 
+            if (!_cache.ContainsKey(tObject.Key))
+                _cache.Add(tObject.Key, new List<IValuesObject>());
+
             if (_cache[tObject.Key].Contains(tObject))
                 return;
             
