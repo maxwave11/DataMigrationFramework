@@ -94,7 +94,10 @@ namespace XQ.DataMigration.Data
         
         private void SetObjectKey(IValuesObject valuesObject)
         {
-            var result =  Key.Transit(new ValueTransitContext(valuesObject,null, valuesObject));
+            var ctx = new ValueTransitContext(valuesObject, null, valuesObject);
+            ctx.Trace = MapConfig.Current.TraceKeyTransition;
+
+            var result = Key.Transit(ctx);
             valuesObject.Key = UnifyKey(result.Value?.ToString()); 
         }
 

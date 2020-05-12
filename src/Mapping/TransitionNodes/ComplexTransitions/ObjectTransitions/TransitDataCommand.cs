@@ -51,7 +51,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         public void Run()
         {
-            Migrator.Current.Tracer.TraceLine($"-> Start {Name} data transition");
+            TraceLine($"-> Start {Name} data transition");
             
             Tracer.Indent();
             
@@ -76,7 +76,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             Saver.TrySave();
             
             Tracer.IndentBack();
-            Migrator.Current.Tracer.TraceLine($"<- End {Name} data transition\\n");
+            TraceLine($"<- End {Name} data transition\\n");
         }
 
         private IValuesObject TransitObject(IValuesObject sourceObject)
@@ -88,6 +88,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 return null;
 
             var ctx = new ValueTransitContext(sourceObject, target, null);
+            ctx.Trace = MapConfig.Current.TraceValueTransition;
 
             TraceLine($"-> Start {Name} object transition, key [{sourceObject.Key}], IsNew:  {target.IsNew}");
 
@@ -108,34 +109,27 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         protected TransitResult TransitValues(ValueTransitContext ctx)
         {
-            try
+
+            foreach (var childTransition in Transitions)
             {
-                // Migrator.Current.Tracer.Indent();
-                foreach (var childTransition in Transitions)
+                //Every time after value transition finishes - reset current value to Source object
+                ctx.SetCurrentValue("DataTransitCommand", ctx.Source);
+                    
+                childTransition.TraceColor = ConsoleColor.Yellow;
+                    
+                var valueTransitResult =  childTransition.Transit(ctx);
+
+                if (valueTransitResult.Flow == TransitionFlow.SkipValue)
                 {
-                    //Every time after value transition finishes - reset current value to Source object
-                    ctx.SetCurrentValue("DataTransitCommand", ctx.Source);
-                    
-                    childTransition.TraceColor = ConsoleColor.Yellow;
-                    
-                    var valueTransitResult =  childTransition.Transit(ctx);
-
-                    if (valueTransitResult.Flow == TransitionFlow.SkipValue)
-                    {
-                        TraceLine($"<- Breaking value");
-                        continue;
-                    }
-
-                    if (valueTransitResult.Flow != TransitionFlow.Continue)
-                    {
-                        TraceLine($"<- Breaking {this.GetType().Name}");
-                        return valueTransitResult;
-                    }
+                    TraceLine($"<- Breaking value");
+                    continue;
                 }
-            }
-            finally
-            {
-                // Migrator.Current.Tracer.IndentBack();
+
+                if (valueTransitResult.Flow != TransitionFlow.Continue)
+                {
+                    TraceLine($"<- Breaking {this.GetType().Name}");
+                    return valueTransitResult;
+                }
             }
 
             return new TransitResult(ctx.TransitValue);

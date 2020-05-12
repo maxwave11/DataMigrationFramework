@@ -19,8 +19,6 @@ namespace XQ.DataMigration.MapConfiguration
         public char DefaultDecimalSeparator { get; set; } = '.';
         public bool TraceKeyTransition { get; set; }
         public bool TraceValueTransition { get; set; }
-        public bool TraceObjectTransition { get; set; }
-
 
         internal void Initialize()
         {
@@ -28,18 +26,9 @@ namespace XQ.DataMigration.MapConfiguration
             Pipeline.ForEach(i => i.Initialize());
         }
         
-
-
         public T GetDefaultSourceSettings<T>()
         {
             return SourceSettings.OfType<T>().Single();
         }
-
-        // public ITargetProvider GetTargetProvider()
-        // {
-        //     //Only one TargetProvider allowed at current moment!
-        //     //return DataSources.OfType<ITargetProvider>().Single();
-        //     return null;
-        // }
     }
 }

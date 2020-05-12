@@ -11,7 +11,7 @@ namespace XQ.DataMigration.Mapping.Trace
         /// <summary>
         /// Use this event to trace migration process
         /// </summary>
-        public event EventHandler<TraceMessage> Trace;
+        public event EventHandler<TraceMessage> Trace = delegate { };
 
         /// <summary>
         /// Event fires each time when any value transition started. By use this event
@@ -46,7 +46,7 @@ namespace XQ.DataMigration.Mapping.Trace
             ctx?.AddTraceEntry(message, color);
             
             if (ctx.Trace)
-                Trace?.Invoke(this, new TraceMessage(message, color));
+                Trace.Invoke(this, new TraceMessage(message, color));
         }
 
         public void TraceWarning(string message, ValueTransitContext ctx)
@@ -56,7 +56,7 @@ namespace XQ.DataMigration.Mapping.Trace
 
             ctx.AddTraceEntry(message, ConsoleColor.Yellow);
 
-            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.Yellow));
+            Trace.Invoke(this, new TraceMessage(message, ConsoleColor.Yellow));
         }
 
         public void TraceError(string message, ValueTransitContext ctx)
@@ -64,7 +64,7 @@ namespace XQ.DataMigration.Mapping.Trace
             var msg = FormatMessage(message);
             ctx.AddTraceEntry(msg, ConsoleColor.Yellow);
 
-            Trace?.Invoke(this, new TraceMessage(msg, ConsoleColor.Red));
+            Trace.Invoke(this, new TraceMessage(msg, ConsoleColor.Red));
 
             var args = new TransitErrorEventArgs(ctx);
             OnValueTransitError?.Invoke(ctx, args);

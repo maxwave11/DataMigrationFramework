@@ -46,9 +46,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         /// </summary>
         public TransitResult Transit(ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.Indent();
-
             ctx.CurrentNode = this;
+
             TraceStart(ctx);
 
             TransitResult result = null;
@@ -74,7 +73,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
             TraceEnd(ctx);
 
-            Migrator.Current.Tracer.IndentBack();
 
             return new TransitResult(TransitionFlow.Continue, ctx.TransitValue);
         }
@@ -91,6 +89,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         private void TraceStart(ValueTransitContext ctx)
         {
+            Migrator.Current.Tracer.Indent();
+
             var tagName = GetType().Name;
 
             var incomingValue = ctx.TransitValue?.ToString();
@@ -104,14 +104,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         private void TraceEnd(ValueTransitContext ctx)
         {
-            var tagName = GetType().Name;
             var returnValue = ctx.TransitValue?.ToString();
             var returnValueType = ctx.TransitValue?.GetType().Name;
 
             var traceMsg = $"   Output: ({returnValueType.Truncate(30)}){returnValue}\n";
             TraceLine(traceMsg,ctx);
-            //traceMsg = $"<- {tagName}";
-            //TraceLine(traceMsg);
+
+            Migrator.Current.Tracer.IndentBack();
         }
 
         protected virtual void TraceLine(string message, ValueTransitContext ctx)
