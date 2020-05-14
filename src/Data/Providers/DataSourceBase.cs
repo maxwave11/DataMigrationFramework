@@ -53,16 +53,18 @@ namespace XQ.DataMigration.Data
 
         private void LoadObjectsToCache()
         {
-            Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Loading objects...");
+            var tracer = Migrator.Current.Tracer;
+            tracer.TraceLine($"DataSource ({ this })");
+            tracer.Indent();
+            tracer.TraceLine($"Loading objects...");
 
             var stopwatch = new Stopwatch();
+
             stopwatch.Start();
             var targetObjects = GetDataInternal().ToList();
             stopwatch.Stop();
 
-            Migrator.Current.Tracer.TraceLine($"Loading {targetObjects.Count} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
-
-            Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Put {targetObjects.Count} objects to cache...");
+            tracer.TraceLine($"Loading {targetObjects.Count} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
 
             stopwatch.Reset();
             stopwatch.Start();
@@ -76,7 +78,9 @@ namespace XQ.DataMigration.Data
             
             stopwatch.Stop();
 
-            Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Put {targetObjects.Count} objects to cache completed in { stopwatch.Elapsed.TotalSeconds } sec");
+            tracer.TraceLine($"Put {targetObjects.Count} objects to cache completed in { stopwatch.Elapsed.TotalSeconds } sec");
+            tracer.IndentBack();
+
         }
 
         protected void PutObjectToCache(IValuesObject tObject)
@@ -96,15 +100,14 @@ namespace XQ.DataMigration.Data
         private void SetObjectKey(IValuesObject valuesObject)
         {
             var ctx = new ValueTransitContext(valuesObject, null, valuesObject);
-            ctx.Trace = MapConfig.Current.TraceKeyTransition;
 
             var result = Key.Transit(ctx);
-            valuesObject.Key = UnifyKey(result.Value?.ToString()); 
+            valuesObject.Key = result.Value != null ? UnifyKey(result.Value.ToString()) : null; 
         }
 
         private static string UnifyKey(string key)
         {
-            return key.Trim().ToUpper();
+             return key.Trim().ToUpper();
         }
 
         public override string ToString()

@@ -37,6 +37,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public override string ToString()
         {
+            if (Expression != null)
+                return Expression.ToString();
+
             return $"[{ Pipeline.Select(i => i.ToString()).Join() }]";
         }
     }

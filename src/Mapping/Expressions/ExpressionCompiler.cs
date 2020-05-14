@@ -58,7 +58,7 @@ namespace XQ.DataMigration.Mapping.Expressions
             
             //translate simplified values object accessor '@': @field_name => VALUES_OBJECT[field_name]
             //expression = expression.Replace("@[",$"{nameof(ExpressionContext.VALUE_OBJECT)}[");
-            expression = new Regex(@"<([^>]*)>").Replace(expression, $"{nameof(ExpressionContext.SRC)}[$1]");
+            expression = new Regex(@"<([^<>]*)>").Replace(expression, $"{nameof(ExpressionContext.SRC)}[$1]");
 
             //quotes conversion: 
             //'some text' => "some text"

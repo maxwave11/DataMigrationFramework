@@ -29,8 +29,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             if (expression.IsEmpty())
                 throw new InvalidOperationException("Expression can't be empty");
             
-            if (MigrationExpression.IsExpression(expression))
-                return new WriteTransitUnit() { Expression = expression };
+            if (expression.StartsWith("=>"))
+                return new WriteTransitUnit() { Expression = expression.TrimStart('=','>') };
             
             return new WriteTransitUnit() { ToField = expression };
         }

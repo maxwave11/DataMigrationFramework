@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,24 +16,25 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         /// </summary>
         public int SaveCount { get; set; } = 10;
 
+        public TransitionNode OnSave { get; set; }
+
         private readonly List<IValuesObject> _transittedObjects = new List<IValuesObject>();
 
-        public TargetObjectsSaver(ITargetProvider targetProvider)
+        internal void Push(IValuesObject objectToSave)
         {
-            TargetProvider = targetProvider;
-        }
+            if (objectToSave.IsEmpty() || objectToSave.Key.IsEmpty())
+                return;
 
-        internal void Push(IEnumerable<IValuesObject> objectsToSave)
-        {
-            _transittedObjects.AddRange(objectsToSave.Where(obj => !obj.IsEmpty() && !obj.Key.IsEmpty()));
+            if (_transittedObjects.Contains(objectToSave))
+                return;
 
-            //need to save after each child transition to avoid referencing to unsaved data
+            _transittedObjects.Add(objectToSave);
+
             if (_transittedObjects.Count >= SaveCount)
                 SaveTargetObjects(_transittedObjects);
         }
 
-
-        private void SaveTargetObjects(List<IValuesObject> targetObjects)
+        protected virtual void SaveTargetObjects(List<IValuesObject> targetObjects)
         {
             try
             {
