@@ -9,7 +9,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 {
     public class TargetObjectsSaver 
     {
-        public  ITargetProvider TargetProvider { get; set; }
+        public  ITargetSource TargetSource { get; set; }
 
         /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value
@@ -52,7 +52,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 var stopWath = new Stopwatch();
                 stopWath.Start();
 
-                TargetProvider.SaveObjects(targetObjects);
+                TargetSource.SaveObjects(targetObjects);
                 stopWath.Stop();
 
                 TraceLine($"Saved {targetObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");

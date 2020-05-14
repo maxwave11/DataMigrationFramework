@@ -15,7 +15,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
     /// <summary>
     /// Base class for all transition elements in Map configuration
     /// </summary>
-    public abstract class TransitionNode:
+    public abstract class TransitionNode
     {
         public string Name { get; set; }
 

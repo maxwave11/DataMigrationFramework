@@ -63,7 +63,6 @@ namespace XQ.DataMigration.Mapping.Expressions
             var importTypes = new List<Type>();
             importTypes.Add(typeof(IValuesObject));
             importTypes.AddRange(customTypes.ToArray());
-
             
             var scriptOptions = ScriptOptions.Default
                 .WithReferences(importTypes.Select(t => t.Assembly))

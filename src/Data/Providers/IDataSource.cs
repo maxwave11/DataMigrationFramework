@@ -10,8 +10,9 @@ namespace XQ.DataMigration.Data
     public interface IDataSource 
     { 
         IEnumerable<IValuesObject> GetData();
-
         IEnumerable<IValuesObject> GetObjectsByKey(string key);
-        //KeyTransition Key { get; }
+
     }
+
+  
 }

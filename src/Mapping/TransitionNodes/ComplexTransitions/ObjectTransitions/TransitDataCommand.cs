@@ -17,18 +17,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     public class TransitDataCommand
     {
         public bool Enabled { get; set; } = true;
-        public string Name{ get; set; }
+        public string Name { get; set; }
         public bool TraceObjects { get; set; }
 
         public IDataSource Source { get; set; }
-        public IDataSource Target { get; set; }
+        public ITargetSource Target { get; set; }
 
         public int SaveCount { get; set; } = 50;
 
         public TargetObjectsSaver Saver { get; set; }
-        
-        public ObjectTransitMode TransitMode { get; set; }
-        
+
         public List<ComplexTransition<TransitionNode>> Transitions { get; set; }
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
@@ -37,7 +35,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         {
             if (Target == null)
                 throw new ArgumentNullException();
-            
+
             if (Source == null)
                 throw new ArgumentNullException();
 
@@ -47,9 +45,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 Saver.SaveCount = SaveCount;
             }
 
-            Saver.TargetProvider = (ITargetProvider)Target;//NEED REFACTOR TO AVOID EXPLICIT CONVERTION
+            Saver.TargetSource = (ITargetSource)Target;//NEED REFACTOR TO AVOID EXPLICIT CONVERTION
 
-            Transitions.ForEach(i=>i.Initialize(null));
+            Transitions.ForEach(i => i.Initialize(null));
         }
 
         public void Run()
@@ -57,7 +55,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             Tracer.TraceLine("");
             Tracer.TraceLine($"-> Start {Name} data transition", ConsoleColor.Magenta);
             Tracer.Indent();
-            
+
             var srcDataSet = Source.GetData();
             long objectsCount = srcDataSet.Count();
             long completedCount = 0;
@@ -68,33 +66,31 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                     continue;
 
                 var target = TransitObject(sourceObject);
-                
-                if (target==null)
+
+                if (target == null)
                     continue;
-                
-                
+
                 Saver.Push(target);
-                
+
 
                 TraceLine($"<- {Name} object transition completed {completedCount / objectsCount:P1} ({completedCount} of {objectsCount}) \\n");
             }
 
             Saver.TrySave();
-            
+
             Tracer.IndentBack();
             Tracer.TraceLine($"<- End {Name} data transition\\n", ConsoleColor.Magenta);
         }
 
         private IValuesObject TransitObject(IValuesObject sourceObject)
         {
-            var target = GetTargetObject(sourceObject.Key);
+            var target = Target.GetObjectByKeyOrCreate(sourceObject.Key);
 
             //target can be empty when using TransitMode = OnlyExitedObjects
             if (target == null)
                 return null;
 
             var ctx = new ValueTransitContext(sourceObject, target, null);
-            //Migrator.Current.Tracer.TraceEnabled = MapConfig.Current.TraceValueTransition;
 
             TraceLine($"-> Start {Name} object transition, key [{sourceObject.Key}], IsNew:  {target.IsNew}");
 
@@ -102,15 +98,22 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             var valuesTransitResult = TransitValues(ctx);
 
-            switch (valuesTransitResult.Flow)
+            if (valuesTransitResult.Flow == TransitionFlow.SkipObject)
             {
-                case TransitionFlow.SkipObject:
-                    return null;
-                case TransitionFlow.Stop:
-                    throw new Exception("Transition stopped - " + valuesTransitResult.Message);
-                default:
-                    return target;
+                //If object just created and skipped by migration logic - need to remove it from cache
+                //becaus it's invalid and must be removed from cache to avoid any referencing to this object
+                //by any migration logic (lookups, key ytansitions, etc.)
+                //If object is not new, it means that it's already saved and passed by migration validation
+                if (target.IsNew)
+                    Target.InvalidateObject(target);
+
+                return null;
             }
+
+            if (valuesTransitResult.Flow == TransitionFlow.Stop)
+                throw new Exception("Transition stopped - " + valuesTransitResult.Message);
+
+            return target;
         }
 
         protected TransitResult TransitValues(ValueTransitContext ctx)
@@ -120,10 +123,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             {
                 //Every time after value transition finishes - reset current value to Source object
                 ctx.SetCurrentValue("DataTransitCommand", ctx.Source);
-                    
+
                 childTransition.TraceColor = ConsoleColor.Yellow;
-                    
-                var valueTransitResult =  childTransition.Transit(ctx);
+
+                var valueTransitResult = childTransition.Transit(ctx);
 
                 if (valueTransitResult.Flow == TransitionFlow.SkipValue)
                 {
@@ -140,31 +143,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             return new TransitResult(ctx.TransitValue);
         }
-        
-        private  IValuesObject GetTargetObject(string key)
-        {
-            var targetObject = Target.GetObjectsByKey(key)?.SingleOrDefault();
 
-            switch (TransitMode)
-            {
-                case ObjectTransitMode.OnlyExistedObjects:
-                    return targetObject;
-                case ObjectTransitMode.OnlyNewObjects when targetObject != null:
-                    TraceLine($"Object already exist, skipping, because TransitMode = TransitMode.OnlyNewObjects");
-                    return null;
-            }
-
-            if (targetObject != null)
-                return targetObject;
-
-            targetObject = ((ITargetProvider)Target).CreateObject(key);
-            return targetObject;
-        }
-        
         protected virtual void TraceLine(string message)
         {
-           if (TraceObjects)
-              Migrator.Current.Tracer.TraceLine(message, ConsoleColor.Gray);
+            if (TraceObjects)
+                Migrator.Current.Tracer.TraceLine(message, ConsoleColor.Gray);
         }
     }
 }

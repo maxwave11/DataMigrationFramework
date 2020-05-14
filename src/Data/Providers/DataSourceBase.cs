@@ -1,58 +1,85 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Emit;
-using XQ.DataMigration.MapConfiguration;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping;
-using XQ.DataMigration.Mapping.Expressions;
 using XQ.DataMigration.Mapping.Logic;
 using XQ.DataMigration.Mapping.TransitionNodes;
-using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
+
+    public abstract class TargetSourceBase : DataSourceBase, ITargetSource
+    {
+        protected abstract IValuesObject CreateObject(string key);
+        public abstract void SaveObjects(IEnumerable<IValuesObject> objects);
+
+        public ObjectTransitMode TransitMode { get; set; }
+
+        public IValuesObject GetObjectByKeyOrCreate(string key)
+        {
+            LoadObjectsToCache();
+
+            string unifiedKey = UnifyKey(key);
+
+            var targetObject = _cache.ContainsKey(unifiedKey) ? _cache[unifiedKey].SingleOrDefault() : null;
+
+            switch (TransitMode)
+            {
+                case ObjectTransitMode.OnlyExistedObjects:
+                    return targetObject;
+                case ObjectTransitMode.OnlyNewObjects when targetObject != null:
+                    return null;
+            }
+
+            if (targetObject != null)
+                return targetObject;
+
+            targetObject = CreateObject(key);
+
+            PutObjectToCache(targetObject);
+
+            return targetObject;
+        }
+
+        public void InvalidateObject(IValuesObject valuesObject)
+        {
+            _cache.Remove(valuesObject.Key);
+        }
+    }
     public abstract class DataSourceBase : IDataSource
     {
         public string Query { get; set; }
 
         public TransitionNode Key { get; set; }
 
-        
-        private Dictionary<string, List<IValuesObject>> _cache;
 
-        /// <summary>
-        /// Set this value if you want to transit concrete range of DataSet objects from source system
-        /// Example 1: 2-10
-        /// Example 2: 2-10, 14-50
-        /// </summary>
-        public string RowsRange { get; set; }
-
-        //private Dictionary<int, int> _allowedRanges;
+        protected Dictionary<string, List<IValuesObject>> _cache;
 
         protected abstract IEnumerable<IValuesObject> GetDataInternal();
 
         public IEnumerable<IValuesObject> GetData()
         {
-            if (_cache == null)
-                LoadObjectsToCache();
-
+            LoadObjectsToCache();
             return _cache.Values.SelectMany(i => i);
         }
 
         public IEnumerable<IValuesObject> GetObjectsByKey(string key)
         {
-            if (_cache == null)
-                LoadObjectsToCache();
+            LoadObjectsToCache();
 
             string unifiedKey = UnifyKey(key);
             return _cache.ContainsKey(unifiedKey) ? _cache[unifiedKey] : null;
         }
 
-        private void LoadObjectsToCache()
+        protected void LoadObjectsToCache()
         {
+            if (_cache != null)
+                return;
+
             var tracer = Migrator.Current.Tracer;
             tracer.TraceLine($"DataSource ({ this })");
             tracer.Indent();
@@ -85,7 +112,7 @@ namespace XQ.DataMigration.Data
 
         protected void PutObjectToCache(IValuesObject tObject)
         {
-            if (tObject.IsEmpty())
+            if (tObject.Key.IsEmpty())
                 return;
 
             if (!_cache.ContainsKey(tObject.Key))
@@ -105,7 +132,7 @@ namespace XQ.DataMigration.Data
             valuesObject.Key = result.Value != null ? UnifyKey(result.Value.ToString()) : null; 
         }
 
-        private static string UnifyKey(string key)
+        protected static string UnifyKey(string key)
         {
              return key.Trim().ToUpper();
         }
@@ -114,31 +141,5 @@ namespace XQ.DataMigration.Data
         {
             return $"Query: { Query }, Key: { Key }";
         }
-
-        //private bool IsRowIndexInRange(int rowIndex)
-        //{
-        //    if (RowsRange.IsEmpty()) return true;
-
-        //    return _allowedRanges.Any(i => i.Key <= rowIndex && rowIndex <= i.Value);
-        //}
-
-        //private void ParseRowsRange()
-        //{
-        //    if (RowsRange.IsEmpty()) return;
-
-        //    if (this._allowedRanges == null)
-        //    {
-        //        this._allowedRanges = new Dictionary<int, int>();
-
-        //        foreach (string strRange in RowsRange.Split(','))
-        //        {
-        //            if (strRange.Contains("-"))
-
-        //                this._allowedRanges.Add(Convert.ToInt32(strRange.Split('-')[0]), Convert.ToInt32(strRange.Split('-')[1]));
-        //            else
-        //                this._allowedRanges.Add(Convert.ToInt32(strRange), Convert.ToInt32(strRange));
-        //        }
-        //    }
-        //}
     }
 }

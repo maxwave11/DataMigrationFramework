@@ -43,7 +43,7 @@ namespace XQ.DataMigration.MapConfiguration
                 { "GET", typeof(ReadTransitUnit) },
                 { "IF", typeof(IfTransition) },
                 { "TRACE", typeof(TraceTransitUnit) },
-                //{ "TRANSIT", typeof(ComplexTransition<TransitionNode>) },
+                { "TRANSIT", typeof(ComplexTransition<TransitionNode>) },
 
                 { "csv", typeof(CsvDataSource) },
                 { "excel", typeof(ExcelDataSource) },

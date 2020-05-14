@@ -65,8 +65,8 @@ namespace XQ.DataMigration.MapConfiguration
 
     //    public void RegisterTargetProvider(Type type)
     //    {
-    //        if (!typeof(ITargetProvider).IsAssignableFrom(type))
-    //            throw new Exception($"Provider types for registering must derived from {nameof(ITargetProvider)}");
+    //        if (!typeof(ITargetSource).IsAssignableFrom(type))
+    //            throw new Exception($"Provider types for registering must derived from {nameof(ITargetSource)}");
 
     //        if (!_dataProviders.Contains(type))
     //            _dataProviders.Add(type);

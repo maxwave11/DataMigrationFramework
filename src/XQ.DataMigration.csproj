@@ -109,7 +109,7 @@
     <Compile Include="Data\DataSets\CachedDataSet.cs" />
     <Compile Include="Data\Providers\IDataSource.cs" />
     <Compile Include="Data\IValuesObject.cs" />
-    <Compile Include="Data\Providers\ITargetProvider.cs" />
+    <Compile Include="Data\Providers\ITargetSource.cs" />
     <Compile Include="Data\ValuesObject.cs" />
     <Compile Include="Enums\FetchMode.cs" />
     <Compile Include="MapConfiguration\MapConfig.cs" />
