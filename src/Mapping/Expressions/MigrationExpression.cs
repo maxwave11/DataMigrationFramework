@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using XQ.DataMigration.Data;
@@ -63,10 +64,11 @@ namespace XQ.DataMigration.Mapping.Expressions
             importTypes.Add(typeof(IValuesObject));
             importTypes.AddRange(customTypes.ToArray());
 
-
+            
             var scriptOptions = ScriptOptions.Default
                 .WithReferences(importTypes.Select(t => t.Assembly))
-                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text"));
+                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text"))
+                .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release);
 
             var script = CSharpScript.Create<T>(_translatedExpression, options: scriptOptions, globalsType: typeof(ExpressionContext));
 

@@ -39,11 +39,9 @@ namespace XQ.DataMigration.Mapping.Trace
             if (!string.IsNullOrEmpty(message))
                 message = FormatMessage(message);
 
-            Trace.Invoke(this, new TraceMessage(message, ConsoleColor.White));
-
             ctx?.AddTraceEntry(message, color);
 
-            if (TraceEnabled)
+            if (ctx == null || ctx.Trace)
                 Trace.Invoke(this, new TraceMessage(message, color));
         }
 

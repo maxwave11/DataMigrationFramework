@@ -9,7 +9,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public bool Trace { get; set; }
         protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.TraceEnabled = this.Trace;
+            ctx.Trace = this.Trace;
             return new TransitResult(ctx.TransitValue);
         }
         

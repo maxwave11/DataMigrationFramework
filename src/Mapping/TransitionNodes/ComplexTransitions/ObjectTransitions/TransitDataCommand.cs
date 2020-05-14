@@ -54,8 +54,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
         public void Run()
         {
+            Tracer.TraceLine("");
             Tracer.TraceLine($"-> Start {Name} data transition", ConsoleColor.Magenta);
-            
             Tracer.Indent();
             
             var srcDataSet = Source.GetData();
@@ -82,7 +82,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             Saver.TrySave();
             
             Tracer.IndentBack();
-            Tracer.TraceLine($"<- End {Name} data transition\\n");
+            Tracer.TraceLine($"<- End {Name} data transition\\n", ConsoleColor.Magenta);
         }
 
         private IValuesObject TransitObject(IValuesObject sourceObject)
@@ -94,7 +94,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 return null;
 
             var ctx = new ValueTransitContext(sourceObject, target, null);
-            Migrator.Current.Tracer.TraceEnabled = MapConfig.Current.TraceValueTransition;
+            //Migrator.Current.Tracer.TraceEnabled = MapConfig.Current.TraceValueTransition;
 
             TraceLine($"-> Start {Name} object transition, key [{sourceObject.Key}], IsNew:  {target.IsNew}");
 
@@ -164,7 +164,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         protected virtual void TraceLine(string message)
         {
            if (TraceObjects)
-              Migrator.Current.Tracer.TraceLine(message);
+              Migrator.Current.Tracer.TraceLine(message, ConsoleColor.Gray);
         }
     }
 }

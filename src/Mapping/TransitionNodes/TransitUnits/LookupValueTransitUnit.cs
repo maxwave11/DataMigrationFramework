@@ -65,7 +65,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         protected  override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             IValuesObject lookupObject = null;
-            string message = "";
             var continuation = TransitionFlow.Continue;
 
             var valueToFind = ctx.TransitValue?.ToString();
@@ -76,12 +75,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
                 if (lookupObject == null)
                 {
-                    message = $"Lookup ({ Source }) object not found by value '{valueToFind}'\n";
+                    var message = $"Lookup ({ Source }) object not found by value '{valueToFind}'\n";
                     continuation = this.OnNotFound;
+                    Migrator.Current.Tracer.TraceWarning(message, ctx);
                 }
             }
 
-            return new TransitResult(continuation, lookupObject, message);
+            return new TransitResult(continuation, lookupObject);
         }
         private IValuesObject FindLookupObject(string searchValue, ValueTransitContext ctx)
         {

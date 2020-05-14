@@ -25,6 +25,8 @@ namespace XQ.DataMigration.Mapping.Logic
 
         public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
 
+        public bool Trace { get; set; }
+
         internal void AddTraceEntry(string msg, ConsoleColor color)
         {
             TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });

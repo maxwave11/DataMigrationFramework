@@ -15,7 +15,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
     /// <summary>
     /// Base class for all transition elements in Map configuration
     /// </summary>
-    public abstract class TransitionNode
+    public abstract class TransitionNode:
     {
         public string Name { get; set; }
 
@@ -64,18 +64,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             
             ctx.SetCurrentValue(Name, result.Value);
 
-            if (result.Flow != TransitionFlow.Continue)
-            {
-                string message = $"Transition interrupted, message: {result.Message}";
-                Migrator.Current.Tracer.TraceWarning(message,ctx);
-                Migrator.Current.Tracer.IndentBack();
-                return new TransitResult(result.Flow, result.Value, message);
-            }
-
             TraceEnd(ctx);
 
-
-            return new TransitResult(TransitionFlow.Continue, ctx.TransitValue);
+            return new TransitResult(result.Flow, ctx.TransitValue);
         }
 
         /// <summary>

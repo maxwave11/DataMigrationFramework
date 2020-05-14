@@ -34,15 +34,20 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 SaveTargetObjects(_transittedObjects);
         }
 
+        private void TraceLine(string message) 
+        {
+            Migrator.Current.Tracer.TraceLine(message, ConsoleColor.DarkCyan);
+        }
+
         protected virtual void SaveTargetObjects(List<IValuesObject> targetObjects)
         {
             try
             {
-                Migrator.Current.Tracer.TraceLine($"Saving {targetObjects.Count} objects...");
+                TraceLine($"Saving {targetObjects.Count} objects...");
                 var newObjectsCount = targetObjects.Count(i => i.IsNew);
 
                 if (newObjectsCount > 0)
-                    Migrator.Current.Tracer.TraceLine($"New objects: {newObjectsCount}");
+                    TraceLine($"New objects: {newObjectsCount}");
 
                 var stopWath = new Stopwatch();
                 stopWath.Start();
@@ -50,12 +55,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 TargetProvider.SaveObjects(targetObjects);
                 stopWath.Stop();
 
-                Migrator.Current.Tracer.TraceLine($"Saved {targetObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
+                TraceLine($"Saved {targetObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
             }
             catch (Exception ex)
             {
                 var objectsInfo = targetObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
-                Migrator.Current.Tracer.TraceLine("=====Error while saving transitted objects: " + ex + objectsInfo);
+                TraceLine("=====Error while saving transitted objects: " + ex + objectsInfo);
                 throw;
             }
 

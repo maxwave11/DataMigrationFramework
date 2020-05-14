@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
@@ -42,6 +43,7 @@ namespace XQ.DataMigration.MapConfiguration
                 { "GET", typeof(ReadTransitUnit) },
                 { "IF", typeof(IfTransition) },
                 { "TRACE", typeof(TraceTransitUnit) },
+                //{ "TRANSIT", typeof(ComplexTransition<TransitionNode>) },
 
                 { "csv", typeof(CsvDataSource) },
                 { "excel", typeof(ExcelDataSource) },
