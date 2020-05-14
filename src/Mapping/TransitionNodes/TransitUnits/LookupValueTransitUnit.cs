@@ -21,13 +21,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     /// </summary>
     internal class LookupValueTransitUnit: TransitionNode
     {
-        
-        /// <summary>
-        /// DataSet id in which current transition will try to find a particular object by expression determined in 
-        /// <c>LookupKeyExpr</c> or <c>LookupAlternativeExpr</c>
-        /// </summary>
-        //public string LookupDataSetId { get; set; }
 
+        /// <summary>
+        /// DataSet id in which current transition will try to find a particular object by Key or by LookupPredicate
+        /// </summary>
         public IDataSource Source { get; set; }
 
         /// <summary>
@@ -46,10 +43,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         //NOTE: used only when LookupAlternativeExpr is used
         public bool FindFirstOccurence { get; set; }
 
+
         /// <summary>
-        /// Query to limit amout of objects for fetching
+        /// Searches item by this expression instead of object Key (slow)
         /// </summary>
-        public string QueryToTarget { get; set; }
+        public MigrationExpression<bool> LookupPredicate { get; set; }
 
         /// <summary>
         /// Specifies migration behavior in case when lookup object wasn't found
@@ -78,7 +76,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
                 if (lookupObject == null)
                 {
-                    message = $"Lookup ({ Source }) object not found by key '{valueToFind}'\n";
+                    message = $"Lookup ({ Source }) object not found by value '{valueToFind}'\n";
                     continuation = this.OnNotFound;
                 }
             }
@@ -87,6 +85,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         }
         private IValuesObject FindLookupObject(string searchValue, ValueTransitContext ctx)
         {
+            if (LookupPredicate != null)
+            {
+                var foundObject = Source
+                    .GetData()
+                    .Where(i => LookupPredicate.Evaluate(new ValueTransitContext(i, null, ctx.TransitValue)))
+                    .SingleOrDefault();
+
+                return foundObject;
+            }
+
             var foundObects = Source.GetObjectsByKey(searchValue);
             
             return FindFirstOccurence ? foundObects?.FirstOrDefault() : foundObects?.SingleOrDefault();
