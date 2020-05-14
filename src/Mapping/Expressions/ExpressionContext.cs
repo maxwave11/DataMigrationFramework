@@ -30,8 +30,6 @@ namespace XQ.DataMigration.Mapping.Expressions
         public IValuesObject VALUE_OBJECT => (IValuesObject)_ctx.TransitValue;
         
         public Dictionary<string, object> Variables => MapConfig.Current.Variables;
-        public bool TRACE { get => _ctx.Trace; set => _ctx.Trace = value; }
-        
       
         private readonly ValueTransitContext _ctx;
 

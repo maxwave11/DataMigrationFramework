@@ -13,6 +13,8 @@ namespace XQ.DataMigration.Mapping.Trace
         /// </summary>
         public event EventHandler<TraceMessage> Trace = delegate { };
 
+        public bool TraceEnabled { get; set; } = false;
+
         /// <summary>
         /// Event fires each time when any value transition started. By use this event
         /// you can control (for example stop/pause) migration flow.
@@ -32,20 +34,16 @@ namespace XQ.DataMigration.Mapping.Trace
 
         internal int _identLevel = 0;
 
-        public void TraceLine(string message)
-        {
-            message = FormatMessage(message);
-            Trace?.Invoke(this, new TraceMessage(message, ConsoleColor.White));
-        }
-
-        public void TraceLine(string message, ConsoleColor color, ValueTransitContext ctx)
+        public void TraceLine(string message, ConsoleColor color = ConsoleColor.White, ValueTransitContext ctx = null)
         {
             if (!string.IsNullOrEmpty(message))
                 message = FormatMessage(message);
-        
+
+            Trace.Invoke(this, new TraceMessage(message, ConsoleColor.White));
+
             ctx?.AddTraceEntry(message, color);
-            
-            if (ctx.Trace)
+
+            if (TraceEnabled)
                 Trace.Invoke(this, new TraceMessage(message, color));
         }
 

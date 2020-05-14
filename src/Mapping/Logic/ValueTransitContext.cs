@@ -13,9 +13,6 @@ namespace XQ.DataMigration.Mapping.Logic
         public IValuesObject Source { get; set; }
         public IValuesObject Target { get; set; }
 
-        //enables trace from any place of configuration (change it by expression). Should reset after value transition stop
-        public bool Trace { get; set; }
-        
         public FlowControl Flow { get; set; }
 
         public object TransitValue { get; private set; }
@@ -32,7 +29,6 @@ namespace XQ.DataMigration.Mapping.Logic
         {
             TraceEntries.Add(new TraceEntry() { Mesage = msg, Color = color });
         }
-
 
         public ValueTransitContext(IValuesObject source, IValuesObject target, object transitValue)
         {

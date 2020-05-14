@@ -49,17 +49,6 @@ namespace XQ.DataMigration.Mapping.Expressions
             }
         }
 
-        public static void ValidateExpression(string expression)
-        {
-            if(!IsExpression(expression))
-                throw new Exception($"String '{expression}' must be an expression with return type { typeof(T) } ");
-        }
-
-        public static bool IsExpression(string expression)
-        {
-            return expression.StartsWith("$") || expression.StartsWith("=>");
-        }
-
         /// <summary>
         /// Compiles migration expression to delegate
         /// </summary>
@@ -94,7 +83,7 @@ namespace XQ.DataMigration.Mapping.Expressions
 
         public override string ToString()
         {
-            return  $"{Expression}";
+            return  Expression;
         }
         
         public static implicit operator MigrationExpression<T>(string expression)

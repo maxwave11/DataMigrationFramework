@@ -18,6 +18,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
     {
         public bool Enabled { get; set; } = true;
         public string Name{ get; set; }
+        public bool TraceObjects { get; set; }
 
         public IDataSource Source { get; set; }
         public IDataSource Target { get; set; }
@@ -40,25 +41,29 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
             if (Source == null)
                 throw new ArgumentNullException();
 
-            Saver = new TargetObjectsSaver((ITargetProvider)Target)//NEED REFACTOR TO AVOID EXPLICIT CONVERTION
+            if (Saver == null)
             {
-                SaveCount = SaveCount
-            };
-            
-            
+                Saver = new TargetObjectsSaver();
+                Saver.SaveCount = SaveCount;
+            }
+
+            Saver.TargetProvider = (ITargetProvider)Target;//NEED REFACTOR TO AVOID EXPLICIT CONVERTION
+
             Transitions.ForEach(i=>i.Initialize(null));
         }
 
         public void Run()
         {
-            TraceLine($"-> Start {Name} data transition");
+            Tracer.TraceLine($"-> Start {Name} data transition", ConsoleColor.Magenta);
             
             Tracer.Indent();
             
             var srcDataSet = Source.GetData();
-
+            long objectsCount = srcDataSet.Count();
+            long completedCount = 0;
             foreach (var sourceObject in srcDataSet)
             {
+                completedCount++;
                 if (sourceObject == null)
                     continue;
 
@@ -68,15 +73,16 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                     continue;
                 
                 
-                Saver.Push(new[] {target});
-                TraceLine($"<- {Name} object transition completedn\\n");
-                // TraceLine($"Completed {completedObjects / totalObjects:P1} ({completedObjects} of {totalObjects})");
+                Saver.Push(target);
+                
+
+                TraceLine($"<- {Name} object transition completed {completedCount / objectsCount:P1} ({completedCount} of {objectsCount}) \\n");
             }
 
             Saver.TrySave();
             
             Tracer.IndentBack();
-            TraceLine($"<- End {Name} data transition\\n");
+            Tracer.TraceLine($"<- End {Name} data transition\\n");
         }
 
         private IValuesObject TransitObject(IValuesObject sourceObject)
@@ -88,7 +94,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 return null;
 
             var ctx = new ValueTransitContext(sourceObject, target, null);
-            ctx.Trace = MapConfig.Current.TraceValueTransition;
+            Migrator.Current.Tracer.TraceEnabled = MapConfig.Current.TraceValueTransition;
 
             TraceLine($"-> Start {Name} object transition, key [{sourceObject.Key}], IsNew:  {target.IsNew}");
 
@@ -157,8 +163,8 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
         
         protected virtual void TraceLine(string message)
         {
-           // if (MapConfig.Current.TraceObjectTransition)
-                Migrator.Current.Tracer.TraceLine(message);
+           if (TraceObjects)
+              Migrator.Current.Tracer.TraceLine(message);
         }
     }
 }

@@ -112,7 +112,6 @@
     <Compile Include="Data\Providers\ITargetProvider.cs" />
     <Compile Include="Data\ValuesObject.cs" />
     <Compile Include="Enums\FetchMode.cs" />
-    <Compile Include="MapConfiguration\KeyTransition.cs" />
     <Compile Include="MapConfiguration\MapConfig.cs" />
     <Compile Include="MapConfiguration\MapConfigReaderYaml.cs" />
     <Compile Include="MapConfiguration\MapConfigReader.cs" />
