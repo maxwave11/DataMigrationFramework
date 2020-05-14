@@ -21,13 +21,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
 
         public bool TraceWarnings { get; set; } = true;
 
-        public virtual ConsoleColor TraceColor { get; set; } = ConsoleColor.White;
-
-        public TransitionNode Parent { get; private set; }
+        public ConsoleColor TraceColor { get; set; } = ConsoleColor.White;
 
         public virtual void Initialize(TransitionNode parent)
         {
-            Parent = parent;
             Validate();
         }
 
@@ -83,12 +80,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         {
             Migrator.Current.Tracer.Indent();
 
-            var tagName = GetType().Name;
+            string tagName = GetType().Name;
 
             var incomingValue = ctx.TransitValue?.ToString();
-            var incomingValueType = ctx.TransitValue?.GetType().Name;
+            string incomingValueType = ctx.TransitValue?.GetType().Name;
 
-            var traceMsg = $"-> {tagName} { this.ToString() }";
+            string traceMsg = $"-> {tagName} { this.ToString() }";
             TraceLine(traceMsg, ctx);
 
             TraceLine($"   Input: ({incomingValueType.Truncate(30)}){incomingValue}",ctx);
@@ -97,33 +94,17 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         private void TraceEnd(ValueTransitContext ctx)
         {
             var returnValue = ctx.TransitValue?.ToString();
-            var returnValueType = ctx.TransitValue?.GetType().Name;
+            string returnValueType = ctx.TransitValue?.GetType().Name;
 
-            var traceMsg = $"   Output: ({returnValueType.Truncate(30)}){returnValue}\n";
+            string traceMsg = $"   Output: ({returnValueType.Truncate(30)}){returnValue}\n";
             TraceLine(traceMsg,ctx);
 
             Migrator.Current.Tracer.IndentBack();
         }
 
-        protected virtual void TraceLine(string message, ValueTransitContext ctx)
+        protected void TraceLine(string message, ValueTransitContext ctx)
         {
             Migrator.Current.Tracer.TraceLine(message, this.TraceColor, ctx);
-        }
-
-        public bool HasParent(TransitionNode node)
-        {
-            if (Parent == node)
-                return true;
-
-            return Parent?.HasParent(node) ?? false;
-        }
-
-        public bool HasParentOfType<T>()
-        {
-            if (Parent is T)
-                return true;
-
-            return Parent?.HasParentOfType<T>() ?? false;
         }
 
         public static implicit operator TransitionNode(string expression)
