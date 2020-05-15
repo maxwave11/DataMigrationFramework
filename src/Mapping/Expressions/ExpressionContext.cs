@@ -59,6 +59,12 @@ namespace XQ.DataMigration.Mapping.Expressions
 
             return String.Format(format,argument);
         }
+        
+        public T GetValueFromSource<T>(string name)
+        {
+            return TypeConverter.GetTypedValue<T>(SRC[name], MapConfig.Current.DefaultDecimalSeparator) ;
+        }
+
 
         public object Field(object obj, string fieldName)
         {

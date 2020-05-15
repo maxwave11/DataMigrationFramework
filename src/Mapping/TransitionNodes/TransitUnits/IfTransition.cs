@@ -25,14 +25,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
             base.Initialize(parent);
         }
-
+        
         protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             bool boolValue = Expression.Evaluate(ctx);
 
             return boolValue
                 ? OnTrue.Transit(ctx)
-                : new TransitResult(TransitionFlow.Continue, ctx.TransitValue);
+                : new TransitResult(TransitionFlow.SkipValue, ctx.TransitValue);
         }
 
         public static implicit operator IfTransition(string expression)

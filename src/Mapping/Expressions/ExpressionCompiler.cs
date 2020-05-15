@@ -52,13 +52,28 @@ namespace XQ.DataMigration.Mapping.Expressions
             if (migrationExpression.Count(c => c == '{') != migrationExpression.Count(c => c == '}'))
                 throw new Exception($"Expression {migrationExpression} is not valid. Check open and close brackets");
 
-
             //translate simplified global variable accessor directive '%': %variable% => Variables[variable]
             expression = new Regex(@"%([^%]*)%").Replace(expression, $"{nameof(ExpressionContext.Variables)}[$1]");
+
+            //translate simplified values object accessor :
+            //<field_name> => SRC[field_name]
+            //<field_name:type> => GetValueFromSource<type>('field_name')
+            var regex = new Regex(@"<([^<>]*?)(\:((int|double|float|long)\??))?>");
+            var match = regex.Match(expression);
+            var group = match.Groups[3];
+            if (match.Success)
+            {
+                if (group.Success)
+                {
+                    expression = regex.Replace(expression, $"{nameof(ExpressionContext.GetValueFromSource)}<$3>('$1')");
+                }
+                else
+                {
+                    expression = regex.Replace(expression, $"{nameof(ExpressionContext.SRC)}[$1]");
+                }
+            }   
+                
             
-            //translate simplified values object accessor '@': @field_name => VALUES_OBJECT[field_name]
-            //expression = expression.Replace("@[",$"{nameof(ExpressionContext.VALUE_OBJECT)}[");
-            expression = new Regex(@"<([^<>]*)>").Replace(expression, $"{nameof(ExpressionContext.SRC)}[$1]");
 
             //quotes conversion: 
             //'some text' => "some text"

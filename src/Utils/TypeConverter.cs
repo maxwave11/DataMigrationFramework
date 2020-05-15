@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using XQ.DataMigration.Data;
 
 namespace XQ.DataMigration.Utils
 {
@@ -9,14 +10,37 @@ namespace XQ.DataMigration.Utils
     {
         public static T GetTypedValue<T>(object value, char decimalSeparator = '.', string[] dataTypeFormats = null)
         {
-            var typeCode = Convert.GetTypeCode(typeof(T));
+
+            TypeCode typeCode = TypeCode.Object;
+
+            if (typeof(T) == typeof(int) || typeof(T) == typeof(int?))
+                typeCode = TypeCode.Int32;
+            if (typeof(T) == typeof(long) || typeof(T) == typeof(long?))
+                typeCode = TypeCode.Int64;
+            if (typeof(T) == typeof(double) || typeof(T) == typeof(double?))
+                typeCode = TypeCode.Double;
+            if (typeof(T) == typeof(float) || typeof(T) == typeof(float?))
+                typeCode = TypeCode.Single;
+            if (typeof(T) == typeof(decimal) || typeof(T) == typeof(decimal?))
+                typeCode = TypeCode.Single;
+
             var converterdValue = GetTypedValue(typeCode, value,decimalSeparator,dataTypeFormats);
-            return (T) converterdValue;
+
+            if (default(T) == null && converterdValue == null)
+                return default(T);
+           
+            return (T)converterdValue;
         }
 
         public static object GetTypedValue(TypeCode targetType, object value, char decimalSeparator = '.', string[] dataTypeFormats = null)
         {
+            if (value == null)
+                return null;
+
             var strValue = Convert.ToString(value, CultureInfo.InvariantCulture);
+
+            if (strValue.IsEmpty())
+                return null;
 
             switch (targetType)
             {

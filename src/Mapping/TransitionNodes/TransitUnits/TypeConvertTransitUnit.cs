@@ -44,16 +44,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         protected override TransitResult TransitInternal(ValueTransitContext ctx)
         {
             var value = ctx.TransitValue;
-            var formats = DataTypeFormats.IsNotEmpty() ? DataTypeFormats.Split(',') : null; 
-            
-            if (value == null)
-                return null;
-
-            if (value is string strValue)
-            {
-                if (strValue.IsEmpty())
-                    return null;
-            }
+            var formats = DataTypeFormats.IsNotEmpty() ? DataTypeFormats.Split(',') : null;
             
             var typedValue = TypeConverter.GetTypedValue(_typeCode, value, DecimalSeparator, formats);
             return new TransitResult(typedValue);
