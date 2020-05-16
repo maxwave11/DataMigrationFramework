@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
-using XQ.DataMigration.Mapping;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data

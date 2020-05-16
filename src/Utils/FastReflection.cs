@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace XQ.DataMigration.Utils
 {
-    public class FastReflection
+    public static class FastReflection
     {
-        static Dictionary<Type, TypeAccessor> accessorsCache = new Dictionary<Type, TypeAccessor>();
+        static readonly Dictionary<Type, TypeAccessor> accessorsCache = new Dictionary<Type, TypeAccessor>();
         public static object GetValue(object dataObject, string propertyName)
         {
             return GetAccessor(dataObject.GetType())[dataObject, propertyName];
