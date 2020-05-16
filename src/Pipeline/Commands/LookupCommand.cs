@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Data.DataSources;
@@ -21,6 +22,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         /// <summary>
         /// DataSet id in which current transition will try to find a particular object by Key or by LookupPredicate
         /// </summary>
+        [Required]
         public IDataSource Source { get; set; }
 
         /// <summary>
@@ -49,14 +51,6 @@ namespace XQ.DataMigration.Pipeline.Commands
         /// Specifies migration behavior in case when lookup object wasn't found
         /// </summary>
         public TransitionFlow OnNotFound { get; set; } = TransitionFlow.Stop;
-
-        public override void Initialize(CommandBase parent)
-        {
-            if (Source == null)
-                throw new Exception($"{ nameof(Source)}  is required");
-
-            base.Initialize(parent);
-        }
 
         protected  override void ExecuteInternal(ValueTransitContext ctx)
         {

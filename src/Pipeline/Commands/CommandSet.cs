@@ -10,12 +10,6 @@ namespace XQ.DataMigration.Pipeline.Commands
     {
         public List<T> Pipeline { get; set; } = new List<T>();
 
-        public override void Initialize(CommandBase parent)
-        {
-            Pipeline.ForEach(i => i.Initialize(this));
-            base.Initialize(parent);
-        }
-
         protected  override void ExecuteInternal(ValueTransitContext ctx)
         {
             foreach (var childTransition in Pipeline)

@@ -12,47 +12,47 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         public char DecimalSeparator { get; set; }
 
-        private TypeCode _typeCode;
-        public override void Initialize(CommandBase parent)
+        private readonly TypeCode _typeCode;
+
+        public TypeConvertCommand()
         {
-            if (DecimalSeparator == 0)
-                DecimalSeparator = MapConfig.Current.DefaultDecimalSeparator;
-                
-            if (DataType.ToLower() == "int")
-                DataType = "int32";
-
-            if (DataType.ToLower() == "float")
-                DataType = "single";
-
-            if (DataType.ToLower() == "bool")
-                DataType = "boolean";
-
-            if (DataType.ToLower() == "long")
-                DataType = "int64";
-
-            if(!Enum.TryParse(DataType, true, out _typeCode))
-                throw new Exception($"Can't parse type name '{DataType}'");
-            
-            base.Initialize(parent);
         }
 
+        public TypeConvertCommand(string type)
+        {
+            DataType = type;
+            if (type.ToLower() == "int")
+                DataType = "int32";
+
+            if (type.ToLower() == "float")
+                DataType = "single";
+
+            if (type.ToLower() == "bool")
+                DataType = "boolean";
+
+            if (type.ToLower() == "long")
+                DataType = "int64";
+            
+            if(!Enum.TryParse(DataType, true, out _typeCode))
+                throw new Exception($"Can't parse type name '{DataType}'");
+        }
         protected override void ExecuteInternal(ValueTransitContext ctx)
         {
             var value = ctx.TransitValue;
             var formats = DataTypeFormats.IsNotEmpty() ? DataTypeFormats.Split(',') : null;
-            
-            var typedValue = TypeConverter.GetTypedValue(_typeCode, value, DecimalSeparator, formats);
+            var decimalSeparator = DecimalSeparator == 0 ? MapConfig.Current.DefaultDecimalSeparator: DecimalSeparator;
+            var typedValue = TypeConverter.GetTypedValue(_typeCode, value, decimalSeparator, formats);
             ctx.SetCurrentValue(typedValue);
         }
 
         public override string ToString()
         {
-            return $"TargetType=\"{ DataType }\"";
+            return DataType;
         }
 
-        public static implicit operator TypeConvertCommand(string expression)
+        public static implicit operator TypeConvertCommand(string type)
         {
-            return new TypeConvertCommand() { DataType = expression };
+            return new TypeConvertCommand(type);
         }
     }
 }

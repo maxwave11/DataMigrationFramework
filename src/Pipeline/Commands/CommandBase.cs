@@ -25,19 +25,20 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         public ConsoleColor TraceColor { get; set; } = ConsoleColor.White;
 
-        public virtual void Initialize(CommandBase parent)
+        private bool _isValidated;
+        private void Validate()
         {
-            Validate();
-        }
-
-        void Validate()
-        {
+            if (_isValidated)
+                return;
+            
             var results = new List<ValidationResult>();
             if (!Validator.TryValidateObject(this, new ValidationContext(this), results, true))
             {
                 var firstError = results[0];
                 throw new ValidationException(firstError, null, this);
             }
+
+            _isValidated = true;
         }
 
         /// <summary>
@@ -46,6 +47,8 @@ namespace XQ.DataMigration.Pipeline.Commands
         /// </summary>
         public void Execute(ValueTransitContext ctx)
         {
+            Validate();
+            
             ctx.CurrentNode = this;
 
             TraceStart(ctx);

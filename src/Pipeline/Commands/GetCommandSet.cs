@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using XQ.DataMigration.Pipeline.Expressions;
 using XQ.DataMigration.Utils;
 
@@ -37,7 +37,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         public override string ToString()
         {
             if (Expression != null)
-                return "Expression: " + Expression.ToString();
+                return "Expression: " + Expression;
 
             return $"[{ Pipeline.Select(i => i.ToString()).Join() }]";
         }

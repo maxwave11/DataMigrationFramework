@@ -44,8 +44,6 @@ namespace XQ.DataMigration.Pipeline
             }
 
             Saver.TargetSource = (ITargetSource)Target;//NEED REFACTOR TO AVOID EXPLICIT CONVERTION
-
-            Commands.ForEach(i => i.Initialize(null));
         }
 
         public void Run()
