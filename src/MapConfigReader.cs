@@ -41,6 +41,7 @@ namespace XQ.DataMigration
                 { CommandUtils.GetCommandYamlName(typeof(CommandSet<CommandBase>)), typeof(CommandSet<CommandBase>) },
 
                 { "csv", typeof(CsvDataSource) },
+                { "composite-source", typeof(CompositeDataSource) },
                 { "excel", typeof(ExcelDataSource) },
                 { "csv-settings", typeof(CsvSourceSettings) },
             
