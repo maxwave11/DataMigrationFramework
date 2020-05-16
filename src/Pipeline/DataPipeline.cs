@@ -25,7 +25,7 @@ namespace XQ.DataMigration.Pipeline
 
         public TargetObjectsSaver Saver { get; set; }
 
-        public List<ComplexCommand<CommandBase>> Transitions { get; set; }
+        public List<ComplexCommand<CommandBase>> Commands { get; set; }
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 
@@ -45,7 +45,7 @@ namespace XQ.DataMigration.Pipeline
 
             Saver.TargetSource = (ITargetSource)Target;//NEED REFACTOR TO AVOID EXPLICIT CONVERTION
 
-            Transitions.ForEach(i => i.Initialize(null));
+            Commands.ForEach(i => i.Initialize(null));
         }
 
         public void Run()
@@ -119,7 +119,7 @@ namespace XQ.DataMigration.Pipeline
 
         protected void TransitValues(ValueTransitContext ctx)
         {
-            foreach (var childTransition in Transitions)
+            foreach (var childTransition in Commands)
             {
                 //every time after value transition finishes - reset current value to Source object
                 ctx.SetCurrentValue(ctx.Source);
