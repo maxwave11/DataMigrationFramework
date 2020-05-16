@@ -57,7 +57,7 @@ namespace XQ.DataMigration.Data
         public string GetInfo()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var fieldName in FieldNames)
+            foreach (var fieldName in FieldNames.OrderBy(i=>i))
             {
                 sb.AppendLine($"{fieldName}={this[fieldName]}");
             }

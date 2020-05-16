@@ -11,7 +11,6 @@ namespace XQ.DataMigration.Pipeline.Commands
     /// </summary>
     public class ExpressionCommand<T>: CommandBase
     {
-        [YamlMember()]
         public MigrationExpression<T> Expression { get; set; }
 
         protected override void ExecuteInternal(ValueTransitContext ctx)
@@ -22,7 +21,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         
         public override string ToString()
         {
-            return $"Expresion: { Expression }";
+            return Expression.ToString();
         }
     }
 }

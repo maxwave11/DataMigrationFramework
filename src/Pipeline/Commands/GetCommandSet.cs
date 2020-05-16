@@ -37,7 +37,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         public override string ToString()
         {
             if (Expression != null)
-                return "Expression: " + Expression;
+                return Expression.ToString();
 
             return $"[{ Pipeline.Select(i => i.ToString()).Join() }]";
         }

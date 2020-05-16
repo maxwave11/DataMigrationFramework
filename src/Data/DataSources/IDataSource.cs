@@ -12,6 +12,4 @@ namespace XQ.DataMigration.Data.DataSources
         IEnumerable<IValuesObject> GetObjectsByKey(string key);
 
     }
-
-  
 }

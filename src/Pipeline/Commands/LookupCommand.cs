@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Data.DataSources;
@@ -18,7 +17,6 @@ namespace XQ.DataMigration.Pipeline.Commands
     [Command("LOOKUP")]
     internal class LookupCommand: CommandBase
     {
-
         /// <summary>
         /// DataSet id in which current transition will try to find a particular object by Key or by LookupPredicate
         /// </summary>
@@ -64,7 +62,7 @@ namespace XQ.DataMigration.Pipeline.Commands
 
                 if (lookupObject == null)
                 {
-                    var message = $"Lookup ({ Source }) object not found by value '{valueToFind}'\n";
+                    string message = $"Lookup ({ Source }) object not found by value '{valueToFind}'\n";
                     ctx.Flow = this.OnNotFound;
                     Migrator.Current.Tracer.TraceWarning(message, ctx);
                 }
@@ -87,6 +85,11 @@ namespace XQ.DataMigration.Pipeline.Commands
             var foundObects = Source.GetObjectsByKey(searchValue);
             
             return FindFirstOccurence ? foundObects?.FirstOrDefault() : foundObects?.SingleOrDefault();
+        }
+
+        public override string ToString()
+        {
+            return $"Source: { Source }";
         }
     }
 }
