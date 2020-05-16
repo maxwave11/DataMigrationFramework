@@ -25,7 +25,7 @@ namespace XQ.DataMigration.Pipeline
 
         public TargetObjectsSaver Saver { get; set; }
 
-        public List<ComplexCommand<CommandBase>> Commands { get; set; }
+        public List<CommandSet<CommandBase>> Commands { get; set; }
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
 

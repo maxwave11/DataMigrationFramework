@@ -5,7 +5,7 @@ using XQ.DataMigration.Utils;
 namespace XQ.DataMigration.Pipeline.Commands
 {    
     [Command("GET")]
-    public class GetCommand : ComplexCommand<GetCommand>
+    public class GetCommandSet : CommandSet<GetCommandSet>
     {
         public MigrationExpression Expression { get; set; }
         string _key = "";
@@ -22,15 +22,15 @@ namespace XQ.DataMigration.Pipeline.Commands
             base.ExecuteInternal(ctx);
             ctx.SetCurrentValue(_key.TrimEnd('/'));
         }
-        protected override void TransitChild(GetCommand childTransition, ValueTransitContext ctx)
+        protected override void TransitChild(GetCommandSet childTransition, ValueTransitContext ctx)
         {
             base.TransitChild(childTransition, ctx);
             _key += ctx.TransitValue + "/";
         }
 
-        public static implicit operator GetCommand(string expression)
+        public static implicit operator GetCommandSet(string expression)
         {
-            var retVal = new GetCommand() { Expression = expression };
+            var retVal = new GetCommandSet() { Expression = expression };
             return retVal;
         }
 

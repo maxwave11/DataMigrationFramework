@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using XQ.DataMigration.Data.DataSources;
 using XQ.DataMigration.Pipeline.Commands;
+using XQ.DataMigration.Utils;
 using YamlDotNet.Serialization;
 
 namespace XQ.DataMigration
@@ -29,15 +30,15 @@ namespace XQ.DataMigration
         {
             var commandMapping = new Dictionary<string, Type>()
             {
-                { "REPLACE", typeof(ReplaceCommand) },
-                { "FLOW", typeof(SetFlowCommand) },
-                { "LOOKUP", typeof(LookupCommand) },
-                { "TYPE", typeof(TypeConvertCommand) },
-                { "SET", typeof(SetCommand) },
-                { "GET", typeof(GetCommand) },
-                { "IF", typeof(IfCommand) },
-                { "TRACE", typeof(TraceCommand) },
-                { "TRANSIT", typeof(ComplexCommand<CommandBase>) },
+                { CommandUtils.GetCommandYamlName(typeof(ReplaceCommandSet)), typeof(ReplaceCommandSet) },
+                { CommandUtils.GetCommandYamlName(typeof(SetFlowCommand)), typeof(SetFlowCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(LookupCommand)), typeof(LookupCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(TypeConvertCommand)), typeof(TypeConvertCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(SetCommand)), typeof(SetCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(GetCommandSet)), typeof(GetCommandSet) },
+                { CommandUtils.GetCommandYamlName(typeof(IfCommand)), typeof(IfCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(TraceCommand)), typeof(TraceCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(CommandSet<CommandBase>)), typeof(CommandSet<CommandBase>) },
 
                 { "csv", typeof(CsvDataSource) },
                 { "excel", typeof(ExcelDataSource) },

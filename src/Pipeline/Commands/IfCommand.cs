@@ -3,6 +3,7 @@ using XQ.DataMigration.Enums;
 
 namespace XQ.DataMigration.Pipeline.Commands
 {
+    [Command("IF")]
     public class IfCommand: ExpressionCommand<bool>
     {
         public CommandBase OnTrue { get; set; } = new SetFlowCommand() { Flow = TransitionFlow.Continue };

@@ -6,7 +6,7 @@ using XQ.DataMigration.Utils;
 namespace XQ.DataMigration.Pipeline.Commands
 {
     [Command("REPLACE")]
-    public class ReplaceCommand : ComplexCommand<ReplaceStepCommand>
+    public class ReplaceCommandSet : CommandSet<ReplaceStepCommand>
     {
         protected override void ExecuteInternal(ValueTransitContext ctx)
         {
@@ -31,14 +31,14 @@ namespace XQ.DataMigration.Pipeline.Commands
         }
 
 
-        public static implicit operator ReplaceCommand(string expression)
+        public static implicit operator ReplaceCommandSet(string expression)
         {
             if (expression.IsEmpty())
                 throw new Exception("Replace expression cant be empty");
 
             var rules = expression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-            return new ReplaceCommand() { Pipeline = rules.Select(i=> (ReplaceStepCommand)i).ToList()};
+            return new ReplaceCommandSet() { Pipeline = rules.Select(i=> (ReplaceStepCommand)i).ToList()};
         }
     }
 }

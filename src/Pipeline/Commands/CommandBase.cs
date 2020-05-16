@@ -7,11 +7,10 @@ namespace XQ.DataMigration.Pipeline.Commands
 {
     public class CommandAttribute: Attribute
     {
-        private readonly string _name;
-        public string Name { get; set; }
+        public string Name { get; }
         public CommandAttribute(string name)
         {
-            _name = name;
+            Name = name;
         }
     }
 
@@ -78,7 +77,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         {
             Migrator.Current.Tracer.Indent();
 
-            string tagName = GetType().Name;
+            string tagName = CommandUtils.GetCommandYamlName(GetType());
 
             var incomingValue = ctx.TransitValue?.ToString();
             string incomingValueType = ctx.TransitValue?.GetType().Name;
@@ -104,10 +103,11 @@ namespace XQ.DataMigration.Pipeline.Commands
         {
             Migrator.Current.Tracer.TraceLine(message, this.TraceColor, ctx);
         }
+        
 
         public static implicit operator CommandBase(string expression)
         {
-            return new GetCommand() { Expression = expression };
+            return new GetCommandSet() { Expression = expression };
         }
     }
 }

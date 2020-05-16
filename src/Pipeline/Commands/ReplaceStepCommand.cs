@@ -6,6 +6,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Pipeline.Commands
 {
+    [Command("REPLACE_STEP")]
     public class ReplaceStepCommand : CommandBase
     {
         public bool Important { get; set; }

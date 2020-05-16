@@ -6,7 +6,7 @@ using XQ.DataMigration.Enums;
 namespace XQ.DataMigration.Pipeline.Commands
 {
     [Command("TRANSIT")]
-    public class ComplexCommand<T> : CommandBase, IList<T>  where T : CommandBase
+    public class CommandSet<T> : CommandBase, IList<T>  where T : CommandBase
     {
         public List<T> Pipeline { get; set; } = new List<T>();
 
@@ -33,6 +33,11 @@ namespace XQ.DataMigration.Pipeline.Commands
         protected virtual void TransitChild(T childTransition, ValueTransitContext ctx)
         {
             childTransition.Execute(ctx);
+        }
+
+        public override string ToString()
+        {
+            return $"Pipeline: { Pipeline.Count }";
         }
 
         #region IList

@@ -1,4 +1,5 @@
 ﻿using XQ.DataMigration.Pipeline.Expressions;
+using YamlDotNet.Serialization;
 
 namespace XQ.DataMigration.Pipeline.Commands
 {
@@ -10,6 +11,7 @@ namespace XQ.DataMigration.Pipeline.Commands
     /// </summary>
     public class ExpressionCommand<T>: CommandBase
     {
+        [YamlMember()]
         public MigrationExpression<T> Expression { get; set; }
 
         protected override void ExecuteInternal(ValueTransitContext ctx)
