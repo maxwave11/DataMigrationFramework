@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using XQ.DataMigration.Enums;
 
 namespace XQ.DataMigration.Pipeline.Commands
@@ -6,8 +7,11 @@ namespace XQ.DataMigration.Pipeline.Commands
     [Command("IF")]
     public class IfCommand: ExpressionCommand<bool>
     {
-        public CommandBase OnTrue { get; set; } = new SetFlowCommand() { Flow = TransitionFlow.Continue };
-        public CommandBase OnFalse { get; set; } = new SetFlowCommand() { Flow = TransitionFlow.SkipValue };
+        [Required]
+        public CommandBase OnTrue { get; set; }
+        
+        [Required]
+        public CommandBase OnFalse { get; set; }
         
         protected override void ExecuteInternal(ValueTransitContext ctx)
         {
@@ -19,7 +23,13 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         public static implicit operator IfCommand(string expression)
         {
-            return new IfCommand() { Expression = expression };
+            //default IF initialization from plain string
+            return new IfCommand()
+            {
+                Expression = expression,
+                OnTrue = new SetFlowCommand() { Flow = TransitionFlow.Continue },
+                OnFalse = new SetFlowCommand() { Flow = TransitionFlow.SkipValue }
+            };
         }
     }
 }
