@@ -75,6 +75,7 @@ namespace XQ.DataMigration.Mapping.Expressions
             {
                 ScriptRunner<T> runner = script.CreateDelegate();
                 return runner;
+                return null;
             }
             catch
             {

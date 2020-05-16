@@ -72,9 +72,7 @@ namespace XQ.DataMigration.Mapping.Expressions
                     expression = regex.Replace(expression, $"{nameof(ExpressionContext.SRC)}[$1]");
                 }
             }   
-                
             
-
             //quotes conversion: 
             //'some text' => "some text"
             //''some text'' => 'some text'
@@ -93,7 +91,6 @@ namespace XQ.DataMigration.Mapping.Expressions
                 nameof(ExpressionContext.TARGET),
                 nameof(ExpressionContext.VALUE_OBJECT),
                 nameof(ExpressionContext.Variables),
-                $@"{nameof(ExpressionContext.HISTORY)}.*?\)"
             };
             
             //braces regex wich define expression like [.....] or with nested braces [..[...]...]

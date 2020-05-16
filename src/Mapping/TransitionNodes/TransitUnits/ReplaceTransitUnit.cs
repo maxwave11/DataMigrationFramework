@@ -11,28 +11,26 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
 {
     public class ReplaceTransitUnit : ComplexTransition<ReplaceStepUnit>
     {
-        protected override TransitResult TransitInternal(ValueTransitContext ctx)
+        protected override void TransitInternal(ValueTransitContext ctx)
         {
-            TransitResult replaceResult = null;
             foreach (var childTransition in Pipeline)
             {
-                replaceResult = childTransition.Transit(ctx);
+                childTransition.Transit(ctx);
 
-                if (replaceResult.Flow == TransitionFlow.SkipValue)
+                if (ctx.Flow == TransitionFlow.SkipValue)
                 {
-                    //if ReplaceUnit returned SkipUnit then need to stop replacing sequence
-
-                    return new TransitResult(TransitionFlow.Continue, replaceResult.Value);
+                    //if ReplaceUnit returned SkipValue then need to stop ONLY replacing sequence (hack, need to refactor to do
+                    //it in more convenient way
+                    ctx.Flow = TransitionFlow.Continue;
+                    break;
                 }
 
-                if (replaceResult.Flow != TransitionFlow.Continue)
+                if (ctx.Flow != TransitionFlow.Continue)
                 {
                     TraceLine($"Breaking {this.GetType().Name}", ctx);
-                    return replaceResult;
+                    break;
                 }
             }
-
-            return replaceResult;
         }
 
 

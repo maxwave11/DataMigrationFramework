@@ -96,9 +96,9 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
 
             ctx.TransitDataCommand = this;
 
-            var valuesTransitResult = TransitValues(ctx);
+            TransitValues(ctx);
 
-            if (valuesTransitResult.Flow == TransitionFlow.SkipObject)
+            if (ctx.Flow == TransitionFlow.SkipObject)
             {
                 //If object just created and skipped by migration logic - need to remove it from cache
                 //becaus it's invalid and must be removed from cache to avoid any referencing to this object
@@ -110,38 +110,42 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTran
                 return null;
             }
 
-            if (valuesTransitResult.Flow == TransitionFlow.Stop)
-                throw new Exception("Transition stopped - " + valuesTransitResult.Message);
+            if (ctx.Flow == TransitionFlow.Stop)
+            {
+                Migrator.Current.Tracer.TraceError("Transition stopped by TransitionFlow.Stop", ctx);
+                throw new Exception("Transition stopped by TransitionFlow.Stop");
+            }
 
             return target;
         }
 
-        protected TransitResult TransitValues(ValueTransitContext ctx)
+        protected void TransitValues(ValueTransitContext ctx)
         {
-
             foreach (var childTransition in Transitions)
             {
-                //Every time after value transition finishes - reset current value to Source object
-                ctx.SetCurrentValue("DataTransitCommand", ctx.Source);
+                //every time after value transition finishes - reset current value to Source object
+                ctx.SetCurrentValue(ctx.Source);
 
                 childTransition.TraceColor = ConsoleColor.Yellow;
 
-                var valueTransitResult = childTransition.Transit(ctx);
+                if (MapConfig.Current.TraceValueTransition == true)
+                    ctx.Trace = true;
 
-                if (valueTransitResult.Flow == TransitionFlow.SkipValue)
+                childTransition.Transit(ctx);
+
+                if (ctx.Flow == TransitionFlow.SkipValue)
                 {
+                    ctx.Flow = TransitionFlow.Continue;
                     TraceLine($"<- Breaking value");
                     continue;
                 }
 
-                if (valueTransitResult.Flow != TransitionFlow.Continue)
+                if (ctx.Flow != TransitionFlow.Continue)
                 {
                     TraceLine($"<- Breaking {this.GetType().Name}");
-                    return valueTransitResult;
+                    break;
                 }
             }
-
-            return new TransitResult(ctx.TransitValue);
         }
 
         protected virtual void TraceLine(string message)

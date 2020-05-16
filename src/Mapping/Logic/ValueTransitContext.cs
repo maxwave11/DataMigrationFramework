@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using XQ.DataMigration.Data;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.TransitionNodes;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Utils;
@@ -10,18 +11,16 @@ namespace XQ.DataMigration.Mapping.Logic
 {
     public class ValueTransitContext
     {
-        public IValuesObject Source { get; set; }
-        public IValuesObject Target { get; set; }
+        public IValuesObject Source { get; }
+        public IValuesObject Target { get; }
 
-        public FlowControl Flow { get; set; }
+        public TransitionFlow Flow { get; set; }
 
         public object TransitValue { get; private set; }
         
         public TransitDataCommand TransitDataCommand { get; set; }
         
         public TransitionNode CurrentNode { get; set; }
-
-        public readonly Dictionary<string, object> _valuesHistory = new Dictionary<string, object>();
 
         public readonly List<TraceEntry> TraceEntries = new List<TraceEntry>();
 
@@ -39,20 +38,9 @@ namespace XQ.DataMigration.Mapping.Logic
             TransitValue = transitValue;
         }
 
-        public void SetCurrentValue(string transitionName, object value)
+        public void SetCurrentValue(object value)
         {
             TransitValue = value;
-            if (transitionName.IsEmpty())
-                return;
-
-            _valuesHistory[transitionName] = value;
-        }
-
-        public object GetHistoricValue(string transitionName)
-        {
-            if (!_valuesHistory.ContainsKey(transitionName))
-                throw new Exception($"There are no value from transition { transitionName }");
-            return _valuesHistory[transitionName];
         }
     }
 }

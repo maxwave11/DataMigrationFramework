@@ -10,23 +10,23 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     {
         public MigrationExpression Expression { get; set; }
         string _key = "";
-        protected override TransitResult TransitInternal(ValueTransitContext ctx)
+        protected override void TransitInternal(ValueTransitContext ctx)
         {
             if (Expression != null)
             {
                 var returnValue = Expression.Evaluate(ctx);
-                return new TransitResult(returnValue);
+                ctx.SetCurrentValue(returnValue);
+                return;
             }
 
             _key = "";
             base.TransitInternal(ctx);
-            return new TransitResult(_key.TrimEnd('/'));
+            ctx.SetCurrentValue(_key.TrimEnd('/'));
         }
-        protected override TransitResult TransitChild(ReadTransitUnit childTransition, ValueTransitContext ctx)
+        protected override void TransitChild(ReadTransitUnit childTransition, ValueTransitContext ctx)
         {
-            var result = base.TransitChild(childTransition, ctx);
-            _key += result.Value + "/";
-            return new TransitResult(null);
+            base.TransitChild(childTransition, ctx);
+            _key += ctx.TransitValue + "/";
         }
 
         public static implicit operator ReadTransitUnit(string expression)
@@ -38,7 +38,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
         public override string ToString()
         {
             if (Expression != null)
-                return Expression.ToString();
+                return "Expression: " + Expression.ToString();
 
             return $"[{ Pipeline.Select(i => i.ToString()).Join() }]";
         }

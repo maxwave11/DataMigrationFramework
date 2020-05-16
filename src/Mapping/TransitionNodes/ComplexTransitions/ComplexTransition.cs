@@ -16,25 +16,23 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions
             base.Initialize(parent);
         }
 
-        protected  override TransitResult TransitInternal(ValueTransitContext ctx)
+        protected  override void TransitInternal(ValueTransitContext ctx)
         {
             foreach (var childTransition in Pipeline)
             {
-                var childTransitResult = TransitChild(childTransition, ctx);
+                TransitChild(childTransition, ctx);
 
-                if (childTransitResult.Flow != TransitionFlow.Continue)
+                if (ctx.Flow != TransitionFlow.Continue)
                 {
                     TraceLine($"Breaking {this.GetType().Name}", ctx);
-                    return childTransitResult;
+                    break;
                 }
             }
-
-            return new TransitResult(ctx.TransitValue);
         }
 
-        protected virtual TransitResult TransitChild(T childTransition, ValueTransitContext ctx)
+        protected virtual void TransitChild(T childTransition, ValueTransitContext ctx)
         {
-            return childTransition.Transit(ctx);
+            childTransition.Transit(ctx);
         }
 
         #region IList

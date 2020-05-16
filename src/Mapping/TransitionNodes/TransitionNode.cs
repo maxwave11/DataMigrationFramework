@@ -42,28 +42,23 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         /// Main (core) transition method which wraps node transition logic by logging and next flow control
         /// Generally used by DataMigration classes to construct transition flow
         /// </summary>
-        public TransitResult Transit(ValueTransitContext ctx)
+        public void Transit(ValueTransitContext ctx)
         {
             ctx.CurrentNode = this;
 
             TraceStart(ctx);
 
-            TransitResult result = null;
             try
             {
-                result = TransitInternal(ctx);
+                TransitInternal(ctx);
             }
             catch (Exception ex)
             {
                 Migrator.Current.Tracer.TraceError(ex.ToString(), ctx);
                 throw;
             }
-            
-            ctx.SetCurrentValue(Name, result.Value);
 
             TraceEnd(ctx);
-
-            return new TransitResult(result.Flow, ctx.TransitValue);
         }
 
         /// <summary>
@@ -74,7 +69,7 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        protected abstract TransitResult TransitInternal(ValueTransitContext ctx);
+        protected abstract void TransitInternal(ValueTransitContext ctx);
 
         private void TraceStart(ValueTransitContext ctx)
         {
@@ -85,18 +80,18 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
             var incomingValue = ctx.TransitValue?.ToString();
             string incomingValueType = ctx.TransitValue?.GetType().Name;
 
-            string traceMsg = $"-> {tagName} { this.ToString() }";
-            TraceLine(traceMsg, ctx);
-
-            TraceLine($"   Input: ({incomingValueType.Truncate(30)}){incomingValue}",ctx);
+            TraceLine($"-> {tagName} { this.ToString() }", ctx);
+            Migrator.Current.Tracer.Indent();
+            TraceLine($"({incomingValueType.Truncate(30)}){incomingValue}", ctx);
         }
 
         private void TraceEnd(ValueTransitContext ctx)
         {
             var returnValue = ctx.TransitValue?.ToString();
             string returnValueType = ctx.TransitValue?.GetType().Name;
+            Migrator.Current.Tracer.IndentBack();
 
-            string traceMsg = $"   Output: ({returnValueType.Truncate(30)}){returnValue}\n";
+            string traceMsg = $"<- ({returnValueType.Truncate(30)}){returnValue}\n";
             TraceLine(traceMsg,ctx);
 
             Migrator.Current.Tracer.IndentBack();
@@ -110,11 +105,6 @@ namespace XQ.DataMigration.Mapping.TransitionNodes
         public static implicit operator TransitionNode(string expression)
         {
             return new ReadTransitUnit() { Expression = expression };
-        }
-
-        public override string ToString()
-        {
-            return $"Type={GetType().Name}";
         }
     }
 }

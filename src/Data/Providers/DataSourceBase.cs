@@ -128,8 +128,9 @@ namespace XQ.DataMigration.Data
         {
             var ctx = new ValueTransitContext(valuesObject, null, valuesObject);
 
-            var result = Key.Transit(ctx);
-            valuesObject.Key = result.Value != null ? UnifyKey(result.Value.ToString()) : null; 
+            Key.Transit(ctx);
+            var strKey = ctx.TransitValue?.ToString();
+            valuesObject.Key = strKey.IsNotEmpty() ? UnifyKey(strKey) : null; 
         }
 
         protected static string UnifyKey(string key)

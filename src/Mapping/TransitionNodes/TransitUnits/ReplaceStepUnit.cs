@@ -8,7 +8,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 {
-    public class ReplaceStepUnit : TransitUnit
+    public class ReplaceStepUnit : TransitionNode
     {
         public bool Important { get; set; }
 
@@ -16,19 +16,14 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
 
         public string ReplaceValue { get; set; }
 
-        protected  override TransitResult TransitInternal(ValueTransitContext ctx)
+        protected  override void TransitInternal(ValueTransitContext ctx)
         {
-            var continuation = TransitionFlow.Continue;
-            var value = ctx.TransitValue?.ToString();
-
             if (ConditionIsTrue(ctx))
             {
-                value = Replace(ctx);
-                ctx.SetCurrentValue(this.Name, value);
-                continuation = Important ? TransitionFlow.SkipValue : TransitionFlow.Continue;
+                var value = Replace(ctx);
+                ctx.SetCurrentValue(value);
+                ctx.Flow = Important ? TransitionFlow.SkipValue : TransitionFlow.Continue;
             }
-
-            return new TransitResult(continuation, value);
         }
 
         private string Replace(ValueTransitContext ctx)

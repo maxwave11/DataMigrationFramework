@@ -14,14 +14,12 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     {
         public string ToField { get; set; }
 
-        protected  override TransitResult TransitInternal(ValueTransitContext ctx)
+        protected  override void TransitInternal(ValueTransitContext ctx)
         {
             if (ToField.IsNotEmpty())
                 ctx.Target.SetValue(ToField, ctx.TransitValue);
             else
                 Expression.Evaluate(ctx);
-            
-            return new TransitResult(ctx.TransitValue);
         }
         
         public static implicit operator WriteTransitUnit(string expression)

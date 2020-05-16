@@ -8,12 +8,11 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     /// </summary>
     public class WriteMessageUnit: TransitUnit
     {
-        protected  override TransitResult TransitInternal(ValueTransitContext ctx)
+        protected  override void TransitInternal(ValueTransitContext ctx)
         {
-            var result =  base.TransitInternal(ctx);
-            if (result.Flow == TransitionFlow.Continue)
-                TraceLine(result.Value?.ToString(), ctx);
-            return result;
+            base.TransitInternal(ctx);
+            if (ctx.Flow == TransitionFlow.Continue)
+                TraceLine(ctx.TransitValue?.ToString(), ctx);
         }
     }
 }

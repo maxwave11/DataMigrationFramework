@@ -38,11 +38,6 @@ namespace XQ.DataMigration.Mapping.Expressions
             _ctx = ctx;
         }
 
-        public object HISTORY(string transitionName)
-        {
-            return _ctx.GetHistoricValue(transitionName);
-        }
-
         public string Guid()
         {
             return System.Guid.NewGuid().ToString();

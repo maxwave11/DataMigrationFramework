@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Mapping.Expressions;
@@ -18,10 +19,10 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
     {
         public MigrationExpression<T> Expression { get; set; }
 
-        protected override TransitResult TransitInternal(ValueTransitContext ctx)
+        protected override void TransitInternal(ValueTransitContext ctx)
         {
             var  returnValue = Expression.Evaluate(ctx);
-            return new TransitResult(returnValue);
+            ctx.SetCurrentValue(returnValue);
         }
         
         public override string ToString()

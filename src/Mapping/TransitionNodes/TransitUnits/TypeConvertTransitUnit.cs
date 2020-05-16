@@ -41,13 +41,13 @@ namespace XQ.DataMigration.Mapping.TransitionNodes.TransitUnits
             base.Initialize(parent);
         }
 
-        protected override TransitResult TransitInternal(ValueTransitContext ctx)
+        protected override void TransitInternal(ValueTransitContext ctx)
         {
             var value = ctx.TransitValue;
             var formats = DataTypeFormats.IsNotEmpty() ? DataTypeFormats.Split(',') : null;
             
             var typedValue = TypeConverter.GetTypedValue(_typeCode, value, DecimalSeparator, formats);
-            return new TransitResult(typedValue);
+            ctx.SetCurrentValue(typedValue);
         }
 
         public override string ToString()

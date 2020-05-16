@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using XQ.DataMigration.Data;
@@ -8,8 +9,10 @@ using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ObjectTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.ComplexTransitions.ValueTransitions;
 using XQ.DataMigration.Mapping.TransitionNodes.TransitUnits;
+using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NodeDeserializers;
 
 namespace XQ.DataMigration.MapConfiguration
 {
@@ -59,12 +62,38 @@ namespace XQ.DataMigration.MapConfiguration
                 .ToList()
                 .ForEach(type => builder = builder.WithTagMapping("!" + type.Key, type.Value));
 
-            var deserializer = builder.Build();
+            var deserializer = builder
+                //.WithNodeDeserializer(inner => new ValidatingNodeDeserializer(inner), s => s.InsteadOf<ObjectNodeDeserializer>())
+                .Build();
 
             var mapConfig = deserializer.Deserialize<MapConfig>(_yaml);
             mapConfig.Initialize();
 
             return mapConfig;
+        }
+    }
+    
+    
+    public class ValidatingNodeDeserializer : INodeDeserializer
+    {
+        private readonly INodeDeserializer _nodeDeserializer;
+
+        public ValidatingNodeDeserializer(INodeDeserializer nodeDeserializer)
+        {
+            _nodeDeserializer = nodeDeserializer;
+        }
+
+        public bool Deserialize(IParser parser, Type expectedType, Func<IParser, Type, object> nestedObjectDeserializer, out object value)
+        {
+            if (_nodeDeserializer.Deserialize(parser, expectedType, nestedObjectDeserializer, out value))
+            {
+                var context = new ValidationContext(value, null, null);
+               
+                //Console.WriteLine(value.GetType().Name + " " +  value);
+                Validator.ValidateObject(value, context, true);
+                return true;
+            }
+            return false;
         }
     }
    
