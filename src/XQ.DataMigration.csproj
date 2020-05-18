@@ -101,6 +101,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DataSources\CompositeDataSource.cs" />
     <Compile Include="Data\DataSources\CsvDataSource.cs" />
     <Compile Include="Data\DataSources\DataSourceBase.cs" />
     <Compile Include="Data\DataSources\ExcelDataSource.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Data\DataSources\ITargetSource.cs" />
     <Compile Include="Data\DataSources\ObjectDataSource.cs" />
     <Compile Include="Data\DataSources\SqlDataSource.cs" />
+    <Compile Include="Data\DataSources\TargetSourceBase.cs" />
     <Compile Include="Data\IValuesObject.cs" />
     <Compile Include="Data\TargetObjectsSaver.cs" />
     <Compile Include="Data\ValuesObject.cs" />

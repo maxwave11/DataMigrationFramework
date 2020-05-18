@@ -1,58 +1,23 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using XQ.DataMigration.Enums;
 using XQ.DataMigration.Pipeline;
 using XQ.DataMigration.Pipeline.Commands;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data.DataSources
 {
-
-    public abstract class TargetSourceBase : DataSourceBase, ITargetSource
-    {
-        protected abstract IValuesObject CreateObject(string key);
-        public abstract void SaveObjects(IEnumerable<IValuesObject> objects);
-
-        public ObjectTransitMode TransitMode { get; set; }
-
-        public IValuesObject GetObjectByKeyOrCreate(string key)
-        {
-            LoadObjectsToCache();
-
-            string unifiedKey = UnifyKey(key);
-
-            var targetObject = _cache.ContainsKey(unifiedKey) ? _cache[unifiedKey].SingleOrDefault() : null;
-
-            switch (TransitMode)
-            {
-                case ObjectTransitMode.OnlyExistedObjects:
-                    return targetObject;
-                case ObjectTransitMode.OnlyNewObjects when targetObject != null:
-                    return null;
-            }
-
-            if (targetObject != null)
-                return targetObject;
-
-            targetObject = CreateObject(key);
-
-            PutObjectToCache(targetObject);
-
-            return targetObject;
-        }
-
-        public void InvalidateObject(IValuesObject valuesObject)
-        {
-            _cache.Remove(valuesObject.Key);
-        }
-    }
-    public abstract class DataSourceBase : IDataSource
+    public abstract class DataSourceBase : IDataSource, ICachedDataSource
     {
         public string Query { get; set; }
 
         public CommandBase Key { get; set; }
-
+        
+        /// <summary>
+        /// Some addition commands to preare (unify) data when using many data sources with different structure
+        /// For example in case when there is fiew files with same data but with different headers
+        /// </summary>
+        public CommandSet<CommandBase> PrepareData { get; set; }
 
         protected Dictionary<string, List<IValuesObject>> _cache;
 
@@ -60,8 +25,29 @@ namespace XQ.DataMigration.Data.DataSources
 
         public IEnumerable<IValuesObject> GetData()
         {
+            Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Get data...");
+
+                
+            foreach (var valuesObject in GetDataInternal())
+            {
+                var ctx = new ValueTransitContext(valuesObject, null, valuesObject);
+                Key.Execute(ctx);
+                var strKey = ctx.TransitValue?.ToString();
+                
+                if (strKey.IsEmpty())
+                    continue;
+                
+                valuesObject.Key = UnifyKey(strKey); 
+                
+                PrepareData?.Execute(ctx);
+                yield return valuesObject;
+            }
+        }
+
+        public IEnumerable<IValuesObject> GetCachedData()
+        {
             LoadObjectsToCache();
-            return _cache.Values.SelectMany(i => i);
+            return _cache.SelectMany(i => i.Value);
         }
 
         public IEnumerable<IValuesObject> GetObjectsByKey(string key)
@@ -71,6 +57,7 @@ namespace XQ.DataMigration.Data.DataSources
             string unifiedKey = UnifyKey(key);
             return _cache.ContainsKey(unifiedKey) ? _cache[unifiedKey] : null;
         }
+        
 
         protected void LoadObjectsToCache()
         {
@@ -81,30 +68,17 @@ namespace XQ.DataMigration.Data.DataSources
             tracer.TraceLine($"DataSource ({ this })");
             tracer.Indent();
             tracer.TraceLine($"Loading objects...");
-
-            var stopwatch = new Stopwatch();
-
-            stopwatch.Start();
-            var targetObjects = GetDataInternal().ToList();
-            stopwatch.Stop();
-
-            tracer.TraceLine($"Loading {targetObjects.Count} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
-
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            targetObjects.ForEach(SetObjectKey);
             
-            _cache = targetObjects
-                .Where(i => i.Key.IsNotEmpty())
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            _cache = GetData()
                 .GroupBy(i => i.Key)
                 .ToDictionary(i => i.Key, i => i.ToList());
             
             stopwatch.Stop();
-
-            tracer.TraceLine($"Put {targetObjects.Count} objects to cache completed in { stopwatch.Elapsed.TotalSeconds } sec");
+            tracer.TraceLine($"Loading {_cache.Values.Sum(i=>i.Count)} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
             tracer.IndentBack();
-
         }
 
         protected void PutObjectToCache(IValuesObject tObject)
@@ -121,15 +95,6 @@ namespace XQ.DataMigration.Data.DataSources
             _cache[tObject.Key].Add(tObject);
         }
         
-        private void SetObjectKey(IValuesObject valuesObject)
-        {
-            var ctx = new ValueTransitContext(valuesObject, null, valuesObject);
-
-            Key.Execute(ctx);
-            var strKey = ctx.TransitValue?.ToString();
-            valuesObject.Key = strKey.IsNotEmpty() ? UnifyKey(strKey) : null; 
-        }
-
         protected static string UnifyKey(string key)
         {
              return key.Trim().ToUpper();

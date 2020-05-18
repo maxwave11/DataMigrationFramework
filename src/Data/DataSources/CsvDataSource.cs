@@ -21,19 +21,6 @@ namespace XQ.DataMigration.Data.DataSources
         public int DataStartRowNumber { get; set; } = 2;
     }
 
-    public class CompositeDataSource : List<IDataSource>, IDataSource
-    {
-        public IEnumerable<IValuesObject> GetData()
-        {
-            return this.SelectMany(i => i.GetData());
-        }
-
-        public IEnumerable<IValuesObject> GetObjectsByKey(string key)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class CsvDataSource : DataSourceBase
     {
         protected override IEnumerable<IValuesObject> GetDataInternal()

@@ -22,7 +22,13 @@ namespace XQ.DataMigration.Utils
             if (typeof(T) == typeof(float) || typeof(T) == typeof(float?))
                 typeCode = TypeCode.Single;
             if (typeof(T) == typeof(decimal) || typeof(T) == typeof(decimal?))
-                typeCode = TypeCode.Single;
+                typeCode = TypeCode.Decimal;
+            if (typeof(T) == typeof(bool) || typeof(T) == typeof(bool?))
+                typeCode = TypeCode.Boolean;
+            if (typeof(T) == typeof(string) )
+                typeCode = TypeCode.String;
+            if (typeof(T) == typeof(DateTime)|| typeof(T) == typeof(DateTime?) )
+                typeCode = TypeCode.DateTime;
 
             var converterdValue = GetTypedValue(typeCode, value,decimalSeparator,dataTypeFormats);
 

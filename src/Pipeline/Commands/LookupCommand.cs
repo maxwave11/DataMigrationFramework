@@ -21,7 +21,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         /// DataSet id in which current transition will try to find a particular object by Key or by LookupPredicate
         /// </summary>
         [Required]
-        public IDataSource Source { get; set; }
+        public ICachedDataSource Source { get; set; }
 
         /// <summary>
         /// Migration expression which determines how to evaluate key for each lookup object from <c>LookupDataSetId</c>. 
@@ -75,7 +75,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             if (LookupPredicate != null)
             {
                 var foundObject = Source
-                    .GetData()
+                    .GetCachedData()
                     .Where(i => LookupPredicate.Evaluate(new ValueTransitContext(i, null, ctx.TransitValue)))
                     .SingleOrDefault();
 

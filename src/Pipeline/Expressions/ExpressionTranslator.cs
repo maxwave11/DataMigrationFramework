@@ -52,7 +52,7 @@ namespace XQ.DataMigration.Pipeline.Expressions
             //translate simplified values object accessor :
             //<field_name> => SRC[field_name]
             //<field_name:type> => GetValueFromSource<type>('field_name')
-            var regex = new Regex(@"<([^<>]*?)(\:((int|double|float|long)\??))?>");
+            var regex = new Regex(@"<([^<>]*?)(\:((int|double|float|long|bool)\??))?>");
             var match = regex.Match(expression);
             var group = match.Groups[3];
             if (match.Success)

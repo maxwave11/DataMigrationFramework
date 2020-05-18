@@ -43,7 +43,7 @@ namespace XQ.DataMigration.Pipeline
                 Saver.SaveCount = SaveCount;
             }
 
-            Saver.TargetSource = (ITargetSource)Target;//NEED REFACTOR TO AVOID EXPLICIT CONVERTION
+            Saver.TargetSource = Target;
         }
 
         public void Run()
@@ -53,11 +53,11 @@ namespace XQ.DataMigration.Pipeline
             Tracer.Indent();
 
             var srcDataSet = Source.GetData();
-            long objectsCount = srcDataSet.Count();
-            long completedCount = 0;
+           //long objectsCount = srcDataSet.Count();
+           // long completedCount = 0;
             foreach (var sourceObject in srcDataSet)
             {
-                completedCount++;
+                //completedCount++;
                 if (sourceObject == null)
                     continue;
 
@@ -69,7 +69,7 @@ namespace XQ.DataMigration.Pipeline
                 Saver.Push(target);
 
 
-                TraceLine($"<- {Name} object transition completed {completedCount / objectsCount:P1} ({completedCount} of {objectsCount}) \\n");
+                //TraceLine($"<- {Name} object transition completed {completedCount / objectsCount:P1} ({completedCount} of {objectsCount}) \\n");
             }
 
             Saver.TrySave();

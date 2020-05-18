@@ -9,7 +9,7 @@ namespace XQ.DataMigration.Pipeline.Commands
     public class CommandSet<T> : CommandBase, IList<T>  where T : CommandBase
     {
         public List<T> Pipeline { get; set; } = new List<T>();
-
+        
         protected  override void ExecuteInternal(ValueTransitContext ctx)
         {
             foreach (var childTransition in Pipeline)
@@ -32,6 +32,11 @@ namespace XQ.DataMigration.Pipeline.Commands
         public override string ToString()
         {
             return $"Pipeline: { Pipeline.Count }";
+        }
+        
+        public static implicit operator CommandSet<T>(string expression)
+        {
+            return new CommandSet<T>() { Pipeline = new List<T>() { (T)expression }};
         }
 
         #region IList
