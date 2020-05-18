@@ -1,17 +1,46 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using CsvHelper;
+using CsvHelper.Configuration;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Pipeline.Trace
 {
+    public class MigrationEventTraceEntry
+    {
+        public uint RowNumber { get; set; }
+        public string DataSetName { get; set; }
+
+        public MigrationEvent EventType { get; }
+        
+        public string Query { get; set; }
+
+        public string ObjectKey { get; set; }
+
+        public string Message { get; }
+        
+        public MigrationEventTraceEntry(MigrationEvent eventType, ValueTransitContext ctx, string message)
+        {
+            EventType = eventType;
+            Message = message;
+            ObjectKey = ctx.Source.Key;
+            DataSetName = ctx.DataPipeline.Name;
+            RowNumber = ctx.Source.RowNumber;
+            Query = ctx.DataPipeline.Source.ToString();
+        }
+
+    }
+
     public sealed class MigrationTracer
     {
         /// <summary>
         /// Use this event to trace migration process
         /// </summary>
         public event EventHandler<TraceMessage> Trace = delegate { };
-
-        public bool TraceEnabled { get; set; } = false;
 
         /// <summary>
         /// Event fires each time when any value transition started. By use this event
@@ -28,9 +57,11 @@ namespace XQ.DataMigration.Pipeline.Trace
         /// Event fires each time when any unhandled error occured while migration process
         /// </summary>
 
-        internal const string IndentUnit = "   ";
+        private const string _indentUnit = "   ";
 
-        internal int _identLevel = 0;
+        private int _identLevel = 0;
+
+        private List<MigrationEventTraceEntry> _migrationEvents = new List<MigrationEventTraceEntry>();
 
         public void TraceLine(string message, ConsoleColor color = ConsoleColor.White, ValueTransitContext ctx = null)
         {
@@ -43,19 +74,21 @@ namespace XQ.DataMigration.Pipeline.Trace
                 Trace.Invoke(this, new TraceMessage(message, color));
         }
 
-        public void TraceWarning(string message, ValueTransitContext ctx)
+        public void TraceEvent(MigrationEvent eventType, ValueTransitContext ctx, string message)
         {
             if (!string.IsNullOrEmpty(message))
-                message = FormatMessage("WARNING:" + message);
+                message = FormatMessage(message);
 
             ctx.AddTraceEntry(message, ConsoleColor.Yellow);
+            
+            _migrationEvents.Add(new MigrationEventTraceEntry(eventType,ctx,message));
 
             Trace.Invoke(this, new TraceMessage(message, ConsoleColor.Yellow));
         }
 
         public void TraceError(string message, ValueTransitContext ctx)
         {
-            var msg = FormatMessage(message);
+            string msg = FormatMessage(message);
             ctx.AddTraceEntry(msg, ConsoleColor.Yellow);
 
             Trace.Invoke(this, new TraceMessage(msg, ConsoleColor.Red));
@@ -68,7 +101,7 @@ namespace XQ.DataMigration.Pipeline.Trace
         {
             var indent = "";
             for (int i = 0; i < _identLevel; i++)
-                indent += IndentUnit;
+                indent += _indentUnit;
           
             return '\n' + msg.Split('\n').Select(i => indent + i).Join("\n");
         }
@@ -81,6 +114,15 @@ namespace XQ.DataMigration.Pipeline.Trace
         public void IndentBack()
         {
             _identLevel--;
+        }
+
+        public void SaveLogs()
+        {
+             using (var writer = new StreamWriter("events.csv"))
+                using (var csv = new CsvWriter(writer, new CsvConfiguration(){Delimiter = ";"}))
+                {
+                    csv.WriteRecords(_migrationEvents);
+                }
         }
     }
 }

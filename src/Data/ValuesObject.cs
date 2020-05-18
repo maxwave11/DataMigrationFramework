@@ -13,6 +13,7 @@ namespace XQ.DataMigration.Data
         public object this[string name] { get => GetValue(name); set => SetValue(name, value); }
         public string[] FieldNames => _dataContainer.Keys.ToArray();
         public bool IsNew { get; }
+        public uint RowNumber { get; set; }
         public string Key { get; set; }
         public object Native => this;
 

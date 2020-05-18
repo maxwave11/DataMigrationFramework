@@ -9,6 +9,7 @@ namespace XQ.DataMigration.Data
         string Key { get; set; }
         object Native { get; }
         bool IsNew { get; }
+        uint RowNumber { get; set; }
 
         object GetValue(string name);
         void SetValue(string name, object value);

@@ -102,6 +102,8 @@ namespace XQ.DataMigration.Pipeline
                 //If object is not new, it means that it's already saved and passed by migration validation
                 if (target.IsNew)
                     Target.InvalidateObject(target);
+                
+                Migrator.Current.Tracer.TraceEvent(MigrationEvent.ObjectSkipped, ctx,"");
 
                 return null;
             }
@@ -132,15 +134,12 @@ namespace XQ.DataMigration.Pipeline
                 if (ctx.Flow == TransitionFlow.SkipValue)
                 {
                     ctx.Flow = TransitionFlow.Continue;
-                    TraceLine($"<- Breaking value");
+                    Migrator.Current.Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"");
                     continue;
                 }
 
                 if (ctx.Flow != TransitionFlow.Continue)
-                {
-                    TraceLine($"<- Breaking {this.GetType().Name}");
                     break;
-                }
             }
         }
 

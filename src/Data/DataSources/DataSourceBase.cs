@@ -27,9 +27,11 @@ namespace XQ.DataMigration.Data.DataSources
         {
             Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Get data...");
 
-                
+            uint rowCounter = 0;
+
             foreach (var valuesObject in GetDataInternal())
             {
+                rowCounter++;
                 var ctx = new ValueTransitContext(valuesObject, null, valuesObject);
                 Key.Execute(ctx);
                 var strKey = ctx.TransitValue?.ToString();
@@ -38,7 +40,7 @@ namespace XQ.DataMigration.Data.DataSources
                     continue;
                 
                 valuesObject.Key = UnifyKey(strKey); 
-                
+                valuesObject.RowNumber = rowCounter;
                 PrepareData?.Execute(ctx);
                 yield return valuesObject;
             }

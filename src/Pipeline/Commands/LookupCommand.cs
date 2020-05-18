@@ -64,7 +64,7 @@ namespace XQ.DataMigration.Pipeline.Commands
                 {
                     string message = $"Lookup ({ Source }) object not found by value '{valueToFind}'\n";
                     ctx.Flow = this.OnNotFound;
-                    Migrator.Current.Tracer.TraceWarning(message, ctx);
+                    Migrator.Current.Tracer.TraceEvent(MigrationEvent.LookupFailed, ctx,message);
                 }
             }
             
@@ -76,8 +76,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             {
                 var foundObject = Source
                     .GetCachedData()
-                    .Where(i => LookupPredicate.Evaluate(new ValueTransitContext(i, null, ctx.TransitValue)))
-                    .SingleOrDefault();
+                    .SingleOrDefault(i => LookupPredicate.Evaluate(new ValueTransitContext(i, null, ctx.TransitValue)));
 
                 return foundObject;
             }

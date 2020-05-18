@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Pipeline.Trace;
 
 namespace XQ.DataMigration
@@ -40,6 +41,7 @@ namespace XQ.DataMigration
             }
                 
             stopwatch.Stop();
+            Tracer.SaveLogs();
             Tracer.TraceLine($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
         }
     }
