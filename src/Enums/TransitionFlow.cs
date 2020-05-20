@@ -3,7 +3,7 @@
     public enum TransitionFlow
     {
         Continue,
-        Stop,
+        RiseError,
         SkipValue,
         SkipObject,
         Debug

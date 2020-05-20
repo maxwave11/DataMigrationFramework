@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Utils;
 
@@ -51,20 +52,14 @@ namespace XQ.DataMigration.Pipeline.Commands
             ctx.CurrentNode = this;
 
             TraceStart(ctx);
+            Migrator.Current.Tracer.Indent();
 
-            try
-            {
-                ExecuteInternal(ctx);
-            }
-            catch (Exception ex)
-            {
-                Migrator.Current.Tracer.TraceError(ex.ToString(), ctx);
-                throw;
-            }
+            ExecuteInternal(ctx);
+          
+            Migrator.Current.Tracer.IndentBack();
 
             TraceEnd(ctx);
         }
-
 
         /// <summary>
         /// Method to override in client's code for custom transitions. Allow to use custom logic inside own transitino nodes
@@ -76,39 +71,20 @@ namespace XQ.DataMigration.Pipeline.Commands
         /// <returns></returns>
         protected abstract void ExecuteInternal(ValueTransitContext ctx);
 
-        protected  virtual void TraceStart(ValueTransitContext ctx)
+        public virtual string GetParametersInfo() => String.Empty;
+        protected virtual void TraceStart(ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.Indent();
-
-            string tagName = CommandUtils.GetCommandYamlName(GetType());
-
-            var incomingValue = ctx.TransitValue?.ToString();
-            string incomingValueType = ctx.TransitValue?.GetType().Name;
-
-            TraceLine($"-> {tagName} { this.ToString() }", ctx);
-            Migrator.Current.Tracer.Indent();
-            TraceLine($"({incomingValueType.Truncate(30)}){incomingValue}", ctx);
+            TraceLine($"{ CommandUtils.GetCommandYamlName(GetType()) } { GetParametersInfo() }", ctx);
         }
 
-        protected  virtual void TraceEnd(ValueTransitContext ctx)
+        protected virtual void  TraceEnd(ValueTransitContext ctx)
         {
-            
-            Migrator.Current.Tracer.IndentBack();
-
-            var returnValue = ctx.TransitValue?.ToString();
-            string returnValueType = ctx.TransitValue?.GetType().Name;
-
-            string traceMsg = $"<- ({returnValueType.Truncate(30)}){returnValue}\n";
-            TraceLine(traceMsg,ctx);
-
-            Migrator.Current.Tracer.IndentBack();
         }
 
         protected  void TraceLine(string message, ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.TraceLine(message, ctx, this.TraceColor );
+            Migrator.Current.Tracer.TraceLine(message, ctx, TraceColor);
         }
-        
 
         public static implicit operator CommandBase(string expression)
         {

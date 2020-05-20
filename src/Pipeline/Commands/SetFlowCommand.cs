@@ -17,16 +17,13 @@ namespace XQ.DataMigration.Pipeline.Commands
                 Flow = TransitionFlow.Continue;
             }
 
-            if (ctx.Flow == Flow) return;
-            
-            TraceLine("Changing flow - " + Flow, ctx);
+            if (Flow == TransitionFlow.RiseError)
+                throw new Exception("Error raised by Flow command!");
+
             ctx.Flow = Flow;
         }
 
-        public override string ToString()
-        {
-            return Flow.ToString();
-        }
+        public override string GetParametersInfo() => Flow.ToString();
 
         public static implicit operator SetFlowCommand(string expression)
         {

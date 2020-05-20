@@ -13,13 +13,16 @@ namespace XQ.DataMigration.Pipeline.Commands
             var returnValue = Expression.Evaluate(ctx);
             ctx.SetCurrentValue(returnValue);
         }
-        
+
+        public override string GetParametersInfo() => Expression.ToString();
+
         public static implicit operator GetCommand(string expression)
         {
             return new GetCommand() { Expression = expression };
         }
     }
 
+    [Command("EXPR")]
     public class ExpressionCommand<T>: CommandBase
     {
         //workaround variable. Need to think how to refactor inheritance from CommandBase
@@ -33,13 +36,8 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         protected override void TraceEnd(ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.IndentBack();
-
             var valueType = _returnValue.GetType().Name.Truncate(30);
             TraceLine($"<- ({  valueType }){_returnValue?.ToString().Truncate(30)}" , ctx);
-            
-            Migrator.Current.Tracer.IndentBack();
-
         }
 
         public new T Execute(ValueTransitContext ctx)
@@ -53,6 +51,6 @@ namespace XQ.DataMigration.Pipeline.Commands
             return new ExpressionCommand<T>() { Expression = expression };
         }
 
-        public override string ToString() => Expression.ToString();
+        public override string GetParametersInfo() => Expression.ToString();
     }
 }

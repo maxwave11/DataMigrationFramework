@@ -14,9 +14,7 @@ namespace XQ.DataMigration.Pipeline.Expressions
              return new MigrationExpression(expression);
         }
 
-        public MigrationExpression(string expression) : base(expression)
-        {
-        }
+        public MigrationExpression(string expression) : base(expression) { }
     }
 
     public class MigrationExpression<T>
@@ -32,19 +30,12 @@ namespace XQ.DataMigration.Pipeline.Expressions
 
         public T Evaluate(ValueTransitContext ctx)
         {
-            try
-            {
-                var exprContext = new ExpressionContext(ctx);
-                var task = _scriptRunner(exprContext);
-                if (!task.IsCompleted)
-                    throw new Exception("TASK NOT COMPLETED!!! ALARM!");
+            var exprContext = new ExpressionContext(ctx);
+            var task = _scriptRunner(exprContext);
+            if (!task.IsCompleted)
+               throw new Exception("TASK NOT COMPLETED!!! ALARM!");
                 
-                return  task.Result;
-            }
-            catch
-            {
-                throw;
-            }
+            return  task.Result;
         }
 
         /// <summary>
@@ -68,16 +59,8 @@ namespace XQ.DataMigration.Pipeline.Expressions
 
             var script = CSharpScript.Create<T>(_translatedExpression, options: scriptOptions, globalsType: typeof(ExpressionContext));
 
-            try
-            {
-                ScriptRunner<T> runner = script.CreateDelegate();
-                return runner;
-                return null;
-            }
-            catch
-            {
-                throw;
-            }
+            var runner = script.CreateDelegate();
+            return runner;
         }
 
         public override string ToString()

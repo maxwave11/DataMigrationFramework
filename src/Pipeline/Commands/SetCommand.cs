@@ -35,9 +35,6 @@ namespace XQ.DataMigration.Pipeline.Commands
             return new SetCommand() { ToField = expression };
         }
 
-        public override string ToString()
-        {
-            return ToField.IsNotEmpty() ? $"ToField: {ToField}" : Expression.ToString();
-        }
+        public override string GetParametersInfo() => ToField.IsNotEmpty() ? $"ToField: {ToField}" : Expression.ToString();
     }   
 }

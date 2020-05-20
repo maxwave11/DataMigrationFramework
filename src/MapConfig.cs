@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using XQ.DataMigration.Data.DataSources;
@@ -17,7 +18,8 @@ namespace XQ.DataMigration
         public static MapConfig Current  {get; private set; }
 
         public char DefaultDecimalSeparator { get; set; } = '.';
-        public bool TraceValueTransition { get; set; }
+        
+        public TraceMode TraceMode { get; set; }
 
         internal void Initialize()
         {
@@ -29,5 +31,13 @@ namespace XQ.DataMigration
         {
             return SourceSettings.OfType<T>().Single();
         }
+    }
+
+    [Flags]
+    public enum TraceMode
+    {
+        Auto         = 0,                  // 000000
+        Objects        = 1,           // 000001
+        Commands         = 3,           // 000011
     }
 }

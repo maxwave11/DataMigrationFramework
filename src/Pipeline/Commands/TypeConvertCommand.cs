@@ -45,11 +45,8 @@ namespace XQ.DataMigration.Pipeline.Commands
             ctx.SetCurrentValue(typedValue);
         }
 
-        public override string ToString()
-        {
-            return DataType;
-        }
-
+        public override string GetParametersInfo() => DataType;
+       
         public static implicit operator TypeConvertCommand(string type)
         {
             return new TypeConvertCommand(type);

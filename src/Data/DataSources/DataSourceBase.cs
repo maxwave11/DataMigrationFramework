@@ -104,7 +104,7 @@ namespace XQ.DataMigration.Data.DataSources
 
         public override string ToString()
         {
-            return $"Query: { Query }, Key: { Key }";
+            return $"Query: { Query }, Key: { Key.GetParametersInfo() }";
         }
     }
 }

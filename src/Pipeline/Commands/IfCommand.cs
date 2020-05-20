@@ -25,6 +25,11 @@ namespace XQ.DataMigration.Pipeline.Commands
                 OnFalse.Execute(ctx);
         }
 
+        public override string GetParametersInfo()
+        {
+            return Condition.ToString();
+        }
+
         public static implicit operator IfCommand(string expression)
         {
             //default IF initialization from plain string

@@ -10,7 +10,7 @@ namespace XQ.DataMigration.Pipeline.Commands
     {
         protected override void ExecuteInternal(ValueTransitContext ctx)
         {
-            foreach (var childTransition in Pipeline)
+            foreach (var childTransition in Commands)
             {
                 childTransition.Execute(ctx);
 
@@ -38,7 +38,7 @@ namespace XQ.DataMigration.Pipeline.Commands
 
             var rules = expression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-            return new ReplaceCommandSet() { Pipeline = rules.Select(i=> (ReplaceStepCommand)i).ToList()};
+            return new ReplaceCommandSet() { Commands = rules.Select(i=> (ReplaceStepCommand)i).ToList()};
         }
     }
 }

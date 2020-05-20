@@ -71,10 +71,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             return transitValue?.Contains(Condition) ?? false;
         }
 
-        public override string ToString()
-        {
-            return base.ToString() + $"Condition: { Condition }, ReplaceValue: { ReplaceValue }";
-        }
+        public override string GetParametersInfo() => $"Condition: {Condition}, ReplaceValue: {ReplaceValue}";
         
         public static implicit operator ReplaceStepCommand(string replaceExpression)
         {

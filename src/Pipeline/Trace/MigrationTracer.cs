@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using CsvHelper;
 using CsvHelper.Configuration;
+using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Utils;
 
@@ -16,13 +18,13 @@ namespace XQ.DataMigration.Pipeline.Trace
         public string DataSetName { get; set; }
 
         public MigrationEvent EventType { get; }
-        
+
         public string Query { get; set; }
 
         public string ObjectKey { get; set; }
 
         public string Message { get; }
-        
+
         public MigrationEventTraceEntry(MigrationEvent eventType, ValueTransitContext ctx, string message)
         {
             EventType = eventType;
@@ -51,66 +53,72 @@ namespace XQ.DataMigration.Pipeline.Trace
         /// <summary>
         /// Event fires each time when any unhandled error occured while migration process
         /// </summary>
-        public event EventHandler<TransitErrorEventArgs> OnValueTransitError;
-        
-        /// <summary>
-        /// Event fires each time when any unhandled error occured while migration process
-        /// </summary>
 
-        private const string _indentUnit = "   ";
+        private const string _indentUnit = "    ";
 
         private int _identLevel = 0;
 
         private List<MigrationEventTraceEntry> _migrationEvents = new List<MigrationEventTraceEntry>();
 
-        public void TraceLine(string message,  ValueTransitContext ctx = null, ConsoleColor color = ConsoleColor.White)
+        public void TraceLine(string message, ValueTransitContext ctx = null, ConsoleColor color = ConsoleColor.White)
         {
-            if (!string.IsNullOrEmpty(message))
-                message = FormatMessage(message);
+            message = FormatMessage(message);
 
             ctx?.AddTraceEntry(message, color);
 
             if (ctx == null || ctx.Trace)
-                Trace.Invoke(this, new TraceMessage(message, color));
+                SendTraceMessage(message, color);
         }
 
         public void TraceEvent(MigrationEvent eventType, ValueTransitContext ctx, string message)
         {
-            if (!string.IsNullOrEmpty(message))
-                message = FormatMessage(message);
+            message = FormatMessage(message);
 
             ctx.AddTraceEntry(message, ConsoleColor.Yellow);
-            
-            _migrationEvents.Add(new MigrationEventTraceEntry(eventType,ctx,message));
 
-            Trace.Invoke(this, new TraceMessage(message, ConsoleColor.Yellow));
+            _migrationEvents.Add(new MigrationEventTraceEntry(eventType, ctx, message));
+
+            //SendTraceMessage(message, ConsoleColor.Yellow);
         }
 
         public void TraceError(string message, ValueTransitContext ctx)
         {
             string msg = FormatMessage(message);
-            ctx.AddTraceEntry(msg, ConsoleColor.Yellow);
+            SendTraceMessage(msg, ConsoleColor.Red);
 
-            Trace.Invoke(this, new TraceMessage(msg, ConsoleColor.Red));
+            SendTraceMessage("\nERROR ====================", ConsoleColor.Red);
+            SendTraceMessage("\nTRACE:", ConsoleColor.Red);
+            ctx.TraceEntries.ForEach(i=> Trace.Invoke(this,i));
+            
+            SendTraceMessage("\nSRC:", ConsoleColor.Red);
+            SendTraceMessage("\n" + ctx.Source?.GetInfo(), ConsoleColor.Red);       
+            
+            SendTraceMessage("\nTARGET:", ConsoleColor.Red);
+            SendTraceMessage("\n" + ctx.Target?.GetInfo(), ConsoleColor.Red);
+            
+       
+        }
 
-            var args = new TransitErrorEventArgs(ctx);
-            OnValueTransitError?.Invoke(ctx, args);
+        private void SendTraceMessage(string msg, ConsoleColor color)
+        {
+            Trace.Invoke(this, new TraceMessage(msg, color));
+
         }
 
         private string FormatMessage(string msg)
         {
-            var indent = "";
+            var indentString = "";
             for (int i = 0; i < _identLevel; i++)
-                indent += _indentUnit;
-          
-            return '\n' + msg.Split('\n').Select(i => indent + i).Join("\n");
+                indentString += _indentUnit;
+
+            return '\n' + msg.Split('\n').Select(i => indentString + i).Join("\n");
         }
 
         public void Indent()
         {
             _identLevel++;
         }
-        
+
         public void IndentBack()
         {
             _identLevel--;
@@ -118,11 +126,11 @@ namespace XQ.DataMigration.Pipeline.Trace
 
         public void SaveLogs()
         {
-             using (var writer = new StreamWriter("events.csv"))
-                using (var csv = new CsvWriter(writer, new CsvConfiguration(){Delimiter = ";"}))
-                {
-                    csv.WriteRecords(_migrationEvents);
-                }
+            using (var writer = new StreamWriter("events.csv"))
+            using (var csv = new CsvWriter(writer, new CsvConfiguration() { Delimiter = ";" }))
+            {
+                csv.WriteRecords(_migrationEvents);
+            }
         }
     }
 }

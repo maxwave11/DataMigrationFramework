@@ -20,9 +20,6 @@ namespace XQ.DataMigration.Pipeline.Commands
             _key += ctx.TransitValue + "/";
         }
 
-        public override string ToString()
-        {
-            return $"[{ Pipeline.Select(i => i.ToString()).Join() }]";
-        }
+        public override string GetParametersInfo() => $"[{ Commands.Select(i => i.GetParametersInfo()).Join() }]";
     }
 }

@@ -8,11 +8,11 @@ namespace XQ.DataMigration.Pipeline.Commands
     [Command("TRANSIT")]
     public class CommandSet<T> : CommandBase, IList<T>  where T : CommandBase
     {
-        public List<T> Pipeline { get; set; } = new List<T>();
+        public List<T> Commands { get; set; } = new List<T>();
         
         protected  override void ExecuteInternal(ValueTransitContext ctx)
         {
-            foreach (var childTransition in Pipeline)
+            foreach (var childTransition in Commands)
             {
                 TransitChild(childTransition, ctx);
 
@@ -29,21 +29,16 @@ namespace XQ.DataMigration.Pipeline.Commands
             childTransition.Execute(ctx);
         }
 
-        public override string ToString()
-        {
-            return $"Pipeline: { Pipeline.Count }";
-        }
-        
         public static implicit operator CommandSet<T>(string expression)
         {
-            return new CommandSet<T>() { Pipeline = new List<T>() { (T)expression }};
+            return new CommandSet<T>() { Commands = new List<T>() { (T)expression }};
         }
 
         #region IList
 
         public void Add(T item)
         {
-            Pipeline.Add(item);
+            Commands.Add(item);
         }
 
         public IEnumerator<T> GetEnumerator()
