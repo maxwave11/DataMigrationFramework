@@ -63,7 +63,7 @@ namespace XQ.DataMigration.Pipeline.Trace
 
         private List<MigrationEventTraceEntry> _migrationEvents = new List<MigrationEventTraceEntry>();
 
-        public void TraceLine(string message, ConsoleColor color = ConsoleColor.White, ValueTransitContext ctx = null)
+        public void TraceLine(string message,  ValueTransitContext ctx = null, ConsoleColor color = ConsoleColor.White)
         {
             if (!string.IsNullOrEmpty(message))
                 message = FormatMessage(message);

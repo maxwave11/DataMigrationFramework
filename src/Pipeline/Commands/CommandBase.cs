@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using XQ.DataMigration.Enums;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Pipeline.Commands
@@ -20,8 +21,6 @@ namespace XQ.DataMigration.Pipeline.Commands
     public abstract class CommandBase
     {
         public string Name { get; set; }
-
-        public bool TraceWarnings { get; set; } = true;
 
         public ConsoleColor TraceColor { get; set; } = ConsoleColor.White;
 
@@ -66,6 +65,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             TraceEnd(ctx);
         }
 
+
         /// <summary>
         /// Method to override in client's code for custom transitions. Allow to use custom logic inside own transitino nodes
         /// inherited from CommandBase class
@@ -76,7 +76,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         /// <returns></returns>
         protected abstract void ExecuteInternal(ValueTransitContext ctx);
 
-        private void TraceStart(ValueTransitContext ctx)
+        protected  virtual void TraceStart(ValueTransitContext ctx)
         {
             Migrator.Current.Tracer.Indent();
 
@@ -90,11 +90,13 @@ namespace XQ.DataMigration.Pipeline.Commands
             TraceLine($"({incomingValueType.Truncate(30)}){incomingValue}", ctx);
         }
 
-        private void TraceEnd(ValueTransitContext ctx)
+        protected  virtual void TraceEnd(ValueTransitContext ctx)
         {
+            
+            Migrator.Current.Tracer.IndentBack();
+
             var returnValue = ctx.TransitValue?.ToString();
             string returnValueType = ctx.TransitValue?.GetType().Name;
-            Migrator.Current.Tracer.IndentBack();
 
             string traceMsg = $"<- ({returnValueType.Truncate(30)}){returnValue}\n";
             TraceLine(traceMsg,ctx);
@@ -102,15 +104,15 @@ namespace XQ.DataMigration.Pipeline.Commands
             Migrator.Current.Tracer.IndentBack();
         }
 
-        protected void TraceLine(string message, ValueTransitContext ctx)
+        protected  void TraceLine(string message, ValueTransitContext ctx)
         {
-            Migrator.Current.Tracer.TraceLine(message, this.TraceColor, ctx);
+            Migrator.Current.Tracer.TraceLine(message, ctx, this.TraceColor );
         }
         
 
         public static implicit operator CommandBase(string expression)
         {
-            return new GetCommandSet() { Expression = expression };
+            return new GetCommand() { Expression = expression };
         }
     }
 }

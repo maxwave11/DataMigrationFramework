@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using XQ.DataMigration.Data.DataSources;
 using XQ.DataMigration.Pipeline;
+using XQ.DataMigration.Pipeline.Commands;
 using XQ.DataMigration.Pipeline.Expressions;
 
 namespace XQ.DataMigration

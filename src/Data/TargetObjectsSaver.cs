@@ -37,7 +37,7 @@ namespace XQ.DataMigration.Data
 
         private void TraceLine(string message) 
         {
-            Migrator.Current.Tracer.TraceLine(message, ConsoleColor.DarkCyan);
+            Migrator.Current.Tracer.TraceLine(message, color:ConsoleColor.DarkCyan);
         }
 
         protected virtual void SaveTargetObjects(List<IValuesObject> targetObjects)

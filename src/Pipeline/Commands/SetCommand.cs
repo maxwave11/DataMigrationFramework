@@ -1,4 +1,5 @@
 ﻿using System;
+using XQ.DataMigration.Pipeline.Expressions;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Pipeline.Commands
@@ -9,11 +10,13 @@ namespace XQ.DataMigration.Pipeline.Commands
     /// If Expression is Migration expression -> unit exeuctes this expression
     /// </summary>
     [Command("SET")]
-    public class SetCommand : ExpressionCommand
+    public class SetCommand : CommandBase
     {
         public string ToField { get; set; }
+        
+        public MigrationExpression Expression { get; set; }
 
-        protected  override void ExecuteInternal(ValueTransitContext ctx)
+        protected override void ExecuteInternal(ValueTransitContext ctx)
         {
             if (ToField.IsNotEmpty())
                 ctx.Target.SetValue(ToField, ctx.TransitValue);

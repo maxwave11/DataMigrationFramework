@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -7,7 +7,7 @@ using XQ.DataMigration.Data;
 
 namespace XQ.DataMigration.Pipeline.Expressions
 {
-    public class MigrationExpression: MigrationExpression<object>
+    public sealed class MigrationExpression: MigrationExpression<object>
     {
         public static implicit operator MigrationExpression(string expression)
         {

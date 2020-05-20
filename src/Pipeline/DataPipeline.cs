@@ -49,7 +49,7 @@ namespace XQ.DataMigration.Pipeline
         public void Run()
         {
             Tracer.TraceLine("");
-            Tracer.TraceLine($"-> Start {Name} data transition", ConsoleColor.Magenta);
+            Tracer.TraceLine($"-> Start {Name} data transition", color:ConsoleColor.Magenta);
             Tracer.Indent();
 
             var srcDataSet = Source.GetData();
@@ -75,7 +75,7 @@ namespace XQ.DataMigration.Pipeline
             Saver.TrySave();
 
             Tracer.IndentBack();
-            Tracer.TraceLine($"<- End {Name} data transition\\n", ConsoleColor.Magenta);
+            Tracer.TraceLine($"<- End {Name} data transition\\n", color:ConsoleColor.Magenta);
         }
 
         private IValuesObject TransitObject(IValuesObject sourceObject)
@@ -146,7 +146,7 @@ namespace XQ.DataMigration.Pipeline
         protected virtual void TraceLine(string message)
         {
             if (TraceObjects)
-                Migrator.Current.Tracer.TraceLine(message, ConsoleColor.Gray);
+                Migrator.Current.Tracer.TraceLine(message, color:ConsoleColor.Gray);
         }
     }
 }

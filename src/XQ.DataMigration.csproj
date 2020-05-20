@@ -120,8 +120,8 @@
     <Compile Include="MapConfigReader.cs" />
     <Compile Include="Migrator.cs" />
     <Compile Include="Pipeline\Commands\CommandSet.cs" />
-    <Compile Include="Pipeline\Commands\ExpressionCommand.cs" />
-    <Compile Include="Pipeline\Commands\GetCommandSet.cs" />
+    <Compile Include="Pipeline\Commands\ExpressoinCommand.cs" />
+    <Compile Include="Pipeline\Commands\ConcatCommand.cs" />
     <Compile Include="Pipeline\Commands\IfCommand.cs" />
     <Compile Include="Pipeline\Commands\LookupCommand.cs" />
     <Compile Include="Pipeline\Commands\MessageCommand.cs" />
