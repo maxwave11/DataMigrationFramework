@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Data.DataSources;
@@ -48,7 +49,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         /// <summary>
         /// Specifies migration behavior in case when lookup object wasn't found
         /// </summary>
-        public TransitionFlow OnNotFound { get; set; } = TransitionFlow.RiseError;
+        public SetFlowCommand OnNotFound { get; set; } = TransitionFlow.RiseError.ToString();
 
         protected  override void ExecuteInternal(ValueTransitContext ctx)
         {
@@ -63,8 +64,8 @@ namespace XQ.DataMigration.Pipeline.Commands
                 if (lookupObject == null)
                 {
                     string message = $"Lookup ({ Source }) object not found by value '{valueToFind}'";
-                    ctx.Flow = this.OnNotFound;
                     Migrator.Current.Tracer.TraceEvent(MigrationEvent.LookupFailed, ctx,message);
+                    OnNotFound.Execute(ctx);
                 }
             }
             
