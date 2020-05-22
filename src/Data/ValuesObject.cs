@@ -47,7 +47,17 @@ namespace XQ.DataMigration.Data
             if (name.IsEmpty())
                 throw new ArgumentException($"FromField name can't be empty");
 
-            _dataContainer[name] = value;
+            var valueToSet = value;
+            
+            //don't allow empty strings in source data
+            //store null always in order to simplify migration expressions
+            if (value is string strValue)
+            {
+                if (strValue.IsEmpty())
+                    valueToSet = null;
+            }
+            
+            _dataContainer[name] = valueToSet;
         }
 
         public bool IsEmpty()
