@@ -23,6 +23,8 @@ namespace XQ.DataMigration.Data.DataSources
 
     public class CsvDataSource : DataSourceBase
     {
+        public string Delimiter { get; set; }
+
         protected override IEnumerable<IValuesObject> GetDataInternal()
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
@@ -45,7 +47,7 @@ namespace XQ.DataMigration.Data.DataSources
 
             var txtReader = new StreamReader(filePath, Encoding.GetEncoding("Windows-1252"));
             var csvReader = new CsvReader(txtReader);
-            csvReader.Configuration.Delimiter = settings.Delimiter;
+            csvReader.Configuration.Delimiter = Delimiter.IsEmpty() ? settings.Delimiter : Delimiter;
             csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
             csvReader.Configuration.TrimFields = true;
             csvReader.Configuration.IgnoreBlankLines = true;
