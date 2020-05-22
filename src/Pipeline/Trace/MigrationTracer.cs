@@ -78,7 +78,7 @@ namespace XQ.DataMigration.Pipeline.Trace
 
             _migrationEvents.Add(new MigrationEventTraceEntry(eventType, ctx, message));
 
-            //SendTraceMessage(message, ConsoleColor.Yellow);
+            SendTraceMessage(message, ConsoleColor.Yellow);
         }
 
         public void TraceError(string message, ValueTransitContext ctx)

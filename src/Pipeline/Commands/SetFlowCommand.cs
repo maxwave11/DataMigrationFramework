@@ -1,14 +1,16 @@
 using System;
 using System.Diagnostics;
 using XQ.DataMigration.Enums;
+using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Pipeline.Commands
 {
-    
     [Command("FLOW")]
     public class SetFlowCommand: CommandBase
     {
         public TransitionFlow Flow { get; set; } = TransitionFlow.Continue;
+        
+        public string Message { get; set; }
         protected override void ExecuteInternal(ValueTransitContext ctx)
         {
             if (Flow == TransitionFlow.Debug)
@@ -18,7 +20,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             }
 
             if (Flow == TransitionFlow.RiseError)
-                throw new Exception("Error raised by Flow command!");
+                throw new Exception( Message.IsEmpty() ? "Error raised by Flow command!" : Message);
 
             ctx.Flow = Flow;
         }

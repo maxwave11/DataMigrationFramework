@@ -15,7 +15,6 @@ namespace XQ.DataMigration.Pipeline
     {
         public bool Enabled { get; set; } = true;
         public string Name { get; set; }
-        public bool TraceObjects { get; set; }
 
         public IDataSource Source { get; set; }
         public ITargetSource Target { get; set; }
@@ -84,9 +83,10 @@ namespace XQ.DataMigration.Pipeline
 
             var ctx = new ValueTransitContext(sourceObject, target, null);
 
-            TraceLine($"PIPELINE '{Name}' OBJECT, Row {sourceObject.RowNumber}, Key [{sourceObject.Key}], IsNew:  {target.IsNew}", ctx);
-
+            ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands) ;
             ctx.DataPipeline = this;
+            
+            TraceLine($"PIPELINE '{Name}' OBJECT, Row {sourceObject.RowNumber}, Key [{sourceObject.Key}], IsNew:  {target.IsNew}", ctx);
 
             try
             {
@@ -125,7 +125,7 @@ namespace XQ.DataMigration.Pipeline
 
                 childTransition.TraceColor = ConsoleColor.Yellow;
                 
-                ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands) ;
+                
                 
                 if(ctx.Trace)
                     TraceLine("", ctx);
@@ -135,7 +135,7 @@ namespace XQ.DataMigration.Pipeline
                 if (ctx.Flow == TransitionFlow.SkipValue)
                 {
                     ctx.Flow = TransitionFlow.Continue;
-                    Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"Value skipped");
+                    //Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"Value skipped");
                     continue;
                 }
 
