@@ -17,7 +17,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         protected override void TransitChild(GetCommand childTransition, ValueTransitContext ctx)
         {
             base.TransitChild(childTransition, ctx);
-            _key += ctx.TransitValue + "/";
+            _key += ctx.TransitValue?.ToString().Trim() + "/";
         }
 
         public override string GetParametersInfo() => $"[{ Commands.Select(i => i.GetParametersInfo()).Join() }]";
