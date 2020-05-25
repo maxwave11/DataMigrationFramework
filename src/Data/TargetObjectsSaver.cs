@@ -10,7 +10,7 @@ namespace XQ.DataMigration.Data
 {
     public class TargetObjectsSaver 
     {
-        public  ITargetSource TargetSource { get; set; }
+        public  IDataTarget TargetSource { get; set; }
 
         /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value

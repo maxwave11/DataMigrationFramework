@@ -2,7 +2,7 @@
 
 namespace XQ.DataMigration.Data.DataSources
 {
-    public interface ITargetSource: IDataSource
+    public interface IDataTarget: IDataSource
     {
         IValuesObject GetObjectByKeyOrCreate(string key);
         void SaveObjects(IEnumerable<IValuesObject> objects);

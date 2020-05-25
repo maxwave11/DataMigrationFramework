@@ -4,7 +4,7 @@ using XQ.DataMigration.Enums;
 
 namespace XQ.DataMigration.Data.DataSources
 {
-    public abstract class TargetSourceBase : DataSourceBase, ITargetSource
+    public abstract class DataTargetBase : DataSourceBase, IDataTarget
     {
         protected abstract IValuesObject CreateObject(string key);
         public abstract void SaveObjects(IEnumerable<IValuesObject> objects);

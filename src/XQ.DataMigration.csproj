@@ -107,10 +107,10 @@
     <Compile Include="Data\DataSources\ExcelDataSource.cs" />
     <Compile Include="Data\DataSources\IDataSource.cs" />
     <Compile Include="Data\DataSources\IDataSourceSettings.cs" />
-    <Compile Include="Data\DataSources\ITargetSource.cs" />
+    <Compile Include="Data\DataSources\IDataTarget.cs" />
     <Compile Include="Data\DataSources\ObjectDataSource.cs" />
     <Compile Include="Data\DataSources\SqlDataSource.cs" />
-    <Compile Include="Data\DataSources\TargetSourceBase.cs" />
+    <Compile Include="Data\DataSources\DataTargetBase.cs" />
     <Compile Include="Data\IValuesObject.cs" />
     <Compile Include="Data\TargetObjectsSaver.cs" />
     <Compile Include="Data\ValuesObject.cs" />

@@ -17,7 +17,7 @@ namespace XQ.DataMigration.Pipeline
         public string Name { get; set; }
 
         public IDataSource Source { get; set; }
-        public ITargetSource Target { get; set; }
+        public IDataTarget Target { get; set; }
 
         public int SaveCount { get; set; } = 50;
 
