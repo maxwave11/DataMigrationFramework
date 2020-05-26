@@ -5,21 +5,13 @@ using XQ.DataMigration.Utils;
 namespace XQ.DataMigration.Pipeline.Commands
 {    
     [Command("CONCAT")]
-    public class ConcatCommand : CommandSet<GetCommand>
+    public class ConcatCommand : CommandSet<ExpressionCommand<object>>
     {
-        string _key = "";
         protected override void ExecuteInternal(ValueTransitContext ctx)
         {
-            _key = "";
-            base.ExecuteInternal(ctx);
-            ctx.SetCurrentValue(_key.TrimEnd('/'));
+            string result = Commands.Select(i => i.Execute(ctx)?.ToString()).Join("/");
+            ctx.SetCurrentValue(result);
         }
-        protected override void TransitChild(GetCommand childTransition, ValueTransitContext ctx)
-        {
-            base.TransitChild(childTransition, ctx);
-            _key += ctx.TransitValue?.ToString().Trim() + "/";
-        }
-
         public override string GetParametersInfo() => $"[{ Commands.Select(i => i.GetParametersInfo()).Join() }]";
     }
 }
