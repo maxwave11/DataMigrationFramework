@@ -26,24 +26,24 @@ namespace XQ.DataMigration.Pipeline.Commands
     public class ExpressionCommand<T>: CommandBase
     {
         //workaround variable. Need to think how to refactor inheritance from CommandBase
-        private T _returnValue;
+        public  T ReturnValue { get; private set; }
         public MigrationExpression<T> Expression { get; set; }
 
         protected override void ExecuteInternal(ValueTransitContext ctx)
         {
-            _returnValue = Expression.Evaluate(ctx);
+            ReturnValue = Expression.Evaluate(ctx);
         }
 
         protected override void TraceEnd(ValueTransitContext ctx)
         {
-            var valueType = _returnValue.GetType().Name.Truncate(30);
-            TraceLine($"<- ({  valueType }){_returnValue?.ToString().Truncate(30)}" , ctx);
+            string valueType = ReturnValue.GetType().Name.Truncate(30);
+            TraceLine($"<- ({  valueType }){ReturnValue?.ToString().Truncate(30)}" , ctx);
         }
 
         public new T Execute(ValueTransitContext ctx)
         {
             base.Execute(ctx);
-            return _returnValue;
+            return ReturnValue;
         }
         
         public static implicit operator ExpressionCommand<T>(string expression)

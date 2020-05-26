@@ -127,7 +127,7 @@ namespace XQ.DataMigration.Pipeline
                 
                 
                 
-                if(ctx.Trace)
+                
                     TraceLine("", ctx);
                 
                 childTransition.Execute(ctx);
@@ -146,7 +146,7 @@ namespace XQ.DataMigration.Pipeline
 
         protected virtual void TraceLine(string message, ValueTransitContext ctx)
         { 
-            if ((TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Objects))
+            if ((TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Objects) || ctx?.Trace == true)
                 Tracer.TraceLine(message, ctx, ConsoleColor.Magenta);
         }
     }

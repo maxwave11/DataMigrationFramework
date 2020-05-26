@@ -47,7 +47,7 @@ namespace XQ.DataMigration.Pipeline.Expressions
                 throw new Exception($"Expression {migrationExpression} is not valid. Check open and close brackets");
 
             //translate simplified global variable accessor directive '%': %variable% => Variables[variable]
-            expression = new Regex(@"%([^%]*)%").Replace(expression, $"{nameof(ExpressionContext.Variables)}[$1]");
+            expression = new Regex(@"%([^%]*)%").Replace(expression, $"{nameof(ExpressionContext.Variables)}['$1']");
 
             //translate simplified values object accessor :
             //<field_name> => SRC[field_name]
@@ -84,7 +84,6 @@ namespace XQ.DataMigration.Pipeline.Expressions
                 nameof(ExpressionContext.SRC),
                 nameof(ExpressionContext.TARGET),
                 nameof(ExpressionContext.VALUE_OBJECT),
-                nameof(ExpressionContext.Variables),
             };
             
             //braces regex wich define expression like [.....] or with nested braces [..[...]...]

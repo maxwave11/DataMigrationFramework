@@ -1,7 +1,10 @@
 ﻿using System;
+using System.CodeDom;
 using System.Diagnostics;
 using System.Linq;
 using XQ.DataMigration.Enums;
+using XQ.DataMigration.Pipeline;
+using XQ.DataMigration.Pipeline.Commands;
 using XQ.DataMigration.Pipeline.Trace;
 
 namespace XQ.DataMigration
@@ -30,6 +33,16 @@ namespace XQ.DataMigration
 
             try
             {
+                foreach (string name in _mapConfig.Variables.Keys.ToList())
+                {
+                    if (_mapConfig.Variables[name] is CommandBase command)
+                    {
+                        var ctx = new ValueTransitContext(null, null, null);
+                        command.Execute(ctx);
+                        _mapConfig.Variables[name] = ctx.TransitValue;
+                    }
+                }
+
                 foreach (var node in _mapConfig.Pipeline.Where(i => i.Enabled)) 
                 {
                     node.Run();

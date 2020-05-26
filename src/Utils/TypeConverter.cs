@@ -8,7 +8,7 @@ namespace XQ.DataMigration.Utils
 {
     public static class TypeConverter
     {
-        public static T GetTypedValue<T>(object value, char decimalSeparator = '.', string[] dataTypeFormats = null)
+        public static T GetTypedValue<T>(object value, char decimalSeparator = '.', string dataFormat = null)
         {
 
             TypeCode typeCode = TypeCode.Object;
@@ -30,7 +30,7 @@ namespace XQ.DataMigration.Utils
             if (typeof(T) == typeof(DateTime)|| typeof(T) == typeof(DateTime?) )
                 typeCode = TypeCode.DateTime;
 
-            var converterdValue = GetTypedValue(typeCode, value,decimalSeparator,dataTypeFormats);
+            var converterdValue = GetTypedValue(typeCode, value,decimalSeparator, dataFormat);
 
             if (default(T) == null && converterdValue == null)
                 return default(T);
@@ -38,7 +38,7 @@ namespace XQ.DataMigration.Utils
             return (T)converterdValue;
         }
 
-        public static object GetTypedValue(TypeCode targetType, object value, char decimalSeparator = '.', string[] dataTypeFormats = null)
+        public static object GetTypedValue(TypeCode targetType, object value, char decimalSeparator = '.', string dataFormat = null)
         {
             if (value == null)
                 return null;
@@ -90,9 +90,7 @@ namespace XQ.DataMigration.Utils
                 case TypeCode.DateTime:
                     if (value is string)
                     {
-                        //set default date formats to parse
-                        dataTypeFormats = dataTypeFormats?.Any() == true ? dataTypeFormats : new[] {"dd.MM.yyyy","d.M.yyyy","dd.M.yyyy","d.MM.yyyy"};
-                        return DateTime.ParseExact(strValue.Trim(), dataTypeFormats, new DateTimeFormatInfo(), DateTimeStyles.None);
+                        return DateTime.ParseExact(strValue.Trim(), dataFormat.IsEmpty() ? "d.M.yyyy" : dataFormat, CultureInfo.InvariantCulture);
                     }
                     return Convert.ToDateTime(value);
             }

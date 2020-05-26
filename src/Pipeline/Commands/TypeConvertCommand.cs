@@ -11,6 +11,9 @@ namespace XQ.DataMigration.Pipeline.Commands
         public string Type { get; set; }
 
         public char DecimalSeparator { get; set; }
+        
+        public CommandBase OnError { get; set; }
+
 
         private TypeCode _typeCode;
 
@@ -52,10 +55,22 @@ namespace XQ.DataMigration.Pipeline.Commands
         {
             Init();
             var value = ctx.TransitValue;
-            var decimalSeparator = DecimalSeparator == 0 ? MapConfig.Current.DefaultDecimalSeparator: DecimalSeparator;
-            var typedValue = TypeConverter.GetTypedValue(_typeCode, value, decimalSeparator, new [] {Format});
-            ctx.SetCurrentValue(typedValue);
+            char decimalSeparator = DecimalSeparator == 0 ? MapConfig.Current.DefaultDecimalSeparator : DecimalSeparator;
+            
+            try
+            {
+                var typedValue = TypeConverter.GetTypedValue(_typeCode, value, decimalSeparator, Format);
+                ctx.SetCurrentValue(typedValue);
+            }
+            catch (Exception e)
+            {
+                if (OnError == null)
+                    throw;
+
+                OnError.Execute(ctx);
+            }
         }
+
 
         public override string GetParametersInfo() => Type;
        

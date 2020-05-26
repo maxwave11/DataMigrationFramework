@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using XQ.DataMigration.Data.DataSources;
 using XQ.DataMigration.Pipeline;
 using XQ.DataMigration.Pipeline.Commands;
@@ -11,8 +11,13 @@ namespace XQ.DataMigration
     public class MapConfig
     {
         public List<IDataSourceSettings> SourceSettings { get; set; } = new List<IDataSourceSettings>();
+        
+        private Dictionary<string, object> _variableValues { get; set; } = new Dictionary<string, object>();
+
         public Dictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
+        
         public List<DataPipeline> Pipeline { get; set; } = new List<DataPipeline>();
+        
         public Dictionary<string, MigrationExpression> _examples { get; set; }
         
         public static MapConfig Current  {get; private set; }

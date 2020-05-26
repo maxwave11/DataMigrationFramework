@@ -115,6 +115,7 @@
     <Compile Include="Data\TargetObjectsSaver.cs" />
     <Compile Include="Data\ValuesObject.cs" />
     <Compile Include="Enums\MigrationEvent.cs" />
+    <Compile Include="Enums\TraceMode.cs" />
     <Compile Include="MapConfig.cs" />
     <Compile Include="Enums\TraceLevel.cs" />
     <Compile Include="MapConfigReader.cs" />

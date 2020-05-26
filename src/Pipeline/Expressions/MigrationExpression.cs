@@ -54,13 +54,19 @@ namespace XQ.DataMigration.Pipeline.Expressions
             
             var scriptOptions = ScriptOptions.Default
                 .WithReferences(importTypes.Select(t => t.Assembly))
-                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text").Append("System.Linq"))
+                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text").Append("System.Linq").Append("System.Globalization"))
                 .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release);
 
             var script = CSharpScript.Create<T>(_translatedExpression, options: scriptOptions, globalsType: typeof(ExpressionContext));
 
-            var runner = script.CreateDelegate();
-            return runner;
+            try
+            {
+                return script.CreateDelegate();
+            }
+            catch (Exception e)
+            {
+                throw;//left it for debuggin purposes
+            }
         }
 
         public override string ToString()
