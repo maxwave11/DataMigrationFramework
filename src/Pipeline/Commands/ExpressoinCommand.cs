@@ -36,7 +36,7 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         protected override void TraceEnd(ValueTransitContext ctx)
         {
-            string valueType = ReturnValue.GetType().Name.Truncate(30);
+            string valueType = ReturnValue?.GetType().Name.Truncate(30);
             TraceLine($"<- ({  valueType }){ReturnValue?.ToString().Truncate(30)}" , ctx);
         }
 

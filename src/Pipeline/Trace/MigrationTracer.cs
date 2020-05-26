@@ -30,9 +30,9 @@ namespace XQ.DataMigration.Pipeline.Trace
             EventType = eventType;
             Message = message;
             ObjectKey = ctx.Source.Key;
-            DataSetName = ctx.DataPipeline.Name;
+            DataSetName = ctx.DataPipeline?.Name;
             RowNumber = ctx.Source.RowNumber;
-            Query = ctx.DataPipeline.Source.ToString();
+            Query = ctx.DataPipeline?.Source.ToString();
         }
 
     }
