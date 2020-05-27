@@ -15,6 +15,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             Name = name;
         }
     }
+    
 
     /// <summary>
     /// Base class for all transition elements in Map configuration
@@ -48,7 +49,6 @@ namespace XQ.DataMigration.Pipeline.Commands
         public void Execute(ValueTransitContext ctx)
         {
             Validate();
-            
             ctx.CurrentNode = this;
 
             TraceStart(ctx);
@@ -57,7 +57,6 @@ namespace XQ.DataMigration.Pipeline.Commands
             ExecuteInternal(ctx);
           
             Migrator.Current.Tracer.IndentBack();
-
             TraceEnd(ctx);
         }
 

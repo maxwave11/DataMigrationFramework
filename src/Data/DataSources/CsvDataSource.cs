@@ -32,11 +32,18 @@ namespace XQ.DataMigration.Data.DataSources
             var subQueries = Query.Split('|');
             foreach (string subQuery in subQueries)
             {
-                var filePath = $"{settings.Path}\\{subQuery.Trim()}";
+                var fullPath = $"{settings.Path}\\{subQuery.Trim()}";
+                var dirPath = Path.GetDirectoryName(fullPath);
+                var fileName = Path.GetFileName(fullPath);
 
-                foreach (var valuesObject in GetDataFromFile(filePath))
+                var files = Directory.GetFiles(dirPath, fileName);
+
+                foreach (string file in files)
                 {
-                    yield return valuesObject;
+                    foreach (var valuesObject in GetDataFromFile(fullPath))
+                    {
+                        yield return valuesObject;
+                    }
                 }
             }
         }
