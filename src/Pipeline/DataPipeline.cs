@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Data.DataSources;
 using XQ.DataMigration.Enums;
@@ -17,7 +18,8 @@ namespace XQ.DataMigration.Pipeline
         public string Name { get; set; }
 
         public IDataSource Source { get; set; }
-        public IDataTarget Target { get; set; }
+        
+        private IDataTarget _targetSystem { get; set; }
 
         public int SaveCount { get; set; } = 50;
 
@@ -28,12 +30,10 @@ namespace XQ.DataMigration.Pipeline
         public List<CommandSet<CommandBase>> Commands { get; set; }
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
+        
 
         public void Initialize()
         {
-            if (Target == null)
-                throw new ArgumentNullException();
-
             if (Source == null)
                 throw new ArgumentNullException();
 
@@ -42,8 +42,9 @@ namespace XQ.DataMigration.Pipeline
                 Saver = new TargetObjectsSaver();
                 Saver.SaveCount = SaveCount;
             }
-
-            Saver.TargetSource = Target;
+            //shitty workaround, need to refactor!
+            _targetSystem = Commands.SelectMany(i => i.Commands).OfType<GetTargetCommand>().Single().Target;
+            Saver.TargetSource = _targetSystem;
         }
 
         public void Run()
@@ -52,11 +53,9 @@ namespace XQ.DataMigration.Pipeline
             Tracer.Indent();
 
             var srcDataSet = Source.GetData();
-           //long objectsCount = srcDataSet.Count();
-           // long completedCount = 0;
+        
             foreach (var sourceObject in srcDataSet)
             {
-                //completedCount++;
                 if (sourceObject == null)
                     continue;
 
@@ -75,33 +74,31 @@ namespace XQ.DataMigration.Pipeline
 
         private IValuesObject TransitObject(IValuesObject sourceObject)
         {
-            var target = Target.GetObjectByKeyOrCreate(sourceObject.Key);
+            //var target = Target.GetObjectByKeyOrCreate(sourceObject.Key);
 
             //target can be empty when using TransitMode = OnlyExitedObjects
-            if (target == null)
-                return null;
+            // if (target == null)
+            //     return null;
 
-            var ctx = new ValueTransitContext(sourceObject, target, null);
 
-            ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands) ;
+
+            var ctx = new ValueTransitContext(sourceObject, null);
+            ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands);
             ctx.DataPipeline = this;
-            
-            TraceLine($"PIPELINE '{Name}' OBJECT, Row {sourceObject.RowNumber}, Key [{sourceObject.Key}], IsNew:  {target.IsNew}", ctx);
-
             try
             {
-                TransitValues(ctx);
+                RunCommands(ctx);
 
-                if (ctx.Flow == TransitionFlow.SkipObject)
+                if (ctx.Flow == TransitionFlow.SkipObject && ctx.Target != null)
                 {
                     //If object just created and skipped by migration logic - need to remove it from cache
                     //becaus it's invalid and must be removed from cache to avoid any referencing to this object
                     //by any migration logic (lookups, key ytansitions, etc.)
                     //If object is not new, it means that it's already saved and passed by migration validation
-                    if (target.IsNew)
-                        Target.InvalidateObject(target);
+                    if (ctx.Target.IsNew)
+                        _targetSystem.InvalidateObject(ctx.Target);
 
-                    Tracer.TraceEvent(MigrationEvent.ObjectSkipped, ctx, "Object skipped");
+                    Tracer.TraceEvent(MigrationEvent.ObjectSkipped, ctx, "Source object skipped");
 
                     return null;
                 }
@@ -113,10 +110,10 @@ namespace XQ.DataMigration.Pipeline
                 throw;
             }
 
-            return target;
+            return ctx.Target;
         }
 
-        protected void TransitValues(ValueTransitContext ctx)
+        protected void RunCommands(ValueTransitContext ctx)
         {
             foreach (var childTransition in Commands)
             {
@@ -125,10 +122,7 @@ namespace XQ.DataMigration.Pipeline
 
                 childTransition.TraceColor = ConsoleColor.Yellow;
                 
-                
-                
-                
-                    TraceLine("", ctx);
+                TraceLine("", ctx);
                 
                 childTransition.Execute(ctx);
 

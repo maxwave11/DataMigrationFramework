@@ -37,7 +37,7 @@ namespace XQ.DataMigration
                 {
                     if (_mapConfig.Variables[name] is CommandBase command)
                     {
-                        var ctx = new ValueTransitContext(null, null, null);
+                        var ctx = new ValueTransitContext(null, null);
                         command.Execute(ctx);
                         _mapConfig.Variables[name] = ctx.TransitValue;
                     }

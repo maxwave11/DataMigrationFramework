@@ -77,7 +77,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             {
                 var foundObject = Source
                     .GetCachedData()
-                    .SingleOrDefault(i => LookupPredicate.Evaluate(new ValueTransitContext(i, null, ctx.TransitValue)));
+                    .SingleOrDefault(i => LookupPredicate.Evaluate(new ValueTransitContext(i, ctx.TransitValue)));
 
                 return foundObject;
             }

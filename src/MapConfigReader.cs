@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using XQ.DataMigration.Data.DataSources;
+using XQ.DataMigration.Pipeline;
 using XQ.DataMigration.Pipeline.Commands;
 using XQ.DataMigration.Utils;
 using YamlDotNet.Serialization;
@@ -40,6 +41,7 @@ namespace XQ.DataMigration
                 { CommandUtils.GetCommandYamlName(typeof(IfCommand)), typeof(IfCommand) },
                 { CommandUtils.GetCommandYamlName(typeof(TraceCommand)), typeof(TraceCommand) },
                 { CommandUtils.GetCommandYamlName(typeof(CommandSet<CommandBase>)), typeof(CommandSet<CommandBase>) },
+                { CommandUtils.GetCommandYamlName(typeof(GetTargetCommand)), typeof(GetTargetCommand) },
 
                 { "csv", typeof(CsvDataSource) },
                 { "composite-source", typeof(CompositeDataSource) },
