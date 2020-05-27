@@ -13,6 +13,9 @@ namespace XQ.DataMigration.Data.DataSources
 
         public CommandBase Key { get; set; }
         
+        public ExpressionCommand<bool> Filter { get; set; }
+
+        
         /// <summary>
         /// Some addition commands to preare (unify) data when using many data sources with different structure
         /// For example in case when there is fiew files with same data but with different headers
@@ -32,7 +35,11 @@ namespace XQ.DataMigration.Data.DataSources
             foreach (var valuesObject in GetDataInternal())
             {
                 rowCounter++;
-                var ctx = new ValueTransitContext(valuesObject, null, valuesObject);
+                var ctx = new ValueTransitContext(valuesObject, valuesObject);
+
+                if (Filter != null && Filter.Execute(ctx) == false)
+                    continue;
+                
                 Key.Execute(ctx);
                 var strKey = ctx.TransitValue?.ToString();
                 

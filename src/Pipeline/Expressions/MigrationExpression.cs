@@ -54,7 +54,7 @@ namespace XQ.DataMigration.Pipeline.Expressions
             
             var scriptOptions = ScriptOptions.Default
                 .WithReferences(importTypes.Select(t => t.Assembly))
-                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text").Append("System.Linq").Append("System.Globalization"))
+                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text").Append("System.Linq").Append("System.Globalization").Append("System.Text.RegularExpressions"))
                 .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release);
 
             var script = CSharpScript.Create<T>(_translatedExpression, options: scriptOptions, globalsType: typeof(ExpressionContext));
