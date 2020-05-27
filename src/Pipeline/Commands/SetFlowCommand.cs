@@ -11,7 +11,8 @@ namespace XQ.DataMigration.Pipeline.Commands
         public TransitionFlow Flow { get; set; } = TransitionFlow.Continue;
         
         public string Message { get; set; }
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             if (Flow == TransitionFlow.Debug)
             {

@@ -16,13 +16,13 @@ namespace XQ.DataMigration.Pipeline.Commands
         
         [Required]
         public MigrationExpression<bool> Condition { get; set; }
-        
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             if (Condition.Evaluate(ctx))
-                OnTrue.Execute(ctx);
+                ctx.Execute(OnTrue);
             else
-                OnFalse.Execute(ctx);
+                ctx.Execute(OnFalse);
         }
 
         public override string GetParametersInfo()

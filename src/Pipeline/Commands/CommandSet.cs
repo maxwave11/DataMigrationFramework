@@ -9,8 +9,8 @@ namespace XQ.DataMigration.Pipeline.Commands
     public class CommandSet<T> : CommandBase, IList<T>  where T : CommandBase
     {
         public List<T> Commands { get; set; } = new List<T>();
-        
-        protected  override void ExecuteInternal(ValueTransitContext ctx)
+
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             foreach (var childTransition in Commands)
             {
@@ -18,22 +18,22 @@ namespace XQ.DataMigration.Pipeline.Commands
 
                 if (ctx.Flow != TransitionFlow.Continue)
                 {
-                    TraceLine($"Breaking {this.GetType().Name}", ctx);
+                    ctx.TraceLine($"Breaking {this.GetType().Name}");
                     break;
                 }
             }
         }
 
-        protected virtual void TransitChild(T childTransition, ValueTransitContext ctx)
+        protected virtual void TransitChild(T childCommand, ValueTransitContext ctx)
         {
-            childTransition.Execute(ctx);
+            ctx.Execute(childCommand);
         }
 
         public static implicit operator CommandSet<T>(string expression)
         {
             return new CommandSet<T>() { Commands = new List<T>() { (T)expression }};
         }
-
+        
         #region IList
 
         public void Add(T item)

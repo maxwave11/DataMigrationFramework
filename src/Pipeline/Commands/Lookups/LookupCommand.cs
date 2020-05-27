@@ -51,7 +51,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         /// </summary>
         public SetFlowCommand OnNotFound { get; set; } = TransitionFlow.RiseError.ToString();
 
-        protected  override void ExecuteInternal(ValueTransitContext ctx)
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             IValuesObject lookupObject = null;
 
@@ -65,7 +65,7 @@ namespace XQ.DataMigration.Pipeline.Commands
                 {
                     string message = $"Lookup ({ Source }) object not found by value '{valueToFind}'";
                     Migrator.Current.Tracer.TraceEvent(MigrationEvent.LookupFailed, ctx,message);
-                    OnNotFound.Execute(ctx);
+                    ctx.Execute(OnNotFound);
                 }
             }
             

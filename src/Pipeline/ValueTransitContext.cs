@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Pipeline.Commands;
@@ -19,7 +20,7 @@ namespace XQ.DataMigration.Pipeline
         
         public DataPipeline DataPipeline { get; set; }
         
-        public CommandBase CurrentNode { get; set; }
+        public CommandBase CurrentCommand { get; set; }
 
         public readonly List<TraceMessage> TraceEntries = new List<TraceMessage>();
 
@@ -47,6 +48,47 @@ namespace XQ.DataMigration.Pipeline
         public void ResetCurrentValue()
         {
             TransitValue = null;
+        }
+
+        public void Execute(CommandBase cmd)
+        {
+            Validate(cmd);
+            CurrentCommand = cmd;
+
+            TraceLine($"{ CommandUtils.GetCommandYamlName(GetType()) } { cmd.GetParametersInfo() }");
+            Migrator.Current.Tracer.Indent();
+            
+            cmd.ExecuteInternal(this);
+          
+            Migrator.Current.Tracer.IndentBack();
+        }
+
+        public T Execute<T>(ExpressionCommand<T> cmd)
+        {
+            Execute((CommandBase)cmd);
+            return cmd.ReturnValue;
+        }
+
+        public void TraceLine(string message)
+        {
+            Migrator.Current.Tracer.TraceLine(message, this, CurrentCommand?.TraceColor ?? ConsoleColor.White);
+        }
+        
+        
+        private List<CommandBase> _validatedCommands = new List<CommandBase>(); 
+        private void Validate(CommandBase cmd)
+        {
+            if (_validatedCommands.Contains(cmd))
+                return;
+            
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(cmd, new ValidationContext(cmd), results, true))
+            {
+                var firstError = results[0];
+                throw new ValidationException(firstError, null, cmd);
+            }
+
+            _validatedCommands.Add(cmd);
         }
     }
 }

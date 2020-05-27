@@ -8,7 +8,7 @@ namespace XQ.DataMigration.Pipeline.Commands
     {
         public MigrationExpression Expression { get; set; }
 
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             var returnValue = Expression.Evaluate(ctx);
             ctx.SetCurrentValue(returnValue);
@@ -29,23 +29,13 @@ namespace XQ.DataMigration.Pipeline.Commands
         public  T ReturnValue { get; private set; }
         public MigrationExpression<T> Expression { get; set; }
 
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             ReturnValue = Expression.Evaluate(ctx);
-        }
-
-        protected override void TraceEnd(ValueTransitContext ctx)
-        {
             string valueType = ReturnValue?.GetType().Name.Truncate(30);
-            TraceLine($"<- ({  valueType }){ReturnValue?.ToString().Truncate(30)}" , ctx);
+            ctx.TraceLine($"<- ({  valueType }){ReturnValue?.ToString().Truncate(30)}");
         }
 
-        public new T Execute(ValueTransitContext ctx)
-        {
-            base.Execute(ctx);
-            return ReturnValue;
-        }
-        
         public static implicit operator ExpressionCommand<T>(string expression)
         {
             return new ExpressionCommand<T>() { Expression = expression };

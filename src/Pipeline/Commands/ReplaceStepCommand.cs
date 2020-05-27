@@ -16,7 +16,7 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         public string ReplaceValue { get; set; }
 
-        protected  override void ExecuteInternal(ValueTransitContext ctx)
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             if (ConditionIsTrue(ctx))
             {

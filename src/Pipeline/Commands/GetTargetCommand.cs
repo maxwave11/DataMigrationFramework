@@ -10,10 +10,11 @@ namespace XQ.DataMigration.Pipeline
     {
         public IDataTarget Target { get; set; }
 
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             var target = Target.GetObjectByKeyOrCreate(ctx.Source.Key);
 
+            //target can be empty when using TransitMode = OnlyExitedObjects
             if (target == null)
             {
                 ctx.Flow = TransitionFlow.SkipObject;
@@ -22,7 +23,7 @@ namespace XQ.DataMigration.Pipeline
 
             ctx.Target = target;
             TraceColor = ConsoleColor.Magenta;
-            TraceLine($"PIPELINE '{ctx.DataPipeline.Name}' OBJECT, Row {ctx.Source.RowNumber}, Key [{ctx.Source.Key}], IsNew:  {target.IsNew}", ctx);
+            ctx.TraceLine($"PIPELINE '{ctx.DataPipeline.Name}' OBJECT, Row {ctx.Source.RowNumber}, Key [{ctx.Source.Key}], IsNew:  {target.IsNew}");
         }
     }
 }

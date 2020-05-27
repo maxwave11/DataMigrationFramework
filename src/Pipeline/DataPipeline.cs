@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using XQ.DataMigration.Data;
@@ -59,7 +59,7 @@ namespace XQ.DataMigration.Pipeline
                 if (sourceObject == null)
                     continue;
 
-                var target = TransitObject(sourceObject);
+                var target = TransitSourceObject(sourceObject);
 
                 if (target == null)
                     continue;
@@ -72,19 +72,12 @@ namespace XQ.DataMigration.Pipeline
             Tracer.IndentBack();
         }
 
-        private IValuesObject TransitObject(IValuesObject sourceObject)
+        private IValuesObject TransitSourceObject(IValuesObject sourceObject)
         {
-            //var target = Target.GetObjectByKeyOrCreate(sourceObject.Key);
-
-            //target can be empty when using TransitMode = OnlyExitedObjects
-            // if (target == null)
-            //     return null;
-
-
-
             var ctx = new ValueTransitContext(sourceObject, null);
             ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands);
             ctx.DataPipeline = this;
+            
             try
             {
                 RunCommands(ctx);
@@ -113,7 +106,7 @@ namespace XQ.DataMigration.Pipeline
             return ctx.Target;
         }
 
-        protected void RunCommands(ValueTransitContext ctx)
+        private void RunCommands(ValueTransitContext ctx)
         {
             foreach (var childTransition in Commands)
             {
@@ -124,7 +117,7 @@ namespace XQ.DataMigration.Pipeline
                 
                 TraceLine("", ctx);
                 
-                childTransition.Execute(ctx);
+                ctx.Execute(childTransition);
 
                 if (ctx.Flow == TransitionFlow.SkipValue)
                 {
@@ -138,7 +131,7 @@ namespace XQ.DataMigration.Pipeline
             }
         }
 
-        protected virtual void TraceLine(string message, ValueTransitContext ctx)
+        private void TraceLine(string message, ValueTransitContext ctx)
         { 
             if ((TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Objects) || ctx?.Trace == true)
                 Tracer.TraceLine(message, ctx, ConsoleColor.Magenta);

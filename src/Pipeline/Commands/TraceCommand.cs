@@ -6,7 +6,8 @@ namespace XQ.DataMigration.Pipeline.Commands
     public class TraceCommand : CommandBase
     {
         public bool Trace { get; set; }
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             ctx.Trace = this.Trace;
         }

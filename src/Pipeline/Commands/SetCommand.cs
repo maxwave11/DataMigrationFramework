@@ -16,7 +16,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         
         public MigrationExpression Expression { get; set; }
 
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             if (ToField.IsNotEmpty())
                 ctx.Target.SetValue(ToField, ctx.TransitValue);

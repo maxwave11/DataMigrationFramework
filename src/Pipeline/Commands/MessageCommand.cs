@@ -8,10 +8,11 @@ namespace XQ.DataMigration.Pipeline.Commands
     public class MessageCommand: CommandBase
     {
         public string Message { get; set; }
-        protected  override void ExecuteInternal(ValueTransitContext ctx)
+
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             if (ctx.Flow == TransitionFlow.Continue)
-                TraceLine(Message, ctx);
+                ctx.TraceLine(Message);
         }
     }
 }

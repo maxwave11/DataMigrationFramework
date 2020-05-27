@@ -51,7 +51,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             _isInitialized = true;
         }
 
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             Init();
             var value = ctx.TransitValue;
@@ -67,7 +67,7 @@ namespace XQ.DataMigration.Pipeline.Commands
                 if (OnError == null)
                     throw;
 
-                OnError.Execute(ctx);
+                ctx.Execute(OnError);
             }
         }
 

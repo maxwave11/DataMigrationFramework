@@ -37,10 +37,10 @@ namespace XQ.DataMigration.Data.DataSources
                 rowCounter++;
                 var ctx = new ValueTransitContext(valuesObject, valuesObject);
 
-                if (Filter != null && Filter.Execute(ctx) == false)
+                if (Filter != null && ctx.Execute(Filter) == false)
                     continue;
                 
-                Key.Execute(ctx);
+                ctx.Execute(Key);
                 var strKey = ctx.TransitValue?.ToString();
                 
                 if (strKey.IsEmpty())
@@ -48,7 +48,7 @@ namespace XQ.DataMigration.Data.DataSources
                 
                 valuesObject.Key = UnifyKey(strKey); 
                 valuesObject.RowNumber = rowCounter;
-                PrepareData?.Execute(ctx);
+                if (PrepareData!=null) ctx.Execute(PrepareData);
                 yield return valuesObject;
             }
         }

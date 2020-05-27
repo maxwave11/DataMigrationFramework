@@ -8,11 +8,11 @@ namespace XQ.DataMigration.Pipeline.Commands
     [Command("REPLACE")]
     public class ReplaceCommandSet : CommandSet<ReplaceStepCommand>
     {
-        protected override void ExecuteInternal(ValueTransitContext ctx)
+        public override void ExecuteInternal(ValueTransitContext ctx)
         {
             foreach (var childTransition in Commands)
             {
-                childTransition.Execute(ctx);
+                ctx.Execute(childTransition);
 
                 if (ctx.Flow == TransitionFlow.SkipValue)
                 {
@@ -24,7 +24,7 @@ namespace XQ.DataMigration.Pipeline.Commands
 
                 if (ctx.Flow != TransitionFlow.Continue)
                 {
-                    TraceLine($"Breaking {this.GetType().Name}", ctx);
+                    ctx.TraceLine($"Breaking {this.GetType().Name}");
                     break;
                 }
             }
