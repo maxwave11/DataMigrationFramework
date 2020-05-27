@@ -38,6 +38,9 @@ namespace XQ.DataMigration.Data.DataSources
 
                 var files = Directory.GetFiles(dirPath, fileName);
 
+                if (!files.Any())
+                    throw new FileNotFoundException($"There is no {fileName} files in {dirPath}");
+
                 foreach (string file in files)
                 {
                     foreach (var valuesObject in GetDataFromFile(fullPath))
