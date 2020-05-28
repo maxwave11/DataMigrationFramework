@@ -55,7 +55,7 @@ namespace XQ.DataMigration.Pipeline
             Validate(cmd);
             CurrentCommand = cmd;
 
-            TraceLine($"{ CommandUtils.GetCommandYamlName(GetType()) } { cmd.GetParametersInfo() }");
+            TraceLine($"{ CommandUtils.GetCommandYamlName(cmd.GetType()) } { cmd.GetParametersInfo() }");
             Migrator.Current.Tracer.Indent();
             
             cmd.ExecuteInternal(this);

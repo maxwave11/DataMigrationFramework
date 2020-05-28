@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CsvHelper;
+using XQ.DataMigration.Pipeline;
+using XQ.DataMigration.Pipeline.Commands;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data.DataSources
@@ -23,27 +25,34 @@ namespace XQ.DataMigration.Data.DataSources
 
     public class CsvDataSource : DataSourceBase
     {
+        public ExpressionCommand<string> ExprQuery { get; set; }
+
         public string Delimiter { get; set; }
 
         protected override IEnumerable<IValuesObject> GetDataInternal()
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
-
-            var subQueries = Query.Split('|');
+            if (ExprQuery != null)
+            {
+                var ctx = new ValueTransitContext(null,null);
+                Query = ctx.Execute(ExprQuery);
+            }
+            
+            var subQueries =  Query.Split('|');
             foreach (string subQuery in subQueries)
             {
                 var fullPath = $"{settings.Path}\\{subQuery.Trim()}";
                 var dirPath = Path.GetDirectoryName(fullPath);
                 var fileName = Path.GetFileName(fullPath);
 
-                var files = Directory.GetFiles(dirPath, fileName);
+                var files = Directory.GetFiles(dirPath, fileName).OrderBy(i=>i);
 
                 if (!files.Any())
                     throw new FileNotFoundException($"There is no {fileName} files in {dirPath}");
 
                 foreach (string file in files)
                 {
-                    foreach (var valuesObject in GetDataFromFile(fullPath))
+                    foreach (var valuesObject in GetDataFromFile(file))
                     {
                         yield return valuesObject;
                     }
@@ -54,7 +63,7 @@ namespace XQ.DataMigration.Data.DataSources
         private IEnumerable<IValuesObject> GetDataFromFile(string filePath)
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
-
+            Migrator.Current.Tracer.TraceLine("Reading " + filePath);
             var txtReader = new StreamReader(filePath, Encoding.GetEncoding("Windows-1252"));
             var csvReader = new CsvReader(txtReader);
             csvReader.Configuration.Delimiter = Delimiter.IsEmpty() ? settings.Delimiter : Delimiter;
