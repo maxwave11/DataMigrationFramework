@@ -38,7 +38,7 @@ namespace XQ.DataMigration.Utils
             return (T)converterdValue;
         }
 
-        public static object GetTypedValue(TypeCode targetType, object value, char decimalSeparator = '.', string dataFormat = null)
+        public static object GetTypedValue(TypeCode targetType, object value, char decimalSeparator, string dataFormat = null)
         {
             if (value == null)
                 return null;
@@ -52,13 +52,13 @@ namespace XQ.DataMigration.Utils
             {
                 case TypeCode.Int32:
                     if (strValue.Contains(decimalSeparator))
-                        return Convert.ToInt32(GetTypedValue(TypeCode.Double, value), CultureInfo.InvariantCulture);
+                        return Convert.ToInt32(GetTypedValue(TypeCode.Double, value, decimalSeparator), CultureInfo.InvariantCulture);
 
                     return Convert.ToInt32(value, CultureInfo.InvariantCulture);
 
                 case TypeCode.Int64:
                     if (strValue.Contains(decimalSeparator))
-                        return Convert.ToInt64(GetTypedValue(TypeCode.Double, value), CultureInfo.InvariantCulture);
+                        return Convert.ToInt64(GetTypedValue(TypeCode.Double, value, decimalSeparator), CultureInfo.InvariantCulture);
 
                     return Convert.ToInt64(strValue.Replace(" ",""), CultureInfo.InvariantCulture);
 
