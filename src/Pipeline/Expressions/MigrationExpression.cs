@@ -21,6 +21,7 @@ namespace XQ.DataMigration.Pipeline.Expressions
     {
         public string Expression { get; }
         private string _translatedExpression;
+        private static Script _script;
         private readonly ScriptRunner<T> _scriptRunner;
         public MigrationExpression(string expression)
         {
@@ -48,19 +49,24 @@ namespace XQ.DataMigration.Pipeline.Expressions
         {
             _translatedExpression = ExpressionCompiler.TranslateExpression(migrationExpression);
 
-            var importTypes = new List<Type>();
-            importTypes.Add(typeof(IValuesObject));
-            importTypes.AddRange(customTypes.ToArray());
-            
-            var scriptOptions = ScriptOptions.Default
-                .WithReferences(importTypes.Select(t => t.Assembly))
-                .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text").Append("System.Linq").Append("System.Globalization").Append("System.Text.RegularExpressions"))
-                .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release);
+            if (_script == null)
+            {
+                var importTypes = new List<Type>();
+                importTypes.Add(typeof(IValuesObject));
+                importTypes.AddRange(customTypes.ToArray());
 
-            var script = CSharpScript.Create<T>(_translatedExpression, options: scriptOptions, globalsType: typeof(ExpressionContext));
+                var scriptOptions = ScriptOptions.Default
+                    .WithReferences(importTypes.Select(t => t.Assembly))
+                    .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text")
+                        .Append("System.Linq").Append("System.Globalization").Append("System.Text.RegularExpressions"))
+                    .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release);
+
+                _script = CSharpScript.Create("", options: scriptOptions, globalsType: typeof(ExpressionContext));
+            }
 
             try
             {
+                var script = _script.ContinueWith<T>(_translatedExpression);
                 return script.CreateDelegate();
             }
             catch (Exception e)
