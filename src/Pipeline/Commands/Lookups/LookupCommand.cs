@@ -24,17 +24,8 @@ namespace XQ.DataMigration.Pipeline.Commands
         [Required]
         public ICachedDataSource Source { get; set; }
 
-        /// <summary>
-        /// Migration expression which determines how to evaluate key for each lookup object from <c>LookupDataSetId</c>. 
-        /// This key will allow to find a specific object from lookup's DataSet. In general you should to find objects by this way 
-        /// because it's very fast. 
-        /// WARNING: Use this attribute carefully because all fetched objects from DataSet (if they wasn't fetched early by some another
-        /// transition) will be hosted in local cache by this key.
-        /// NOTE: If you want to find an object by another way (not by its key) then you should to use <c>LookupAlternativeExpr</c> attribue
-        /// </summary>
-        //public MigrationExpression LookupKeyExpr { get; set; }
+        public bool TraceNotFound { get; set; } = true;
 
- 
 
         //Set this poperty to true to allow search in data sets where multiple objects can have same search lookup expression
         //NOTE: used only when LookupAlternativeExpr is used
@@ -63,8 +54,12 @@ namespace XQ.DataMigration.Pipeline.Commands
 
                 if (lookupObject == null)
                 {
-                    string message = $"Lookup ({ Source }) object not found by value '{valueToFind}'";
-                    Migrator.Current.Tracer.TraceEvent(MigrationEvent.LookupFailed, ctx,message);
+                    if (TraceNotFound)
+                    {
+                        string message = $"Lookup ({Source}) object not found by value '{valueToFind}'";
+                        Migrator.Current.Tracer.TraceEvent(MigrationEvent.LookupFailed, ctx, message);
+                    }
+
                     ctx.Execute(OnNotFound);
                 }
             }
