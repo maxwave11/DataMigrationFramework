@@ -16,7 +16,7 @@ namespace XQ.DataMigration.Data.DataSources
             Settings = settings;
             var filePath = $"{settings.Path}\\{Query}";
             
-            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
