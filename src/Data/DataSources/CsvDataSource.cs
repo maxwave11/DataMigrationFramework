@@ -64,7 +64,8 @@ namespace XQ.DataMigration.Data.DataSources
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
             Migrator.Current.Tracer.TraceLine("Reading " + filePath);
-            var txtReader = new StreamReader(filePath, Encoding.GetEncoding("Windows-1252"));
+            var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var txtReader = new StreamReader(stream, Encoding.GetEncoding("Windows-1252"));
             var csvReader = new CsvReader(txtReader);
             csvReader.Configuration.Delimiter = Delimiter.IsEmpty() ? settings.Delimiter : Delimiter;
             csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
