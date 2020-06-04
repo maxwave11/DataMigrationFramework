@@ -30,11 +30,12 @@ namespace XQ.DataMigration.Utils
             if (typeof(T) == typeof(DateTime)|| typeof(T) == typeof(DateTime?) )
                 typeCode = TypeCode.DateTime;
 
+
+            if (default(T) == null && value == null)
+                return default(T);
+
             var converterdValue = GetTypedValue(typeCode, value,decimalSeparator, dataFormat);
 
-            if (default(T) == null && converterdValue == null)
-                return default(T);
-           
             return (T)converterdValue;
         }
 
