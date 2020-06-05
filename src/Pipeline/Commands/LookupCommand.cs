@@ -9,12 +9,21 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Pipeline.Commands
 {
+    public enum LookupMode
+    {
+        //Find single object by key from data source
+        Single, 
+        //Find first object by key from data source (when data source have have multiple objects with same search key)
+        First,
+        //Use this mode to find all objects by search key
+        All
+    }
+    
     /// <summary>
     /// Transition unit which allows to find a specific value from some reference data set. For example, find an asset and get its name 
     /// by asset's id or find a city id by city name or by any other condition. Lookup condition determined by <c>LookupKeyExpr</c> or 
     /// <c>LookupAlternativeExpr</c> migration expression.
     /// </summary>
-    
     [Command("LOOKUP")]
     internal class LookupCommand: CommandBase
     {
@@ -26,12 +35,8 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         public bool TraceNotFound { get; set; } = true;
 
-
-        //Set this poperty to true to allow search in data sets where multiple objects can have same search lookup expression
-        //NOTE: used only when LookupAlternativeExpr is used
-        public bool FindFirstOccurence { get; set; }
-
-
+        public LookupMode Mode { get; set; }
+        
         /// <summary>
         /// Searches item by this expression instead of object Key (slow)
         /// </summary>
@@ -44,7 +49,7 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         public override void ExecuteInternal(ValueTransitContext ctx)
         {
-            IDataObject lookupObject = null;
+            object lookupObject = null;
 
             var valueToFind = ctx.TransitValue?.ToString();
 
@@ -66,7 +71,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             
             ctx.SetCurrentValue(lookupObject);
         }
-        private IDataObject FindLookupObject(string searchValue, ValueTransitContext ctx)
+        private object FindLookupObject(string searchValue, ValueTransitContext ctx)
         {
             if (LookupPredicate != null)
             {
@@ -77,9 +82,18 @@ namespace XQ.DataMigration.Pipeline.Commands
                 return foundObject;
             }
 
-            var foundObects = Source.GetObjectsByKey(searchValue);
-            
-            return FindFirstOccurence ? foundObects?.FirstOrDefault() : foundObects?.SingleOrDefault();
+            switch (Mode)
+            {
+                case LookupMode.Single:
+                    return Source.GetObjectsByKey(searchValue).SingleOrDefault();
+                case LookupMode.First:
+                    return Source.GetObjectsByKey(searchValue).FirstOrDefault();
+                case LookupMode.All:
+                    var result =  Source.GetObjectsByKey(searchValue);
+                    return result.Any() ? result : null;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public override string GetParametersInfo() => $"Source: {Source}";

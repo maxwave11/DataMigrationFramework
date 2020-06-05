@@ -125,7 +125,7 @@
     <Compile Include="Pipeline\Commands\ConcatCommand.cs" />
     <Compile Include="Pipeline\Commands\GetTargetCommand.cs" />
     <Compile Include="Pipeline\Commands\IfCommand.cs" />
-    <Compile Include="Pipeline\Commands\Lookups\LookupCommand.cs" />
+    <Compile Include="Pipeline\Commands\LookupCommand.cs" />
     <Compile Include="Pipeline\Commands\MessageCommand.cs" />
     <Compile Include="Pipeline\Commands\ReplaceCommandSet.cs" />
     <Compile Include="Pipeline\Commands\ReplaceStepCommand.cs" />

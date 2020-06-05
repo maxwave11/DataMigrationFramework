@@ -15,14 +15,19 @@ namespace XQ.DataMigration.Data
         public bool IsNew { get; }
         public uint RowNumber { get; set; }
         public string Key { get; set; }
-        public object Native => this;
-
+        public object Native { get; private set; }
+        
         public bool IsValid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         private readonly Dictionary<string, object> _dataContainer = new Dictionary<string, object>();
 
         public DataObject()
         {
+        }
+        
+        public DataObject(object native)
+        {
+            Native = native;
         }
 
         public DataObject(IDataObject copy)
@@ -67,7 +72,7 @@ namespace XQ.DataMigration.Data
 
         public string GetInfo()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (var fieldName in FieldNames.OrderBy(i=>i))
             {
                 sb.AppendLine($"{fieldName}={this[fieldName]}");

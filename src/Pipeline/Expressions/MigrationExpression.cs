@@ -54,11 +54,16 @@ namespace XQ.DataMigration.Pipeline.Expressions
                 var importTypes = new List<Type>();
                 importTypes.Add(typeof(IDataObject));
                 importTypes.AddRange(customTypes.ToArray());
-
+                
                 var scriptOptions = ScriptOptions.Default
                     .WithReferences(importTypes.Select(t => t.Assembly))
-                    .WithImports(importTypes.Select(t => t.Namespace).ToArray().Append("System").Append("System.Text")
-                        .Append("System.Linq").Append("System.Globalization").Append("System.Text.RegularExpressions"))
+                    .WithImports(importTypes.Select(t => t.Namespace).ToArray()
+                        .Append("System")
+                        .Append("System.Text")
+                        .Append("System.Linq")
+                        .Append("System.Collections.Generic")
+                        .Append("System.Globalization")
+                        .Append("System.Text.RegularExpressions"))
                     .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release);
 
                 _script = CSharpScript.Create("", options: scriptOptions, globalsType: typeof(ExpressionContext));

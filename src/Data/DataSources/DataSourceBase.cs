@@ -64,7 +64,7 @@ namespace XQ.DataMigration.Data.DataSources
             LoadObjectsToCache();
 
             string unifiedKey = UnifyKey(key);
-            return _cache.ContainsKey(unifiedKey) ? _cache[unifiedKey] : null;
+            return _cache.ContainsKey(unifiedKey) ? _cache[unifiedKey] : Enumerable.Empty<IDataObject>();
         }
         
 
