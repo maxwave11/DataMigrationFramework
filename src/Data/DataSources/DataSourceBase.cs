@@ -22,11 +22,11 @@ namespace XQ.DataMigration.Data.DataSources
         /// </summary>
         public CommandSet<CommandBase> PrepareData { get; set; }
 
-        protected Dictionary<string, List<IValuesObject>> _cache;
+        protected Dictionary<string, List<IDataObject>> _cache;
 
-        protected abstract IEnumerable<IValuesObject> GetDataInternal();
+        protected abstract IEnumerable<IDataObject> GetDataInternal();
 
-        public IEnumerable<IValuesObject> GetData()
+        public IEnumerable<IDataObject> GetData()
         {
             Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Get data...");
 
@@ -53,13 +53,13 @@ namespace XQ.DataMigration.Data.DataSources
             }
         }
 
-        public IEnumerable<IValuesObject> GetCachedData()
+        public IEnumerable<IDataObject> GetCachedData()
         {
             LoadObjectsToCache();
             return _cache.SelectMany(i => i.Value);
         }
 
-        public IEnumerable<IValuesObject> GetObjectsByKey(string key)
+        public IEnumerable<IDataObject> GetObjectsByKey(string key)
         {
             LoadObjectsToCache();
 
@@ -90,13 +90,13 @@ namespace XQ.DataMigration.Data.DataSources
             tracer.IndentBack();
         }
 
-        protected void PutObjectToCache(IValuesObject tObject)
+        protected void PutObjectToCache(IDataObject tObject)
         {
             if (tObject.Key.IsEmpty())
                 return;
 
             if (!_cache.ContainsKey(tObject.Key))
-                _cache.Add(tObject.Key, new List<IValuesObject>());
+                _cache.Add(tObject.Key, new List<IDataObject>());
 
             if (_cache[tObject.Key].Contains(tObject))
                 return;

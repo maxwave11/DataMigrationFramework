@@ -72,7 +72,7 @@ namespace XQ.DataMigration.Pipeline
             Tracer.IndentBack();
         }
 
-        private IValuesObject TransitSourceObject(IValuesObject sourceObject)
+        private IDataObject TransitSourceObject(IDataObject sourceObject)
         {
             var ctx = new ValueTransitContext(sourceObject, null);
             ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands);

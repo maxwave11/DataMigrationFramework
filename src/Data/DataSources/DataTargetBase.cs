@@ -6,12 +6,12 @@ namespace XQ.DataMigration.Data.DataSources
 {
     public abstract class DataTargetBase : DataSourceBase, IDataTarget
     {
-        protected abstract IValuesObject CreateObject(string key);
-        public abstract void SaveObjects(IEnumerable<IValuesObject> objects);
+        protected abstract IDataObject CreateObject(string key);
+        public abstract void SaveObjects(IEnumerable<IDataObject> objects);
 
         public ObjectTransitMode TransitMode { get; set; }
 
-        public IValuesObject GetObjectByKeyOrCreate(string key)
+        public IDataObject GetObjectByKeyOrCreate(string key)
         {
             LoadObjectsToCache();
 
@@ -37,9 +37,9 @@ namespace XQ.DataMigration.Data.DataSources
             return targetObject;
         }
 
-        public void InvalidateObject(IValuesObject valuesObject)
+        public void InvalidateObject(IDataObject dataObject)
         {
-            _cache.Remove(valuesObject.Key);
+            _cache.Remove(dataObject.Key);
         }
     }
 }

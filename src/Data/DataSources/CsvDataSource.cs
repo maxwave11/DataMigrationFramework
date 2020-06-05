@@ -29,7 +29,7 @@ namespace XQ.DataMigration.Data.DataSources
 
         public string Delimiter { get; set; }
 
-        protected override IEnumerable<IValuesObject> GetDataInternal()
+        protected override IEnumerable<IDataObject> GetDataInternal()
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
             if (ExprQuery != null)
@@ -60,7 +60,7 @@ namespace XQ.DataMigration.Data.DataSources
             }
         }
 
-        private IEnumerable<IValuesObject> GetDataFromFile(string filePath)
+        private IEnumerable<IDataObject> GetDataFromFile(string filePath)
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
             Migrator.Current.Tracer.TraceLine("Reading " + filePath);
@@ -81,7 +81,7 @@ namespace XQ.DataMigration.Data.DataSources
                 {
                     while (csvReader.Read())
                     {
-                        var result = new ValuesObject();
+                        var result = new DataObject();
                         csvReader.FieldHeaders.ToList().ForEach(i =>
                         {
                             if (i.IsNotEmpty())

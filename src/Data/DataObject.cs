@@ -8,7 +8,7 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data
 {
-    public class ValuesObject : IValuesObject
+    public class DataObject : IDataObject
     {
         public object this[string name] { get => GetValue(name); set => SetValue(name, value); }
         public string[] FieldNames => _dataContainer.Keys.ToArray();
@@ -21,11 +21,11 @@ namespace XQ.DataMigration.Data
 
         private readonly Dictionary<string, object> _dataContainer = new Dictionary<string, object>();
 
-        public ValuesObject()
+        public DataObject()
         {
         }
 
-        public ValuesObject(IValuesObject copy)
+        public DataObject(IDataObject copy)
         {
             foreach (var fieldName in copy.FieldNames)
             {
@@ -37,7 +37,7 @@ namespace XQ.DataMigration.Data
         {
             object result = null;
             if (!_dataContainer.TryGetValue(name, out result))
-                throw new Exception($"There is no field '{name}' in current {nameof(ValuesObject)}");
+                throw new Exception($"There is no field '{name}' in current {nameof(DataObject)}");
 
             return result;
         }

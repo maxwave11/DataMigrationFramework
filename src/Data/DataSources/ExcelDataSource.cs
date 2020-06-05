@@ -10,7 +10,7 @@ namespace XQ.DataMigration.Data.DataSources
     {
         public IDataSourceSettings Settings { get; set; }
 
-        protected override IEnumerable<IValuesObject> GetDataInternal()
+        protected override IEnumerable<IDataObject> GetDataInternal()
         {
             var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
             Settings = settings;
@@ -48,10 +48,10 @@ namespace XQ.DataMigration.Data.DataSources
             }
         }
         
-        private IValuesObject RowToValuesObject(IExcelDataReader reader, string [] headerRow)
+        private IDataObject RowToValuesObject(IExcelDataReader reader, string [] headerRow)
         {
             //fill VlauesObject from row values
-            var valuesObject = new ValuesObject();
+            var valuesObject = new DataObject();
             for (int i = 0; i < reader.FieldCount; i++)
             {
                 if (headerRow[i].IsEmpty())

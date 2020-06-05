@@ -34,17 +34,17 @@ namespace XQ.DataMigration.Data.DataSources
         //{
         //    var actualFrom = From.IsEmpty() ? "{VALUE}" : From;
         //    var sourceObject = ExpressionEvaluator.Evaluate(actualFrom, ctx);
-        //    if (!(sourceObject is IValuesObject))
-        //        throw new InvalidOperationException($"Source object returned by {nameof(From)} expression should implement {nameof(IValuesObject)}");
+        //    if (!(sourceObject is IDataObject))
+        //        throw new InvalidOperationException($"Source object returned by {nameof(From)} expression should implement {nameof(IDataObject)}");
 
         //    var actualQuery = ExpressionEvaluator.EvaluateString(Query, ctx);
-        //    var result = GetObjects(actualQuery, (IValuesObject)sourceObject);
+        //    var result = GetObjects(actualQuery, (IDataObject)sourceObject);
         //    return new TransitResult(result);
         //}
 
-        public IEnumerable<IValuesObject> GetObjects(string query, IValuesObject sourceObject)
+        public IEnumerable<IDataObject> GetObjects(string query, IDataObject sourceObject)
         {
-            List<ValuesObject> result = null;
+            List<DataObject> result = null;
 
             if (query.StartsWith("Pivot"))
             {
@@ -65,7 +65,7 @@ namespace XQ.DataMigration.Data.DataSources
                     }
 
                     if (result == null)
-                        result = pivotColumns.Select(i => new ValuesObject(sourceObject)).ToList();
+                        result = pivotColumns.Select(i => new DataObject(sourceObject)).ToList();
 
                     for (int i = 0; i < pivotColumns.Count(); i++)
                     {
@@ -81,20 +81,20 @@ namespace XQ.DataMigration.Data.DataSources
             throw new NotImplementedException();
         }
 
-            private Dictionary<string, string[]> GetPivotColumnSet(IValuesObject source, string[] patterns)
+            private Dictionary<string, string[]> GetPivotColumnSet(IDataObject source, string[] patterns)
             {
                 return patterns
                     .Select(pattern => new { def = pattern, Columns = FindPivotColumns(pattern, source) })
                     .ToDictionary(i => i.def, i => i.Columns);
             }
 
-            private string[] FindPivotColumns(string columnPattern, IValuesObject source)
+            private string[] FindPivotColumns(string columnPattern, IDataObject source)
             {
                 var regex = new Regex(columnPattern);
                 return source.FieldNames.Where(f => regex.IsMatch(f.Trim())).ToArray();
             }
 
-        public IEnumerable<IValuesObject> GetDataSet(string providerQuery)
+        public IEnumerable<IDataObject> GetDataSet(string providerQuery)
         {
             throw new NotImplementedException();
         }

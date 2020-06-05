@@ -19,9 +19,9 @@ namespace XQ.DataMigration.Data
 
         public CommandBase OnSave { get; set; }
 
-        private readonly List<IValuesObject> _transittedObjects = new List<IValuesObject>();
+        private readonly List<IDataObject> _transittedObjects = new List<IDataObject>();
 
-        internal void Push(IValuesObject objectToSave)
+        internal void Push(IDataObject objectToSave)
         {
             if (objectToSave.IsEmpty() || objectToSave.Key.IsEmpty())
                 return;
@@ -40,7 +40,7 @@ namespace XQ.DataMigration.Data
             Migrator.Current.Tracer.TraceLine(message, color:ConsoleColor.DarkCyan);
         }
 
-        protected virtual void SaveTargetObjects(List<IValuesObject> targetObjects)
+        protected virtual void SaveTargetObjects(List<IDataObject> targetObjects)
         {
             try
             {

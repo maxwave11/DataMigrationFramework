@@ -33,7 +33,7 @@ $@"Error description:
 { Context.Target?.GetInfo() }
 
 ==============TransitValue=====
-{ ((Context.TransitValue as IValuesObject)?.GetInfo().Truncate(1024) ?? Context.TransitValue) }
+{ ((Context.TransitValue as IDataObject)?.GetInfo().Truncate(1024) ?? Context.TransitValue) }
 
 ==============ValueType: {Context.TransitValue?.GetType()}";
 

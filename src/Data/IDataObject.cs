@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace XQ.DataMigration.Data
 {
-    public interface IValuesObject
+    public interface IDataObject
     {
         object this[string name] { get; set; }
         string[] FieldNames { get; }

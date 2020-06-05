@@ -14,15 +14,15 @@ namespace XQ.DataMigration.Pipeline.Expressions
     /// </summary>
     public class ExpressionContext
     {
-        public IValuesObject SRC => _ctx.Source;
-        public IValuesObject TARGET => _ctx.Target;
+        public IDataObject SRC => _ctx.Source;
+        public IDataObject TARGET => _ctx.Target;
         
         /// <summary>
         /// Current transit value. Use this property in expressions to handle value on transit pipeline
         /// </summary>
         public object VALUE => _ctx.TransitValue;
         
-        public IValuesObject VALUE_OBJECT => (IValuesObject)_ctx.TransitValue;
+        public IDataObject DataObject => (IDataObject)_ctx.TransitValue;
         
         /// <summary>
         /// Global configuration variables accessor
@@ -64,8 +64,8 @@ namespace XQ.DataMigration.Pipeline.Expressions
             if (obj == null)
                 return null;
 
-            if (obj is ValuesObject)
-                return ((ValuesObject)obj)[fieldName];
+            if (obj is DataObject)
+                return ((DataObject)obj)[fieldName];
 
             return FastReflection.GetValue(obj, fieldName);
         }

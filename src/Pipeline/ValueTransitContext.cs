@@ -11,8 +11,8 @@ namespace XQ.DataMigration.Pipeline
 {
     public class ValueTransitContext
     {
-        public IValuesObject Source { get; }
-        public IValuesObject Target { get; set; }
+        public IDataObject Source { get; }
+        public IDataObject Target { get; set; }
 
         public TransitionFlow Flow { get; set; }
 
@@ -31,7 +31,7 @@ namespace XQ.DataMigration.Pipeline
             TraceEntries.Add(new TraceMessage(msg, color));
         }
 
-        public ValueTransitContext(IValuesObject source, object transitValue)
+        public ValueTransitContext(IDataObject source, object transitValue)
         {
             Source = source;
             TransitValue = transitValue;

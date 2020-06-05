@@ -44,7 +44,7 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         public override void ExecuteInternal(ValueTransitContext ctx)
         {
-            IValuesObject lookupObject = null;
+            IDataObject lookupObject = null;
 
             var valueToFind = ctx.TransitValue?.ToString();
 
@@ -66,7 +66,7 @@ namespace XQ.DataMigration.Pipeline.Commands
             
             ctx.SetCurrentValue(lookupObject);
         }
-        private IValuesObject FindLookupObject(string searchValue, ValueTransitContext ctx)
+        private IDataObject FindLookupObject(string searchValue, ValueTransitContext ctx)
         {
             if (LookupPredicate != null)
             {

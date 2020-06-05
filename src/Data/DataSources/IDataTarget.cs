@@ -4,8 +4,8 @@ namespace XQ.DataMigration.Data.DataSources
 {
     public interface IDataTarget: IDataSource
     {
-        IValuesObject GetObjectByKeyOrCreate(string key);
-        void SaveObjects(IEnumerable<IValuesObject> objects);
-        void InvalidateObject(IValuesObject valuesObject);
+        IDataObject GetObjectByKeyOrCreate(string key);
+        void SaveObjects(IEnumerable<IDataObject> objects);
+        void InvalidateObject(IDataObject dataObject);
     }
 }

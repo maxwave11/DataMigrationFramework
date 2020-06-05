@@ -52,7 +52,7 @@ namespace XQ.DataMigration.Pipeline.Expressions
             if (_script == null)
             {
                 var importTypes = new List<Type>();
-                importTypes.Add(typeof(IValuesObject));
+                importTypes.Add(typeof(IDataObject));
                 importTypes.AddRange(customTypes.ToArray());
 
                 var scriptOptions = ScriptOptions.Default

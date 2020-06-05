@@ -8,12 +8,12 @@ namespace XQ.DataMigration.Data.DataSources
     /// </summary>
     public interface IDataSource 
     { 
-        IEnumerable<IValuesObject> GetData();
+        IEnumerable<IDataObject> GetData();
     }
 
     public interface ICachedDataSource
     {
-        IEnumerable<IValuesObject> GetCachedData();
-        IEnumerable<IValuesObject> GetObjectsByKey(string key);
+        IEnumerable<IDataObject> GetCachedData();
+        IEnumerable<IDataObject> GetObjectsByKey(string key);
     }
 }

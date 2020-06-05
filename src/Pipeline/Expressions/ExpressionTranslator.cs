@@ -81,7 +81,7 @@ namespace XQ.DataMigration.Pipeline.Expressions
             {
                 nameof(ExpressionContext.SRC),
                 nameof(ExpressionContext.TARGET),
-                nameof(ExpressionContext.VALUE_OBJECT),
+                nameof(ExpressionContext.DataObject),
             };
             
             //braces regex wich define expression like [.....] or with nested braces [..[...]...]

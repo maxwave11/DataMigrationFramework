@@ -8,7 +8,7 @@ namespace XQ.DataMigration.Data.DataSources
     {
         public string ConnectionString { get; set; }
 
-        protected override IEnumerable<IValuesObject> GetDataInternal()
+        protected override IEnumerable<IDataObject> GetDataInternal()
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -20,7 +20,7 @@ namespace XQ.DataMigration.Data.DataSources
                 {
                     while (reader.Read())
                     {
-                        ValuesObject result = new ValuesObject();
+                        DataObject result = new DataObject();
                         for (int fieldIndex = 0; fieldIndex < reader.FieldCount; fieldIndex++)
                         {
                             result.SetValue(reader.GetName(fieldIndex), reader.GetValue(fieldIndex));
