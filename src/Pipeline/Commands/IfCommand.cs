@@ -9,20 +9,12 @@ namespace XQ.DataMigration.Pipeline.Commands
     public class IfCommand: CommandBase
     {
         [Required]
-        public CommandBase OnTrue { get; set; }
-        
-        [Required]
-        public CommandBase OnFalse { get; set; }
-        
-        [Required]
         public MigrationExpression<bool> Condition { get; set; }
 
         public override void ExecuteInternal(ValueTransitContext ctx)
         {
-            if (Condition.Evaluate(ctx))
-                ctx.Execute(OnTrue);
-            else
-                ctx.Execute(OnFalse);
+            if (!Condition.Evaluate(ctx))
+                ctx.Flow = TransitionFlow.SkipValue;
         }
 
         public override string GetParametersInfo()
@@ -33,12 +25,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         public static implicit operator IfCommand(string expression)
         {
             //default IF initialization from plain string
-            return new IfCommand()
-            {
-                Condition = expression,
-                OnTrue = new SetFlowCommand() { Flow = TransitionFlow.Continue },
-                OnFalse = new SetFlowCommand() { Flow = TransitionFlow.SkipValue }
-            };
+            return new IfCommand() {  Condition = expression };
         }
     }
 }
