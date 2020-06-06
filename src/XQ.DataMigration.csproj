@@ -123,6 +123,7 @@
     <Compile Include="Pipeline\Commands\CommandSet.cs" />
     <Compile Include="Pipeline\Commands\ExpressoinCommand.cs" />
     <Compile Include="Pipeline\Commands\ConcatCommand.cs" />
+    <Compile Include="Pipeline\Commands\GetValueCommand.cs" />
     <Compile Include="Pipeline\Commands\GetTargetCommand.cs" />
     <Compile Include="Pipeline\Commands\IfCommand.cs" />
     <Compile Include="Pipeline\Commands\LookupCommand.cs" />

@@ -69,21 +69,19 @@ namespace XQ.DataMigration.Pipeline.Expressions
 
             return FastReflection.GetValue(obj, fieldName);
         }
-        public bool IsNotEmpty(string str)
-        {
-            return str.IsNotEmpty();
-        }
+     
 
-        public bool IsEmpty(object obj)
+        public static bool IsEmpty(object obj)
         {
-            if (obj == null)
-                return true;
-
-            if (obj is string)
+            switch (obj)
             {
-                return ((string)obj).IsEmpty();
+                case null:
+                    return true;
+                case string s:
+                    return s.IsEmpty();
+                default:
+                    return false;
             }
-            return false;
         }
 
         public string CapitalizeWordLetters(object str)

@@ -33,7 +33,7 @@ namespace XQ.DataMigration.Pipeline.Commands
 
         public static implicit operator CommandBase(string expression)
         {
-            return new GetCommand() { Expression = expression };
+            return new GetValueCommand() { Expression = expression };
         }
     }
 
