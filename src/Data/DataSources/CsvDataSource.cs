@@ -54,6 +54,8 @@ namespace XQ.DataMigration.Data.DataSources
                 {
                     foreach (var valuesObject in GetDataFromFile(file))
                     {
+                        //let migration logic know from which source file value comes
+                        valuesObject.Query = file;
                         yield return valuesObject;
                     }
                 }

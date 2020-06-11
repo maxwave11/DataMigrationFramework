@@ -61,7 +61,7 @@ namespace XQ.DataMigration.Pipeline.Commands
                 {
                     if (TraceNotFound)
                     {
-                        string message = $"Lookup ({Source}) object not found by value '{valueToFind}'";
+                        string message = $"Lookup ({Source}) object not found by value '{valueToFind}'\nSource row: { ctx.Source.RowNumber}, Source key: {ctx.Source.Key}";
                         Migrator.Current.Tracer.TraceEvent(MigrationEvent.LookupFailed, ctx, message);
                     }
 

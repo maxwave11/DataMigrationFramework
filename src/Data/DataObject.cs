@@ -18,6 +18,7 @@ namespace XQ.DataMigration.Data
         public object Native { get; private set; }
         
         public bool IsValid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Query { get; set; }
 
         private readonly Dictionary<string, object> _dataContainer = new Dictionary<string, object>();
 
