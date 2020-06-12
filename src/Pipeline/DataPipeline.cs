@@ -91,7 +91,7 @@ namespace XQ.DataMigration.Pipeline
                     if (ctx.Target.IsNew)
                         _targetSystem.InvalidateObject(ctx.Target);
 
-                    Tracer.TraceEvent(MigrationEvent.ObjectSkipped, ctx, "Source object skipped");
+                    //Tracer.TraceEvent(MigrationEvent.ObjectSkipped, ctx, "Source object skipped");
 
                     return null;
                 }

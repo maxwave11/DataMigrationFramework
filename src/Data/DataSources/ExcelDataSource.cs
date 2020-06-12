@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using ExcelDataReader;
@@ -41,8 +41,10 @@ namespace XQ.DataMigration.Data.DataSources
             
                         if (IsRowEmpty(reader))
                             continue;
-            
-                        yield return RowToValuesObject(reader, headerRow);
+                        
+                        var valuesObject = RowToValuesObject(reader, headerRow);
+                        valuesObject.Query = ActualQuery;
+                        yield return valuesObject;
                     }
                 }
             }
