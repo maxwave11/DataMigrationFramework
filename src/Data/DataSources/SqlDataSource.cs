@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using XQ.DataMigration.Pipeline;
 
 namespace XQ.DataMigration.Data.DataSources
 {
@@ -13,7 +14,8 @@ namespace XQ.DataMigration.Data.DataSources
             using (var connection = new SqlConnection(ConnectionString))
             {
                 SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = new SqlCommand(Query, connection);
+           
+                adapter.SelectCommand = new SqlCommand(ActualQuery, connection);
                 DataSet dataset = new DataSet();
                 adapter.Fill(dataset);
                 using (DataTableReader reader = dataset.CreateDataReader())

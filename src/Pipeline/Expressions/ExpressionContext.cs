@@ -89,8 +89,8 @@ namespace XQ.DataMigration.Pipeline.Expressions
             if (str == null)
                 return null;
 
-            TextInfo myTI = new CultureInfo("en-US", false).TextInfo;
-            return myTI.ToTitleCase(str.ToString().ToLower());
+            var myTi = new CultureInfo("en-US", false).TextInfo;
+            return myTi.ToTitleCase(str.ToString().ToLower());
         }
     }
 }

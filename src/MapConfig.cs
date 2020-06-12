@@ -10,8 +10,6 @@ namespace XQ.DataMigration
 {
     public class MapConfig
     {
-        public List<IDataSourceSettings> SourceSettings { get; set; } = new List<IDataSourceSettings>();
-        
         private Dictionary<string, object> _variableValues { get; set; } = new Dictionary<string, object>();
 
         public Dictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
@@ -24,17 +22,15 @@ namespace XQ.DataMigration
 
         public char DefaultDecimalSeparator { get; set; } = '.';
         
+        public string DefaultCsvDelimiter { get; set; } = ";";
+        public string SourceBaseDir { get; set; }
+        
         public TraceMode TraceMode { get; set; }
 
         internal void Initialize()
         {
             Current = this;
             Pipeline.ForEach(i => i.Initialize());
-        }
-        
-        public T GetDefaultSourceSettings<T>()
-        {
-            return SourceSettings.OfType<T>().Single();
         }
     }
 }

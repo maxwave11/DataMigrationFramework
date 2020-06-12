@@ -10,38 +10,20 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data.DataSources
 {
-    public class CsvSourceSettings: IDataSourceSettings
-    {
-        public string Path { get; set; }
-        public string Delimiter { get; set; } = ";";
-
-        /// <summary>
-        /// Indicates in which row in file actual header located
-        /// </summary>
-        public int HeaderRowNumber { get; set; } = 1;
-        
-        public int DataStartRowNumber { get; set; } = 2;
-    }
-
     public class CsvDataSource : DataSourceBase
     {
-        public ExpressionCommand<string> ExprQuery { get; set; }
-
         public string Delimiter { get; set; }
 
         protected override IEnumerable<IDataObject> GetDataInternal()
         {
-            var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
-            if (ExprQuery != null)
-            {
-                var ctx = new ValueTransitContext(null,null);
-                Query = ctx.Execute(ExprQuery);
-            }
+            //var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
+            var baseDir = MapConfig.Current.SourceBaseDir;
+   
             
-            var subQueries =  Query.Split('|');
+            var subQueries =  ActualQuery.Split('|');
             foreach (string subQuery in subQueries)
             {
-                var fullPath = $"{settings.Path}\\{subQuery.Trim()}";
+                var fullPath = $"{baseDir}\\{subQuery.Trim()}";
                 var dirPath = Path.GetDirectoryName(fullPath);
                 var fileName = Path.GetFileName(fullPath);
 
@@ -64,12 +46,11 @@ namespace XQ.DataMigration.Data.DataSources
 
         private IEnumerable<IDataObject> GetDataFromFile(string filePath)
         {
-            var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
             Migrator.Current.Tracer.TraceLine("Reading " + filePath);
             var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             var txtReader = new StreamReader(stream, Encoding.GetEncoding("Windows-1252"));
             var csvReader = new CsvReader(txtReader);
-            csvReader.Configuration.Delimiter = Delimiter.IsEmpty() ? settings.Delimiter : Delimiter;
+            csvReader.Configuration.Delimiter = Delimiter.IsEmpty() ? MapConfig.Current.DefaultCsvDelimiter : Delimiter;
             csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
             csvReader.Configuration.TrimFields = true;
             csvReader.Configuration.IgnoreBlankLines = true;

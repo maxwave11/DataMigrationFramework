@@ -12,9 +12,9 @@ namespace XQ.DataMigration.Data.DataSources
 
         protected override IEnumerable<IDataObject> GetDataInternal()
         {
-            var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
-            Settings = settings;
-            var filePath = $"{settings.Path}\\{Query}";
+            var baseDir = MapConfig.Current.SourceBaseDir;
+
+            var filePath = $"{baseDir}\\{ActualQuery}";
             
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
@@ -27,7 +27,7 @@ namespace XQ.DataMigration.Data.DataSources
                         rowCounter++;
             
                         //init header row
-                        if (rowCounter == settings.HeaderRowNumber)
+                        if (rowCounter == 1)
                         {
                             headerRow = new string[reader.FieldCount];
                             for (int i = 0; i < reader.FieldCount; i++)
@@ -36,7 +36,7 @@ namespace XQ.DataMigration.Data.DataSources
                             continue;
                         }
             
-                        if (rowCounter < settings.DataStartRowNumber)
+                        if (rowCounter < 2)
                             continue;
             
                         if (IsRowEmpty(reader))

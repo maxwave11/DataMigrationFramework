@@ -3,7 +3,6 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Pipeline.Commands
 {
-    [Command("EXPR")]
     public class ExpressionCommand<T>: CommandBase
     {
         //workaround variable. Need to think how to refactor inheritance from CommandBase

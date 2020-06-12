@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace XQ.DataMigration.Data.DataSources
 {
     public abstract class DataSourceBase : IDataSource, ICachedDataSource
     {
-        public string Query { get; set; }
+        public object Query { get; set; }
 
         public CommandBase Key { get; set; }
         
@@ -103,6 +104,31 @@ namespace XQ.DataMigration.Data.DataSources
             
             _cache[tObject.Key].Add(tObject);
         }
+
+        private string _actualQuery;
+        protected string ActualQuery
+        {
+            get
+            {
+                if (_actualQuery != null) return _actualQuery;
+                
+                switch (Query)
+                {
+                    case string query:
+                        _actualQuery = query;
+                        break;
+                    case CommandBase command:
+                        var ctx = new ValueTransitContext(null, null);
+                        ctx.Execute(command);
+                        _actualQuery = ctx.TransitValue?.ToString();
+                        break;
+                    default:
+                        throw new NotSupportedException("Only string and Commands are supported in Query");
+                }
+
+                return _actualQuery;
+            }
+        }
         
         protected static string UnifyKey(string key)
         {
@@ -111,7 +137,7 @@ namespace XQ.DataMigration.Data.DataSources
 
         public override string ToString()
         {
-            return $"Query: { Query }, Key: { Key.GetParametersInfo() }";
+            return $"Query: { ActualQuery }, Key: { Key.GetParametersInfo() }";
         }
     }
 }
