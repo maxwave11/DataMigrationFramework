@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Enums;
 using XQ.DataMigration.Pipeline.Commands;
@@ -23,6 +24,9 @@ namespace XQ.DataMigration.Pipeline
         public CommandBase CurrentCommand { get; set; }
 
         public readonly List<TraceMessage> TraceEntries = new List<TraceMessage>();
+        
+        //for debug purposes
+        public string _traceEntries => TraceEntries.Select(i => i.Text).Join(" ");
 
         public bool Trace { get; set; }
 
