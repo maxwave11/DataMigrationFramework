@@ -45,7 +45,7 @@ namespace XQ.DataMigration.Pipeline
         {
             TransitValue = value;
             var valueType = TransitValue?.GetType().Name.Truncate(30);
-            string message = $"==> ({valueType}){TransitValue?.ToString().Truncate(80)}";
+            string message = $"==> ({valueType}){TransitValue?.ToString().Truncate(240)}";
             Migrator.Current.Tracer.TraceLine(message, this, ConsoleColor.DarkGray);
         }
         
