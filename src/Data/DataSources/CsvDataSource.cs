@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using CsvHelper;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data.DataSources
@@ -13,21 +10,20 @@ namespace XQ.DataMigration.Data.DataSources
     public class CsvDataSource : DataSourceBase
     {
         public string Delimiter { get; set; }
+        public string Encoding { get; set; } = "Windows-1252";
 
         protected override IEnumerable<IDataObject> GetDataInternal()
         {
-            //var settings = MapConfig.Current.GetDefaultSourceSettings<CsvSourceSettings>();
-            var baseDir = MapConfig.Current.SourceBaseDir;
-   
+            string baseDir = MapConfig.Current.SourceBaseDir;
             
             var subQueries =  ActualQuery.Split('|');
             foreach (string subQuery in subQueries)
             {
-                var fullPath = $"{baseDir}\\{subQuery.Trim()}";
-                var dirPath = Path.GetDirectoryName(fullPath);
-                var fileName = Path.GetFileName(fullPath);
+                string fullPath = $"{baseDir}\\{subQuery.Trim()}";
+                string dirPath = Path.GetDirectoryName(fullPath);
+                string fileName = Path.GetFileName(fullPath);
 
-                var files = Directory.GetFiles(dirPath, fileName).OrderBy(i=>i);
+                var files = Directory.GetFiles(dirPath, fileName).OrderBy(i=>i).ToList();
 
                 if (!files.Any())
                     throw new FileNotFoundException($"There is no {fileName} files in {dirPath}");
@@ -48,10 +44,10 @@ namespace XQ.DataMigration.Data.DataSources
         {
             Migrator.Current.Tracer.TraceLine("Reading " + filePath);
             var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            var txtReader = new StreamReader(stream, Encoding.GetEncoding("Windows-1252"));
+            var txtReader = new StreamReader(stream, System.Text.Encoding.GetEncoding(Encoding));
             var csvReader = new CsvReader(txtReader);
-            csvReader.Configuration.Delimiter = Delimiter.IsEmpty() ? MapConfig.Current.DefaultCsvDelimiter : Delimiter;
-            csvReader.Configuration.Encoding = Encoding.GetEncoding("Windows-1252");
+            csvReader.Configuration.Delimiter = Delimiter ?? MapConfig.Current.DefaultCsvDelimiter;
+            csvReader.Configuration.Encoding = System.Text.Encoding.GetEncoding(Encoding);
             csvReader.Configuration.TrimFields = true;
             csvReader.Configuration.IgnoreBlankLines = true;
             csvReader.Configuration.TrimHeaders = true;
