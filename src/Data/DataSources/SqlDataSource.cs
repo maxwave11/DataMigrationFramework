@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using XQ.DataMigration.Pipeline;
+using XQ.DataMigration.Pipeline.Commands;
 
 namespace XQ.DataMigration.Data.DataSources
 {
@@ -11,7 +12,9 @@ namespace XQ.DataMigration.Data.DataSources
 
         protected override IEnumerable<IDataObject> GetDataInternal()
         {
-            using (var connection = new SqlConnection(ConnectionString))
+            var str = ConnectionString ?? MapConfig.Current.Variables["ConnectionString"].ToString();
+            
+            using (var connection = new SqlConnection(str))
             {
                 SqlDataAdapter adapter = new SqlDataAdapter();
            

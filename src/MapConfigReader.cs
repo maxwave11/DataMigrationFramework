@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,6 +47,7 @@ namespace XQ.DataMigration
                 { "csv", typeof(CsvDataSource) },
                 { "composite-source", typeof(CompositeDataSource) },
                 { "excel", typeof(ExcelDataSource) },
+                { "sql", typeof(SqlDataSource) },
             
             };
 
