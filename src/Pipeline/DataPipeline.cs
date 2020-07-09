@@ -99,7 +99,7 @@ namespace XQ.DataMigration.Pipeline
             }
             catch (Exception e)
             {
-                Tracer.TraceError("Error occured while pipeline processing", ctx);
+                Tracer.TraceError("Error occured while pipeline processing", e.ToString(), ctx);
                 throw;
             }
 

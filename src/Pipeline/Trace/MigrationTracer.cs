@@ -53,6 +53,7 @@ namespace XQ.DataMigration.Pipeline.Trace
         /// <summary>
         /// Event fires each time when any unhandled error occured while migration process
         /// </summary>
+        public event EventHandler<TransitErrorEventArgs> OnValueTransitError;
 
         private const string _indentUnit = "    ";
 
@@ -81,28 +82,29 @@ namespace XQ.DataMigration.Pipeline.Trace
             SendTraceMessage(message, ConsoleColor.Yellow);
         }
 
-        public void TraceError(string message, ValueTransitContext ctx)
+        public void TraceError(string message, string errorMessage, ValueTransitContext ctx)
         {
             string msg = FormatMessage(message);
-            SendTraceMessage(msg, ConsoleColor.Red);
+            TraceLine(msg, ctx, ConsoleColor.Red);
 
-            SendTraceMessage("\nERROR ====================", ConsoleColor.Red);
-            SendTraceMessage("\nTRACE:", ConsoleColor.Red);
-            ctx.TraceEntries.ForEach(i=> Trace.Invoke(this,i));
-            
-            SendTraceMessage("\nSRC:", ConsoleColor.Red);
-            SendTraceMessage("\n" + ctx.Source?.GetInfo(), ConsoleColor.Red);       
-            
-            SendTraceMessage("\nTARGET:", ConsoleColor.Red);
-            SendTraceMessage("\n" + ctx.Target?.GetInfo(), ConsoleColor.Red);
-            
-       
+            TraceLine("\nERROR ====================", ctx, ConsoleColor.Red);
+            TraceLine($"\n{errorMessage}", ctx, ConsoleColor.Red);
+            TraceLine("\nTRACE:", ctx, ConsoleColor.Red);
+            ctx.TraceEntries.ForEach(i => Trace.Invoke(this, i));
+
+            TraceLine("\nSRC:", ctx, ConsoleColor.Red);
+            TraceLine("\n" + ctx.Source?.GetInfo(), ctx, ConsoleColor.Red);
+
+            TraceLine("\nTARGET:", ctx, ConsoleColor.Red);
+            TraceLine("\n" + ctx.Target?.GetInfo(), ctx, ConsoleColor.Red);
+
+            var t = this;
+            OnValueTransitError?.Invoke(this, new TransitErrorEventArgs(ctx));
         }
 
         private void SendTraceMessage(string msg, ConsoleColor color)
         {
             Trace.Invoke(this, new TraceMessage(msg, color));
-
         }
 
         private string FormatMessage(string msg)
