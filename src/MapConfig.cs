@@ -13,7 +13,9 @@ namespace XQ.DataMigration
         private Dictionary<string, object> _variableValues { get; set; } = new Dictionary<string, object>();
 
         public Dictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
-        
+
+        public Dictionary<string, string> Mappings { get; set; } = new Dictionary<string, string>();
+
         public List<DataPipeline> Pipeline { get; set; } = new List<DataPipeline>();
         
         public Dictionary<string, MigrationExpression> _examples { get; set; }

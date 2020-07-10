@@ -28,7 +28,13 @@ namespace XQ.DataMigration.Pipeline.Expressions
         /// Global configuration variables accessor
         /// </summary>
         public Dictionary<string, object> Variables => MapConfig.Current.Variables;
-      
+
+        /// <summary>
+        /// Global configuration mappings accessor
+        /// </summary>
+        public Dictionary<string, string> Mappings => MapConfig.Current.Mappings;
+
+
         private readonly ValueTransitContext _ctx;
 
         public ExpressionContext(ValueTransitContext ctx)
