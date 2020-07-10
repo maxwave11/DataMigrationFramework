@@ -14,9 +14,9 @@ namespace XQ.DataMigration
     {
         private string _yaml;
 
-        public MapConfigReaderYaml(string fileName)
+        public MapConfigReaderYaml(string configuration)
         {
-            _yaml = File.ReadAllText(fileName);
+            _yaml = configuration;
         }
 
         public MapConfigReaderYaml(Stream fileStream)
