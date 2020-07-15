@@ -65,12 +65,14 @@ namespace XQ.DataMigration.Pipeline.Expressions
                 {
                     expression = regex.Replace(expression, $"{nameof(ExpressionContext.SRC)}[$1]");
                 }
-            }   
-            
+            }
+
             //quotes conversion: 
             //'some text' => "some text"
             //''some text'' => 'some text'
+            expression = expression.Replace("''", "~~~");//used in sql statements
             expression = expression.Replace("'", "\"");
+            expression = expression.Replace("~~~", "'");
 
             //replace  curly braces to "#open" and "#close" to avoid problems with parsing string formats
             //which can contains curly braces
