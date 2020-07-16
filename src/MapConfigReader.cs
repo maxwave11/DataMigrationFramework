@@ -43,6 +43,7 @@ namespace XQ.DataMigration
                 { CommandUtils.GetCommandYamlName(typeof(TraceCommand)), typeof(TraceCommand) },
                 { CommandUtils.GetCommandYamlName(typeof(CommandSet<CommandBase>)), typeof(CommandSet<CommandBase>) },
                 { CommandUtils.GetCommandYamlName(typeof(GetTargetCommand)), typeof(GetTargetCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(MessageCommand)), typeof(MessageCommand) },
 
                 { "csv", typeof(CsvDataSource) },
                 { "composite-source", typeof(CompositeDataSource) },
