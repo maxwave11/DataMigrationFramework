@@ -118,7 +118,6 @@
     <Compile Include="Enums\TraceMode.cs" />
     <Compile Include="MapConfig.cs" />
     <Compile Include="Enums\TraceLevel.cs" />
-    <Compile Include="MapConfigReader.cs" />
     <Compile Include="Migrator.cs" />
     <Compile Include="Pipeline\Commands\CommandSet.cs" />
     <Compile Include="Pipeline\Commands\ExpressoinCommand.cs" />

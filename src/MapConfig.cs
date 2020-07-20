@@ -1,10 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using XQ.DataMigration.Data.DataSources;
 using XQ.DataMigration.Pipeline;
 using XQ.DataMigration.Pipeline.Commands;
 using XQ.DataMigration.Pipeline.Expressions;
+using XQ.DataMigration.Utils;
+using YamlDotNet.Serialization;
 
 namespace XQ.DataMigration
 {
@@ -33,6 +37,62 @@ namespace XQ.DataMigration
         {
             Current = this;
             Pipeline.ForEach(i => i.Initialize());
+        }
+
+        public static MapConfig ReadFromFile(string yamlFilePath, IEnumerable<Type> customTypes) 
+        {
+            var yaml = File.ReadAllText(yamlFilePath);
+            return ReadFromString(yaml, customTypes);
+
+        }
+        public static MapConfig ReadFromStream(Stream yamlFileStream, IEnumerable<Type> customTypes)
+        {
+            using (StreamReader reader = new StreamReader(yamlFileStream))
+            {
+                var yaml = reader.ReadToEnd();
+                return ReadFromString(yaml, customTypes);
+            }
+        }
+
+        public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customTypes)
+        {
+            var commandMapping = new Dictionary<string, Type>()
+            {
+                { CommandUtils.GetCommandYamlName(typeof(ReplaceCommandSet)), typeof(ReplaceCommandSet) },
+                { CommandUtils.GetCommandYamlName(typeof(SetFlowCommand)), typeof(SetFlowCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(LookupCommand)), typeof(LookupCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(TypeConvertCommand)), typeof(TypeConvertCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(SetCommand)), typeof(SetCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(ConcatCommand)), typeof(ConcatCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(GetValueCommand)), typeof(GetValueCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(GetNotEmptyValueCommand)), typeof(GetNotEmptyValueCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(IfCommand)), typeof(IfCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(TraceCommand)), typeof(TraceCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(CommandSet<CommandBase>)), typeof(CommandSet<CommandBase>) },
+                { CommandUtils.GetCommandYamlName(typeof(GetTargetCommand)), typeof(GetTargetCommand) },
+                { CommandUtils.GetCommandYamlName(typeof(MessageCommand)), typeof(MessageCommand) },
+
+                { "csv", typeof(CsvDataSource) },
+                { "composite-source", typeof(CompositeDataSource) },
+                { "excel", typeof(ExcelDataSource) },
+                { "sql", typeof(SqlDataSource) },
+
+            };
+
+            var builder = new DeserializerBuilder();
+
+            customTypes
+                .Select(type => new KeyValuePair<string, Type>(type.Name, type))
+                .Union(commandMapping)
+                .ToList()
+                .ForEach(type => builder = builder.WithTagMapping("!" + type.Key, type.Value));
+
+            var deserializer = builder.Build();
+
+            var mapConfig = deserializer.Deserialize<MapConfig>(yamlString);
+            mapConfig.Initialize();
+
+            return mapConfig;
         }
     }
 }
