@@ -77,7 +77,6 @@ namespace XQ.DataMigration.Pipeline
             var ctx = new ValueTransitContext(sourceObject, null);
             ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands);
             ctx.DataPipeline = this;
-            
             try
             {
                 RunCommands(ctx);
@@ -95,12 +94,10 @@ namespace XQ.DataMigration.Pipeline
 
                     return null;
                 }
-
             }
-            catch (Exception e)
+            catch (Exception e) 
             {
-                Tracer.TraceError("Error occured while pipeline processing", e.ToString(), ctx);
-                throw;
+                throw new DataMigrationException("Error occured while object processing", ctx, e);
             }
 
             return ctx.Target;

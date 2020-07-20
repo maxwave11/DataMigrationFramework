@@ -1,18 +1,16 @@
-using System;
+﻿using System;
 using System.Linq;
 using XQ.DataMigration.Data;
 using XQ.DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Trace
+namespace XQ.DataMigration.Pipeline
 {
-    public class TransitErrorEventArgs
+    public class DataMigrationException: Exception 
     {
-        public ValueTransitContext Context { get; private set; }
-        public bool Continue { get; set; }
-
-        public TransitErrorEventArgs(ValueTransitContext context)
+        public ValueTransitContext Context { get; }
+        public DataMigrationException(string message, ValueTransitContext ctx, Exception innerException) : base(message, innerException)
         {
-            Context = context;
+            Context = ctx;
         }
 
         public override string ToString()
@@ -21,10 +19,10 @@ namespace XQ.DataMigration.Pipeline.Trace
                 return $"NULL {nameof(ValueTransitContext)}";
             try
             {
-                string errorMsg = 
+                string errorMsg =
 $@"Error description:
 ============ TRACE ========== 
-{ Context.TraceEntries.Select(t=>t.Text).Join("") }
+{ Context.TraceEntries.Select(t => t.Text).Join("") }
 
 ==============SRC==============
 { Context.Source?.GetInfo() }
@@ -41,7 +39,7 @@ $@"Error description:
             }
             catch (Exception ex)
             {
-                throw new Exception("Exception while getting context info: " + ex);
+                return "Error while parsing context info:" + ex;
             }
         }
     }

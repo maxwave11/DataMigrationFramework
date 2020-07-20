@@ -14,12 +14,14 @@ namespace XQ.DataMigration
         public MigrationTracer Tracer { get; }
 
         public static Migrator Current  {get; private set; }
+        public bool ThrowExeptionOnError { get; }
 
         private MapConfig _mapConfig;
 
-        public Migrator(MapConfig mapConfig)
+        public Migrator(MapConfig mapConfig, bool throwExeptionOnError = false)
         {
             _mapConfig = mapConfig;
+            ThrowExeptionOnError = throwExeptionOnError;
             Current = this;
             Tracer = new MigrationTracer();
         }
@@ -43,14 +45,22 @@ namespace XQ.DataMigration
                     }
                 }
 
-                foreach (var node in _mapConfig.Pipeline.Where(i => i.Enabled)) 
+                foreach (var pipeline in _mapConfig.Pipeline.Where(i => i.Enabled)) 
                 {
-                    node.Run();
+                    pipeline.Run();
                 }
+            }
+            catch (DataMigrationException e)
+            {
+                Tracer.TraceMigrationException("Error occured while pipeline processing", e);
+                if (ThrowExeptionOnError)
+                    throw;
             }
             catch (Exception e)
             {
                 Tracer.TraceLine(e.ToString());
+                if (ThrowExeptionOnError)
+                    throw;
             }
                 
             stopwatch.Stop();

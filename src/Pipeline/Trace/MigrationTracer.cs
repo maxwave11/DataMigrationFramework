@@ -50,11 +50,6 @@ namespace XQ.DataMigration.Pipeline.Trace
         /// </summary>
         public event EventHandler TransitValueStarted;
 
-        /// <summary>
-        /// Event fires each time when any unhandled error occured while migration process
-        /// </summary>
-        public event EventHandler<TransitErrorEventArgs> OnValueTransitError;
-
         private const string _indentUnit = "    ";
 
         private int _identLevel = 0;
@@ -82,24 +77,25 @@ namespace XQ.DataMigration.Pipeline.Trace
             SendTraceMessage(message, ConsoleColor.Yellow);
         }
 
-        public void TraceError(string message, string errorMessage, ValueTransitContext ctx)
+        public void TraceMigrationException(string message, DataMigrationException ex)
         {
             string msg = FormatMessage(message);
-            TraceLine(msg, ctx, ConsoleColor.Red);
 
-            TraceLine("\nERROR ====================", ctx, ConsoleColor.Red);
-            TraceLine($"\n{errorMessage}", ctx, ConsoleColor.Red);
-            TraceLine("\nTRACE:", ctx, ConsoleColor.Red);
-            ctx.TraceEntries.ForEach(i => Trace.Invoke(this, i));
+            var entriesBeforeError = ex.Context.TraceEntries.ToList();
 
-            TraceLine("\nSRC:", ctx, ConsoleColor.Red);
-            TraceLine("\n" + ctx.Source?.GetInfo(), ctx, ConsoleColor.Red);
+            TraceLine(msg, ex.Context, ConsoleColor.Red);
 
-            TraceLine("\nTARGET:", ctx, ConsoleColor.Red);
-            TraceLine("\n" + ctx.Target?.GetInfo(), ctx, ConsoleColor.Red);
+            TraceLine("\nException:", ex.Context, ConsoleColor.Red);
+            TraceLine($"\n{ex.InnerException.ToString()}", ex.Context, ConsoleColor.Red);
 
-            var t = this;
-            OnValueTransitError?.Invoke(this, new TransitErrorEventArgs(ctx));
+            TraceLine("\nTRACE:", ex.Context, ConsoleColor.Red);
+            entriesBeforeError.ForEach(i => Trace.Invoke(this, i));
+
+            TraceLine("\nSRC:", ex.Context, ConsoleColor.Red);
+            TraceLine("\n" + ex.Context.Source?.GetInfo(), ex.Context, ConsoleColor.Red);
+
+            TraceLine("\nTARGET:", ex.Context, ConsoleColor.Red);
+            TraceLine("\n" + ex.Context.Target?.GetInfo(), ex.Context, ConsoleColor.Red);
         }
 
         private void SendTraceMessage(string msg, ConsoleColor color)

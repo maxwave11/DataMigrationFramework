@@ -133,6 +133,7 @@
     <Compile Include="Pipeline\Commands\SetFlowCommand.cs" />
     <Compile Include="Pipeline\Commands\TraceCommand.cs" />
     <Compile Include="Pipeline\Commands\TypeConvertCommand.cs" />
+    <Compile Include="Pipeline\DataMigrationException.cs" />
     <Compile Include="Pipeline\DataPipeline.cs" />
     <Compile Include="Pipeline\Expressions\ExpressionContext.cs" />
     <Compile Include="Pipeline\Trace\MigrationTracer.cs" />
@@ -143,7 +144,6 @@
     <Compile Include="Pipeline\Expressions\MigrationExpression.cs" />
     <Compile Include="Pipeline\Commands\Validation\RequiredIfAttribute.cs" />
     <Compile Include="Pipeline\Commands\CommandBase.cs" />
-    <Compile Include="Pipeline\Trace\ValueTransitErrorEventArgs.cs" />
     <Compile Include="Pipeline\ValueTransitContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CommandUtils.cs" />
