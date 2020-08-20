@@ -56,8 +56,8 @@ namespace XQ.DataMigration.Pipeline.Expressions
                 importTypes.AddRange(customTypes.ToArray());
                 
                 var scriptOptions = ScriptOptions.Default
-                    .WithReferences(importTypes.Select(t => t.Assembly))
-                    .WithImports(importTypes.Select(t => t.Namespace).ToArray()
+                    .WithReferences(importTypes.Union(MapConfig.CustomTypes).Select(t => t.Assembly))
+                    .WithImports(importTypes.Union(MapConfig.CustomTypes).Select(t => t.Namespace).ToArray()
                         .Append("System")
                         .Append("System.Text")
                         .Append("System.Linq")

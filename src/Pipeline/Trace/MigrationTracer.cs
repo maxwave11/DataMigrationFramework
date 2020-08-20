@@ -82,7 +82,7 @@ namespace XQ.DataMigration.Pipeline.Trace
             string msg = FormatMessage(message);
 
             var entriesBeforeError = ex.Context.TraceEntries.ToList();
-
+            ex.Context.Trace = true;
             TraceLine(msg, ex.Context, ConsoleColor.Red);
 
             TraceLine("\nException:", ex.Context, ConsoleColor.Red);

@@ -32,6 +32,7 @@ namespace XQ.DataMigration
         public string SourceBaseDir { get; set; }
         
         public TraceMode TraceMode { get; set; }
+        public static IEnumerable<Type> CustomTypes { get; set; }
 
         internal void Initialize()
         {
@@ -39,23 +40,24 @@ namespace XQ.DataMigration
             Pipeline.ForEach(i => i.Initialize());
         }
 
-        public static MapConfig ReadFromFile(string yamlFilePath, IEnumerable<Type> customTypes) 
+        public static MapConfig ReadFromFile(string yamlFilePath, IEnumerable<Type> customCommands) 
         {
             var yaml = File.ReadAllText(yamlFilePath);
-            return ReadFromString(yaml, customTypes);
+            return ReadFromString(yaml, customCommands);
 
         }
-        public static MapConfig ReadFromStream(Stream yamlFileStream, IEnumerable<Type> customTypes)
+        public static MapConfig ReadFromStream(Stream yamlFileStream, IEnumerable<Type> customCommands)
         {
             using (StreamReader reader = new StreamReader(yamlFileStream))
             {
                 var yaml = reader.ReadToEnd();
-                return ReadFromString(yaml, customTypes);
+                return ReadFromString(yaml, customCommands);
             }
         }
 
-        public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customTypes)
+        public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customCommands)
         {
+            
             var commandMapping = new Dictionary<string, Type>()
             {
                 { CommandUtils.GetCommandYamlName(typeof(ReplaceCommandSet)), typeof(ReplaceCommandSet) },
@@ -81,7 +83,7 @@ namespace XQ.DataMigration
 
             var builder = new DeserializerBuilder();
 
-            customTypes
+            customCommands
                 .Select(type => new KeyValuePair<string, Type>(type.Name, type))
                 .Union(commandMapping)
                 .ToList()
