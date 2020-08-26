@@ -32,7 +32,7 @@ namespace XQ.DataMigration
         public string SourceBaseDir { get; set; }
         
         public TraceMode TraceMode { get; set; }
-        public static IEnumerable<Type> CustomTypes { get; set; }
+        public static IEnumerable<Type> CustomTypes { get; set; } = new List<Type>();
 
         internal void Initialize()
         {
