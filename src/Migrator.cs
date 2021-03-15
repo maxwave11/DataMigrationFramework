@@ -1,8 +1,6 @@
 ﻿using System;
-using System.CodeDom;
 using System.Diagnostics;
 using System.Linq;
-using XQ.DataMigration.Enums;
 using XQ.DataMigration.Pipeline;
 using XQ.DataMigration.Pipeline.Commands;
 using XQ.DataMigration.Pipeline.Trace;

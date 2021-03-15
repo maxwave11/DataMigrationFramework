@@ -74,9 +74,10 @@ namespace XQ.DataMigration.Pipeline.Expressions
                 var script = _script.ContinueWith<T>(_translatedExpression);
                 return script.CreateDelegate();
             }
-            catch (Exception e)
+            catch
             {
-                throw;//left it for debuggin purposes
+                //ONLY for debugging purposes
+                throw;
             }
         }
 

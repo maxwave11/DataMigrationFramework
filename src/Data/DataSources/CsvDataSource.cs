@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CsvHelper;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using CsvHelper;
 using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Data.DataSources
@@ -45,12 +46,14 @@ namespace XQ.DataMigration.Data.DataSources
             Migrator.Current.Tracer.TraceLine("Reading " + filePath);
             var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             var txtReader = new StreamReader(stream, System.Text.Encoding.GetEncoding(Encoding));
-            var csvReader = new CsvReader(txtReader);
-            csvReader.Configuration.Delimiter = Delimiter ?? MapConfig.Current.DefaultCsvDelimiter;
-            csvReader.Configuration.Encoding = System.Text.Encoding.GetEncoding(Encoding);
-            csvReader.Configuration.TrimFields = true;
-            csvReader.Configuration.IgnoreBlankLines = true;
-            csvReader.Configuration.TrimHeaders = true;
+
+            var csvConfiguration = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.CurrentCulture);
+            csvConfiguration.Delimiter = Delimiter ?? MapConfig.Current.DefaultCsvDelimiter;
+            csvConfiguration.Encoding = System.Text.Encoding.GetEncoding(Encoding);
+            csvConfiguration.TrimOptions = CsvHelper.Configuration.TrimOptions.Trim;
+            csvConfiguration.IgnoreBlankLines = true;
+            //csvConfiguration.TrimHeaders = true;
+            var csvReader = new CsvReader(txtReader, csvConfiguration);
 
             Key.TraceColor = ConsoleColor.Green;
             
@@ -61,7 +64,7 @@ namespace XQ.DataMigration.Data.DataSources
                     while (csvReader.Read())
                     {
                         var result = new DataObject();
-                        csvReader.FieldHeaders.ToList().ForEach(i =>
+                        csvReader.HeaderRecord.ToList().ForEach(i =>
                         {
                             if (i.IsNotEmpty())
                                 result.SetValue(i.Trim(), csvReader[i.Trim()]);

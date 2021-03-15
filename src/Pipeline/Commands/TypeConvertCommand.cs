@@ -62,7 +62,7 @@ namespace XQ.DataMigration.Pipeline.Commands
                 var typedValue = TypeConverter.GetTypedValue(_typeCode, value, decimalSeparator, Format);
                 ctx.SetCurrentValue(typedValue);
             }
-            catch (Exception e)
+            catch
             {
                 if (OnError == null)
                     throw;
