@@ -7,6 +7,10 @@ using XQ.DataMigration.Utils;
 
 namespace XQ.DataMigration.Pipeline.Commands
 {
+    /// <summary>
+    /// Assign TAG name to the command. You can use it in YAML configuration
+    /// instead of full command class name
+    /// </summary>
     public class CommandAttribute: Attribute
     {
         public string Name { get; }
@@ -17,7 +21,7 @@ namespace XQ.DataMigration.Pipeline.Commands
     }
     
     /// <summary>
-    /// Base class for all transition elements in Map configuration
+    /// Base class for all commands in migration configuration
     /// </summary>
     public abstract class CommandBase
     {

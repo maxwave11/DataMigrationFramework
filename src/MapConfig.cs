@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using XQ.DataMigration.Data.DataSources;
 using XQ.DataMigration.Pipeline;
 using XQ.DataMigration.Pipeline.Commands;
@@ -14,8 +13,6 @@ namespace XQ.DataMigration
 {
     public class MapConfig
     {
-        private Dictionary<string, object> _variableValues { get; set; } = new Dictionary<string, object>();
-
         public Dictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
 
         public Dictionary<string, string> Mappings { get; set; } = new Dictionary<string, string>();

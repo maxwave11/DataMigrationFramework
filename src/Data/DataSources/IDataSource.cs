@@ -3,8 +3,8 @@
 namespace XQ.DataMigration.Data.DataSources
 {
     /// <summary>
-    /// Common interface for any data provider which provides access to 
-    /// particular DataSet of this provider
+    /// Common interface for any data source which returns data from some sources
+    /// like database, excel, csv, etc...
     /// </summary>
     public interface IDataSource 
     { 
