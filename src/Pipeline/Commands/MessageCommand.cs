@@ -4,7 +4,7 @@ using DataMigration.Pipeline.Expressions;
 namespace DataMigration.Pipeline.Commands
 {
     /// <summary>
-    /// Transition which allows to write custom messages to migration trace
+    /// Command allows to write custom messages to migration trace
     /// </summary>
     [Command("MSG")]
     public class MessageCommand: CommandBase

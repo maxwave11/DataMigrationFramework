@@ -8,9 +8,9 @@ namespace DataMigration.Pipeline.Expressions
 {
     /// <summary>
     /// Object of this class represents the contex for accessing from migration expression in run-time
-    /// You can use any public member/method of this class from expression.
-    /// Examples: { HISTORY('fieldName') } - returns result of ExpressionContext.HISTORY method
-    /// Examples: { SRC['fieldName'] } - returns value of 'fieldName' field of source object in current object transition  (ExpressionContext.SRC property)
+    /// You can use any public member/method of this class in any migration expression.
+    /// Example: !GET HISTORY('fieldName') - returns result of ExpressionContext.HISTORY method
+    /// Example: !GET SRC['fieldName'] - returns value of 'fieldName' field of source object in current object transition  (ExpressionContext.SRC property)
     /// </summary>
     public class ExpressionContext
     {

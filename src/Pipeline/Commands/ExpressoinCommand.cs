@@ -5,7 +5,7 @@ namespace DataMigration.Pipeline.Commands
 {
     public class ExpressionCommand<T>: CommandBase
     {
-        //workaround variable. Need to think how to refactor inheritance from CommandBase
+        //Workaround variable. Need to think how to refactor inheritance from CommandBase
         public  T ReturnValue { get; private set; }
         public MigrationExpression<T> Expression { get; set; }
 

@@ -3,6 +3,9 @@ using DataMigration.Utils;
 
 namespace DataMigration.Pipeline.Commands
 {
+    /// <summary>
+    /// Command converts current migration value to some type
+    /// </summary>
     [Command("TYPE")]
     public class TypeConvertCommand : CommandBase
     {
@@ -70,7 +73,6 @@ namespace DataMigration.Pipeline.Commands
                 ctx.Execute(OnError);
             }
         }
-
 
         public override string GetParametersInfo() => Type;
        

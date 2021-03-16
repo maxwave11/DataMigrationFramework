@@ -17,6 +17,10 @@ namespace DataMigration.Pipeline.Expressions
         public MigrationExpression(string expression) : base(expression) { }
     }
 
+    /// <summary>
+    /// Represents compilable C# expression wiht migration sugar
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class MigrationExpression<T>
     {
         public string Expression { get; }
@@ -47,7 +51,7 @@ namespace DataMigration.Pipeline.Expressions
         /// <returns>Compiled delegate</returns>
         private ScriptRunner<T> Compile(string migrationExpression, List<Type> customTypes)
         {
-            _translatedExpression = ExpressionCompiler.TranslateExpression(migrationExpression);
+            _translatedExpression = ExpressionTranslator.Translate(migrationExpression);
 
             if (_script == null)
             {

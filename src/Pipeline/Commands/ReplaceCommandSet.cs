@@ -5,6 +5,9 @@ using DataMigration.Utils;
 
 namespace DataMigration.Pipeline.Commands
 {
+    /// <summary>
+    /// Command allows to implement complex string replacing logic
+    /// </summary>
     [Command("REPLACE")]
     public class ReplaceCommandSet : CommandSet<ReplaceStepCommand>
     {
