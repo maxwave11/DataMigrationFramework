@@ -41,15 +41,13 @@ namespace XQ.DataMigration
         {
             var yaml = File.ReadAllText(yamlFilePath);
             return ReadFromString(yaml, customCommands);
-
         }
+
         public static MapConfig ReadFromStream(Stream yamlFileStream, IEnumerable<Type> customCommands)
         {
-            using (StreamReader reader = new StreamReader(yamlFileStream))
-            {
-                var yaml = reader.ReadToEnd();
-                return ReadFromString(yaml, customCommands);
-            }
+            using StreamReader reader = new StreamReader(yamlFileStream);
+            var yaml = reader.ReadToEnd();
+            return ReadFromString(yaml, customCommands);
         }
 
         public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customCommands)
@@ -80,7 +78,7 @@ namespace XQ.DataMigration
 
             var builder = new DeserializerBuilder();
 
-            customCommands
+            customCommands?
                 .Select(type => new KeyValuePair<string, Type>(type.Name, type))
                 .Union(commandMapping)
                 .ToList()

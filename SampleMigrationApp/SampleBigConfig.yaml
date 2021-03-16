@@ -15,7 +15,7 @@
 #Rules:
 # - edit this config in SUBLIME or other editor/IDE with good YAML syntax highlighting
 # - keep empty line separation between value transitions for easy reading
-# - quote expressions which contains YAML symbols,
+# - quote expressions which contains YAML's syntax symbols,
 #     example1 => SRC[fieldName] to '=> SRC[fieldName]' or "=> SRC[fieldName]" 
 #     example2 ${ var } to '${ var }' or "${ var }" 
 
@@ -24,14 +24,14 @@
 _examples:
   plain_code1: true   #returns (bool)true
   plain_code2: 234    #returns (int)234
-  plain_code3: <field name>    #returns (int)234
-  plain_code4: (int)SRC[Field name] + (int)SRC[secon field]  #returns (int) sum of fields
-  plain_code5: <Maintenance rent:double>  #returns (int) sum of fields
-  plain_string1: $some value #returns sting 
-  plain_string2: "$some value" #returns sting 
-  plain_string3: '$some value' #returns sting 
-  string_template: "${ SRC[sdf] } abc { SRC[sdf] } abc" #returns sting 
-  string_template2: "${ %variable% } abc { <sdf> } abc" #returns sting 
+  plain_code3: <field name>    #returns (object)
+  plain_code4: (int)SRC[Field name] + (int)SRC[second field]  #returns (int)sum of two fields
+  plain_code5: <field name:double>  #returns (double) value from source object's field
+  plain_string1: $some value #returns (sting)'some value'
+  plain_string2: "$some value" #returns (sting)'some value'
+  plain_string3: '$some value' #returns (sting)'some value'
+  string_template: "${ SRC[sdf] } abc { SRC[sdf] } abc" #returns result from string interpolation expr. $"{ SRC["sdf"] } abc { SRC["sdf"] } abc" 
+  string_template2: "${ %variable% } abc { <sdf> } abc" #returns result from string interpolation expr. $"{ GLOBALS["variable"] } abc { SRC["sdf"] } abc" 
 
 
 
