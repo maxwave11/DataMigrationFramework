@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using DataMigration.Data;
 using DataMigration.Data.DataSources;
 
-namespace XQ.EqDataMigrator.TargetProvider
+namespace SampleMigrationApp.Source
 {
     public class JsonDataSource : DataSourceBase
     {

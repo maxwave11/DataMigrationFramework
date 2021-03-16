@@ -5,7 +5,7 @@ using System.Text;
 using DataMigration.Data;
 using DataMigration.Utils;
 
-namespace XQ.EqDataMigrator.TargetProvider
+namespace SampleMigrationApp.Source
 {
     public class JsonDataObject : IDataObject
     {

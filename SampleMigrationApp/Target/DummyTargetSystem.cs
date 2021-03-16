@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DataMigration.Data;
 using DataMigration.Data.DataSources;
-using XQTargetProvider;
 
-namespace XQ.EqDataMigrator.TargetProvider
+namespace SampleMigrationApp.Target
 {
-    public class XqDataSource: DataTargetBase
+    public class DummyTargetSystem: DataTargetBase
     {
-
         private static Dictionary<string, List<IDataObject>> _dummyStorage = new Dictionary<string, List<IDataObject>>();
         protected override IEnumerable<IDataObject> GetDataInternal()
         {
@@ -22,7 +19,6 @@ namespace XQ.EqDataMigrator.TargetProvider
         }
      
         
-       
         #region ITargetSource
 
         protected override IDataObject CreateObject(string key)

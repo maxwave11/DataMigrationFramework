@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading;
 using DataMigration;
 using DataMigration.Pipeline.Trace;
-using XQ.EqDataMigrator.TargetProvider;
+using SampleMigrationApp.Target;
+using SampleMigrationApp.Source;
 
 namespace SampleMigrationApp
 {
@@ -26,7 +27,7 @@ namespace SampleMigrationApp
                 // typeof(AssetTransition),
                 typeof(SetCustomField),
                 typeof(SetCashFlowValue),
-                typeof(XqDataSource),
+                typeof(DummyTargetSystem),
                 typeof(SetAssumption),
                 typeof(JsonDataSource),
                 typeof(ToRecurrancePattern),

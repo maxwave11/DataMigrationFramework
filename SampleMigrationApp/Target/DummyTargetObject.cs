@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using DataMigration.Data;
 using DataMigration.Utils;
 
-namespace XQTargetProvider
+namespace SampleMigrationApp.Target
 {
-    public class XqTargetObject : IDataObject
+    public class DummyTargetObject : IDataObject
     {
         private readonly object _dataObject;
         private bool _isEmpty;
@@ -25,7 +24,7 @@ namespace XQTargetProvider
 
         object IDataObject.this[string name] { get => GetValue(name); set => SetValue(name,value); }
 
-        public XqTargetObject(object dataObject, bool isNew = false)
+        public DummyTargetObject(object dataObject, bool isNew = false)
         {
             _dataObject = dataObject;
             _isEmpty = IsNew = isNew;

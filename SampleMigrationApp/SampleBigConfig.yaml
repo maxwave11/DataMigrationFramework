@@ -1,39 +1,4 @@
 ---
-# %variable_name% - access to items from Variables section
-# exmaple => %file_path
-# $ ... - means that this string is expression
-# commands
-# !transit
-# !condition
-# !lookup
-# !replace
-# !transit-data
-
-# $ abc {} abc {} abc
-# $ abc {} abc {} abc:dd-mm-yyyy
-
-#Rules:
-# - edit this config in SUBLIME or other editor/IDE with good YAML syntax highlighting
-# - keep empty line separation between value transitions for easy reading
-# - quote expressions which contains YAML's syntax symbols,
-#     example1 => SRC[fieldName] to '=> SRC[fieldName]' or "=> SRC[fieldName]" 
-#     example2 ${ var } to '${ var }' or "${ var }" 
-
-
-
-_examples:
-  plain_code1: true   #returns (bool)true
-  plain_code2: 234    #returns (int)234
-  plain_code3: <field name>    #returns (object)
-  plain_code4: (int)SRC[Field name] + (int)SRC[second field]  #returns (int)sum of two fields
-  plain_code5: <field name:double>  #returns (double) value from source object's field
-  plain_string1: $some value #returns (sting)'some value'
-  plain_string2: "$some value" #returns (sting)'some value'
-  plain_string3: '$some value' #returns (sting)'some value'
-  string_template: "${ SRC[sdf] } abc { SRC[sdf] } abc" #returns result from string interpolation expr. $"{ SRC["sdf"] } abc { SRC["sdf"] } abc" 
-  string_template2: "${ %variable% } abc { <sdf> } abc" #returns result from string interpolation expr. $"{ GLOBALS["variable"] } abc { SRC["sdf"] } abc" 
-
-
 
 TraceMode: Auto
 DefaultDecimalSeparator: ','
@@ -43,12 +8,7 @@ Variables:
   ConnectionString: data source=some_server;Database=some_db;MultipleActiveResultSets=True;App=EntityFramework;User=user;Password=pwd
   asset_country_id: 71
   main_currency_id: 49 
- 
-  # analysis_date: !GET 'new DateTime(2020,05,31)'
-  # analysis_date: !GET 'new DateTime(2020,06,30)'
-  # analysis_date: !GET 'new DateTime(2020,07,31)'
-  # analysis_date: !GET 'new DateTime(2020,08,31)'
-  # analysis_date: !GET new DateTime(2020,09,30)
+
   analysis_date: !GET new DateTime(2020,10,31)
   analysis_key: !GET '${((DateTime)%analysis_date%):yyyyMM}'
   prev_analysis_key: !GET '${((DateTime)%analysis_date%).AddMonths(-1):yyyyMM}'
@@ -62,7 +22,7 @@ Pipeline:
     Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\assets_*.csv', Key: <City> }
     Commands:
-      - [ !TARGET { Target: !XqDataSource { Query: city, Key: <name> } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: city, Key: <name> } } ] 
 
       - [ <City> , !SET name] 
 
@@ -75,10 +35,10 @@ Pipeline:
     SaveCount: 15
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: master_analysis,  Key: <external_id> }} ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: master_analysis,  Key: <external_id> }} ] 
 
       - [ <Name>, 
-          !LOOKUP { Source: !XqDataSource { Query: project, Key: <name> } } , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: project, Key: <name> } } , 
           !SET project ]
 
       - [ SRC.Key, !SET external_id ] 
@@ -101,10 +61,10 @@ Pipeline:
     SaveCount: 100
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: asset,  Key: !CONCAT [<external_id>] } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset,  Key: !CONCAT [<external_id>] } } ] 
 
       - [ !CONCAT [ <Rahasto>,'%analysis_key%'], 
-          !LOOKUP { Source: !XqDataSource { Query: master_analysis, Key: <external_id>  } }, 
+          !LOOKUP { Source: !DummyTargetSystem { Query: master_analysis, Key: <external_id>  } }, 
           !SET master_analysis ]
 
       - [ SRC.Key, !SET external_id ] 
@@ -115,7 +75,7 @@ Pipeline:
 
       - [ 10 , !SET forecasting_period_years ]  
 
-      - [ "%main_currency_id%" , !LOOKUP { Source: !XqDataSource { Query: currency, Key: <id> } } , !SET currency ]  
+      - [ "%main_currency_id%" , !LOOKUP { Source: !DummyTargetSystem { Query: currency, Key: <id> } } , !SET currency ]  
 
       - [ <Kohteen nimi>, !SET name ]  
 
@@ -133,12 +93,12 @@ Pipeline:
 
       - [ "%asset_country_id%" , !TYPE int , !SET country_id ]  
 
-      - [ <City> , !LOOKUP { Source: !XqDataSource { Query: city, Key: <name> } } , !SET city ]  
+      - [ <City> , !LOOKUP { Source: !DummyTargetSystem { Query: city, Key: <name> } } , !SET city ]  
 
-      - [ 10 , !LOOKUP { Source: !XqDataSource { Query: cash_flow_template, Key: <id> } } , !SetCashFlowTemplate DataObject ]  
+      - [ 10 , !LOOKUP { Source: !DummyTargetSystem { Query: cash_flow_template, Key: <id> } } , !SetCashFlowTemplate DataObject ]  
 
       - [ !CONCAT ['%prev_analysis_key%',<Kustannuspaikan numero>], 
-          !LOOKUP { Source: !XqDataSource { Query: asset, Key: <external_id> }, OnNotFound: SkipValue } , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: SkipValue } , 
           !GET 'DataObject[cash_flow_model]',
           !SET cash_flow_model ]  
     
@@ -188,21 +148,21 @@ Pipeline:
 
 
       - [ <Region>, 
-          !LOOKUP { Source: !XqDataSource { Query: region, Key: <name> } } , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: region, Key: <name> } } , 
           !SET region ]
 
       - [ <Submarket>, 
-          !LOOKUP { Source: !XqDataSource { Query: microlocation, Key: <name> } } , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: microlocation, Key: <name> } } , 
           !SET microlocation ]
 
       - [ !CONCAT [<Grades>, 'TARGET[segment_id]'], 
-          !LOOKUP { Source: !XqDataSource { Query: asset_grade, Key: !CONCAT [<name>,<segment_id>] }, OnNotFound: Continue} , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset_grade, Key: !CONCAT [<name>,<segment_id>] }, OnNotFound: Continue} , 
           !SET asset_grade ]
 
       - [ 0.1 , !TYPE float,!SET valuation_accuracy ]  
 
       - [ !CONCAT ['%prev_analysis_key%',<Kustannuspaikan numero>], 
-          !LOOKUP { Source: !XqDataSource { Query: asset, Key: <external_id> }, OnNotFound: Continue } , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: Continue } , 
           !GET 'DataObject?[uuid] ?? TARGET[uuid] ?? Guid()',
           !SET uuid ]  
 
@@ -219,10 +179,10 @@ Pipeline:
     SaveCount: 100
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: assetPicture, Key: !CONCAT [ "Field(<asset>, 'external_id')", <picture_id>]  } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: assetPicture, Key: !CONCAT [ "Field(<asset>, 'external_id')", <picture_id>]  } } ] 
 
       - [ !CONCAT [ '%analysis_key%', <number>],
-          !LOOKUP { Source: !XqDataSource { Query: asset, Key: <external_id> } },
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> } },
           !SET asset ] 
 
       - [ <picture_id>, !TYPE int, !SET picture_id ] 
@@ -237,7 +197,7 @@ Pipeline:
     SaveCount: 100
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: asset_investment, Key: "Field(<asset>,'external_id')", TransitMode: OnlyExistedObjects  } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset_investment, Key: "Field(<asset>,'external_id')", TransitMode: OnlyExistedObjects  } } ] 
 
       - [ <Omistustyyppi>,
           !IF "!IsEmpty(VALUE)", 
@@ -256,12 +216,12 @@ Pipeline:
     Saver:  !CashFlowSaver { SaveCount: 100 }
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: asset,  Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset,  Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
 
       - [ !InitAssetCommand {}]  
 
       - [ !CONCAT [ "TARGET[master_analysis_id]", $Change of market rents (%) ] , 
-          !LOOKUP { Source: !XqDataSource { Query: rate_growth, Key: !CONCAT [<master_analysis_id>, <name>] } } , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: rate_growth, Key: !CONCAT [<master_analysis_id>, <name>] } } , 
           !GET 'DataObject[id]',
           !TYPE double,
           !SetAssumption EstimatedRentalValueGrowthRate]  
@@ -307,7 +267,7 @@ Pipeline:
     SaveCount: 100
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: asset_investment, Key: "Field(<asset>,'external_id')", TransitMode: OnlyExistedObjects  } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset_investment, Key: "Field(<asset>,'external_id')", TransitMode: OnlyExistedObjects  } } ] 
 
       - [ 0.06, !TYPE float, !SET holdsell_irr_criteria ] 
 
@@ -325,7 +285,7 @@ Pipeline:
     SaveCount: 100
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects  } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects  } } ] 
 
       - [ <Longitude>, !TYPE double, !SET longitude ] 
 
@@ -341,12 +301,12 @@ Pipeline:
     SaveCount: 200
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: ppe, Key: <external_id>  } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: ppe, Key: <external_id>  } } ] 
 
       - [ SRC.Key, !SET external_id ] 
 
       - [ !CONCAT ['%analysis_key%', <Kustannuspaikan nro>], 
-          !LOOKUP { Source: !XqDataSource { Query: asset, Key: <external_id> }, OnNotFound: SkipObject } , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: SkipObject } , 
           !SET asset ]  
 
       - [ 2, !SET ppe_type_id ] 
@@ -380,19 +340,19 @@ Pipeline:
     SaveCount: 100
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: ppe, Key: !GET <external_id>  } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: ppe, Key: !GET <external_id>  } } ] 
 
       - [ SRC.Key, !SET external_id ] 
 
       - [ !CONCAT [ '%analysis_key%', <Property no.>, 2], 
-          !LOOKUP { Source: !XqDataSource { Query: ppe, Key: !CONCAT [ "Field(<asset>,'external_id')", <ppe_type_id> ] },
+          !LOOKUP { Source: !DummyTargetSystem { Query: ppe, Key: !CONCAT [ "Field(<asset>,'external_id')", <ppe_type_id> ] },
                     OnNotFound: Continue,
                     Mode: First } , 
           !IF VALUE != null,
           !FLOW SkipObject ] # skip object if ppe already exist
 
       - [ !CONCAT [ '%analysis_key%', <Property no.>], 
-          !LOOKUP { Source: !XqDataSource { Query: asset, Key: <external_id> }, OnNotFound: SkipObject }, 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: SkipObject }, 
           !SET asset ] 
 
       - [ 2, !SET ppe_type_id ] 
@@ -411,12 +371,12 @@ Pipeline:
     SaveCount: 100
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: ppe, Key: !GET <external_id> } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: ppe, Key: !GET <external_id> } } ] 
 
       - [ SRC.Key, !SET external_id ] 
 
       - [ !CONCAT ['%analysis_key%', <Kustannuspaikan nro>], 
-          !LOOKUP { Source: !XqDataSource { Query: asset, Key: !GET <external_id> }, OnNotFound: SkipObject } , 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: !GET <external_id> }, OnNotFound: SkipObject } , 
           !SET asset ] 
 
       - [ <Kiinteistotunnus>, !SET name, !SET fullname  ] 
@@ -440,12 +400,12 @@ Pipeline:
     SaveCount: 300
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: premis, Key: !GET <external_id>  } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: premis, Key: !GET <external_id>  } } ] 
 
       - [ SRC.Key, !SET external_id ] 
 
       - [ !CONCAT [ '%analysis_key%', <Property no.>, 2] , 
-          !LOOKUP { Source: !XqDataSource { Query: ppe, Key: !CONCAT [ "Field(<asset>,'external_id')", <ppe_type_id> ] },
+          !LOOKUP { Source: !DummyTargetSystem { Query: ppe, Key: !CONCAT [ "Field(<asset>,'external_id')", <ppe_type_id> ] },
                     OnNotFound: SkipObject,
                     Mode: First },
           !SET ppe ]
@@ -490,7 +450,7 @@ Pipeline:
 
 
       - [ !CONCAT [ "Field(TARGET[ppe],'ppe_category_id')", <Type of use>], 
-          !LOOKUP { Source: !XqDataSource { Query: use, Key: !CONCAT [ <ppe_category_id>, "Field(<use_type>,'name')" ] },
+          !LOOKUP { Source: !DummyTargetSystem { Query: use, Key: !CONCAT [ <ppe_category_id>, "Field(<use_type>,'name')" ] },
                     OnNotFound: Continue,
                     Mode: First },
           !SET use ]
@@ -502,7 +462,7 @@ Pipeline:
     SaveCount: 500
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: tenant, Key: !GET <name>  } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: tenant, Key: !GET <name>  } } ] 
 
       - [ <Tenant group>, !SET name ] 
 
@@ -519,19 +479,19 @@ Pipeline:
     SaveCount: 300
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: rent_roll, Key: <external_id> } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: rent_roll, Key: <external_id> } } ] 
 
       - [ SRC.Key, !SET external_id ] 
 
       - [ !CONCAT [ '%analysis_key%', <Property no.>, <Lease unit>, <Lease no.> ], 
-          !LOOKUP { Source: !XqDataSource { Query: premis, Key: <external_id> },
+          !LOOKUP { Source: !DummyTargetSystem { Query: premis, Key: <external_id> },
                     OnNotFound: SkipObject},
           !SET premis ]
           
       - [ !IF IsEmpty(<Tenant group>), !FLOW SkipObject]
 
       - [ !GET <Tenant group>, 
-          !LOOKUP { Source: !XqDataSource { Query: tenant, Key: <name> } },
+          !LOOKUP { Source: !DummyTargetSystem { Query: tenant, Key: <name> } },
           !SET tenant ]
 
       - [ <Lease no.>, !SET agreement_number ] 
@@ -575,7 +535,7 @@ Pipeline:
           !GET "Field(VALUE,'asset')",
           !GET "Field(VALUE,'master_analysis_id')",
           !CONCAT [ VALUE, "%rate_growth_name%"],
-          !LOOKUP { Source: !XqDataSource { Query: rate_growth, Key: !CONCAT [<master_analysis_id>, <name>] } },
+          !LOOKUP { Source: !DummyTargetSystem { Query: rate_growth, Key: !CONCAT [<master_analysis_id>, <name>] } },
           !SET rate_growth ] 
 
       - [ <Month(s) of rent increase>, !ToRecurrancePattern {},  !SET rate_growth_recurrance_pattern ] #this field must be imported only after rate_growth 
@@ -604,7 +564,7 @@ Pipeline:
           !IF "(int)VALUE <= int.Parse($'{%analysis_date%:yyyyMM}')", 
           !FLOW SkipObject] 
 
-      - [ !TARGET { Target: !XqDataSource { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
 
       - [  <tili>,
           !TYPE double, 
@@ -630,7 +590,7 @@ Pipeline:
     Saver:  !CashFlowSaver { SaveCount: 100 }
     Commands:
 
-      - [ !TARGET { Target: !XqDataSource { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
 
       - [ <MaintenanceInProcess:decimal> + <MaintenanceSuggestion:decimal>,
           !SetCashFlowValue { Date: 'new DateTime(<Year:int>,1,1)', CashFlowItemId: 663, IsActuals: false, IsAnnualValue: true } ]
@@ -655,7 +615,7 @@ Pipeline:
   #   SaveCount: 5
   #   Commands:
 
-  #     - [ !TARGET { Target: !XqDataSource { Query: picture, Key: !GET <filename> ,TransitMode: OnlyNewObjects  }   } ] 
+  #     - [ !TARGET { Target: !DummyTargetSystem { Query: picture, Key: !GET <filename> ,TransitMode: OnlyNewObjects  }   } ] 
 
   #     - [ SRC.Key, !SET filename ] 
 
@@ -673,16 +633,16 @@ Pipeline:
   #   SaveCount: 100
   #   Commands:
 
-  #     - [ !TARGET { Target: !XqDataSource { Query: assetPicture, Key: !GET "Field(<picture>,'filename')"  } } ] 
+  #     - [ !TARGET { Target: !DummyTargetSystem { Query: assetPicture, Key: !GET "Field(<picture>,'filename')"  } } ] 
 
 
   #     - [ !CONCAT [ $202005, <DirectoryName> ],
-  #         !LOOKUP { Source: !XqDataSource { Query: asset, Key: <external_id> } },
+  #         !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> } },
   #         !SET asset ] 
 
 
   #     - [ SRC.Key,
-  #         !LOOKUP { Source: !XqDataSource { Query: picture, Key: <filename> } },
+  #         !LOOKUP { Source: !DummyTargetSystem { Query: picture, Key: <filename> } },
   #         !SET picture ] 
 
   #     - [ true, !SET is_main ] 
