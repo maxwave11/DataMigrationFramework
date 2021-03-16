@@ -64,26 +64,16 @@ namespace XQTargetProvider
             return sb.ToString();
         }
 
-        public IEnumerable<KeyValuePair<string, object>> GetValues()
-        {
-            throw new NotImplementedException();
-        }
-
         public object GetValue(string fieldName)
         {
-            return FastReflection.GetValue(_dataObject, fieldName);
+            //code for getting value from native object
+            return "dummy value";
         }
 
         public void SetValue(string fieldName, object value)
         {
-            if (value is IDataObject)
-                value = ((IDataObject)value).Native;
-
-
-            FastReflection.SetValue(_dataObject, fieldName, value);
-
-            if (value?.ToString().IsNotEmpty() == true)
-                _isEmpty = false;
+            //code for setting value for native object
+            return;
         }
 
         public bool IsEmpty()

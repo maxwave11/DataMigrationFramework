@@ -15,7 +15,7 @@ namespace XQ.EqDataMigrator.TargetProvider
 
         public string Key { get; set; }
         public object Native => _native;
-        public bool IsNew { get; }
+        public bool IsNew { get; set; }
         public uint RowNumber { get; set; }
 
         public string[] FieldNames

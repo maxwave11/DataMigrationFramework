@@ -9,36 +9,39 @@ namespace XQ.EqDataMigrator.TargetProvider
 {
     public class XqDataSource: DataTargetBase
     {
+
+        private static Dictionary<string, List<IDataObject>> _dummyStorage = new Dictionary<string, List<IDataObject>>();
         protected override IEnumerable<IDataObject> GetDataInternal()
         {
-            //InitializeDbContext();
-            //var type = GetEntityType(ActualQuery);
+            var query = ActualQuery;
 
-            //_dbContext.Set(type).Load();
-            //return _dbContext.Set(type).Local.Cast<object>().Select(i => new XqTargetObject(i));
-            return new List<XqTargetObject>();
+            if (!_dummyStorage.ContainsKey(query))
+                _dummyStorage.Add(query, new List<IDataObject>());
+
+            return _dummyStorage[query];
         }
      
         
-        private Type GetEntityType(string entityType)
-        {
-            return typeof(string);
-        }
-
        
         #region ITargetSource
 
         protected override IDataObject CreateObject(string key)
         {
-            var type = GetEntityType(ActualQuery);
-            var newObject = new XqTargetObject("some dummy object", true);
+            var newObject = new DataObject();
             newObject.Key = key;
+            var query = ActualQuery;
+
+            if (!_dummyStorage.ContainsKey(query))
+                _dummyStorage.Add(query, new List<IDataObject>());
+
+            _dummyStorage[query].Add(newObject);
+
             return newObject;
         }
 
         public override void SaveObjects(IEnumerable<IDataObject> objects)
         {
-            foreach (XqTargetObject targetObject in objects)
+            foreach (DataObject targetObject in objects)
             {
                 if (targetObject.IsNew)
                 {

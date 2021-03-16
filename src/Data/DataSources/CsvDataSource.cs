@@ -52,16 +52,19 @@ namespace XQ.DataMigration.Data.DataSources
            // csvConfiguration.Encoding = System.Text.Encoding.GetEncoding(Encoding);
             csvConfiguration.TrimOptions = CsvHelper.Configuration.TrimOptions.Trim;
             csvConfiguration.IgnoreBlankLines = true;
+            csvConfiguration.MissingFieldFound = null;
             //csvConfiguration.TrimHeaders = true;
             using var csvReader = new CsvReader(txtReader, csvConfiguration);
 
             Key.TraceColor = ConsoleColor.Green;
 
+            csvReader.Read();
+            csvReader.ReadHeader();
+
+
             while (csvReader.Read())
             {
-                if (csvReader.HeaderRecord==null)
-                    csvReader.ReadHeader();
-
+               
                 var result = new DataObject();
 
                 csvReader.HeaderRecord.ToList().ForEach(header =>
