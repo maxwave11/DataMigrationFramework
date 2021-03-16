@@ -1,8 +1,6 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
-using XQ.DataMigration.Data;
 
 namespace XQ.DataMigration.Utils
 {
@@ -10,34 +8,38 @@ namespace XQ.DataMigration.Utils
     {
         public static T GetTypedValue<T>(object value, char decimalSeparator = '.', string dataFormat = null)
         {
-
-            TypeCode typeCode = TypeCode.Object;
-
-            if (typeof(T) == typeof(int) || typeof(T) == typeof(int?))
-                typeCode = TypeCode.Int32;
-            if (typeof(T) == typeof(long) || typeof(T) == typeof(long?))
-                typeCode = TypeCode.Int64;
-            if (typeof(T) == typeof(double) || typeof(T) == typeof(double?))
-                typeCode = TypeCode.Double;
-            if (typeof(T) == typeof(float) || typeof(T) == typeof(float?))
-                typeCode = TypeCode.Single;
-            if (typeof(T) == typeof(decimal) || typeof(T) == typeof(decimal?))
-                typeCode = TypeCode.Decimal;
-            if (typeof(T) == typeof(bool) || typeof(T) == typeof(bool?))
-                typeCode = TypeCode.Boolean;
-            if (typeof(T) == typeof(string) )
-                typeCode = TypeCode.String;
-            if (typeof(T) == typeof(DateTime)|| typeof(T) == typeof(DateTime?) )
-                typeCode = TypeCode.DateTime;
-
-
             if (default(T) == null && value == null)
                 return default(T);
 
-            var converterdValue = GetTypedValue(typeCode, value,decimalSeparator, dataFormat);
+            var typeCode = GetTypeCode(typeof(T));
 
-            return (T)converterdValue;
+            var convertedValue = GetTypedValue(typeCode, value,decimalSeparator, dataFormat);
+
+            return (T)convertedValue;
         }
+
+        private static TypeCode GetTypeCode(Type type)
+        {
+            if (type == typeof(int) || type == typeof(int?))
+                return TypeCode.Int32;
+            if (type == typeof(long) || type == typeof(long?))
+                return TypeCode.Int64;
+            if (type == typeof(double) || type == typeof(double?))
+                return TypeCode.Double;
+            if (type == typeof(float) || type == typeof(float?))
+                return TypeCode.Single;
+            if (type == typeof(decimal) || type == typeof(decimal?))
+                return TypeCode.Decimal;
+            if (type == typeof(bool) || type == typeof(bool?))
+                return TypeCode.Boolean;
+            if (type == typeof(DateTime) || type == typeof(DateTime?))
+                return TypeCode.DateTime;
+            if (type == typeof(string))
+                return TypeCode.String;
+
+            throw new NotSupportedException($"Type {type} is not supported for conversion");
+        }
+
 
         public static object GetTypedValue(TypeCode targetType, object value, char decimalSeparator, string dataFormat = null)
         {
@@ -96,7 +98,7 @@ namespace XQ.DataMigration.Utils
                     return Convert.ToDateTime(value);
             }
                    
-            throw new NotSupportedException($"Type {targetType} are not supported");
+            throw new NotSupportedException($"Type {targetType} is not supported");
         }
 
         private static bool ToBool(object value)

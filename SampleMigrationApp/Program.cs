@@ -112,8 +112,6 @@ namespace SampleMigrationApp
 
                 } while (true);
             }
-            // if (key == ConsoleKey.S)
-            //   TransitLogger.IsConsoleSaveLogsEnabled = !TransitLogger.IsConsoleSaveLogsEnabled;
         }
     }
 }
