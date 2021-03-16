@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ExcelDataReader;
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     public class ExcelDataSource : DataSourceBase
     {

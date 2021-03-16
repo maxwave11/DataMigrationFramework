@@ -1,6 +1,6 @@
 using System;
 
-namespace XQ.DataMigration
+namespace DataMigration.Enums
 {
     [Flags]
     public enum TraceMode

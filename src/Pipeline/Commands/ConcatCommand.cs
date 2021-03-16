@@ -1,8 +1,8 @@
 using System.Linq;
-using XQ.DataMigration.Pipeline.Expressions;
-using XQ.DataMigration.Utils;
+using DataMigration.Pipeline.Expressions;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {    
     [Command("CONCAT")]
     public class ConcatCommand : CommandSet<ExpressionCommand<object>>

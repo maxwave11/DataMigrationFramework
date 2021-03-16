@@ -1,8 +1,8 @@
 ﻿using System;
-using XQ.DataMigration.Pipeline.Expressions;
-using XQ.DataMigration.Utils;
+using DataMigration.Pipeline.Expressions;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     /// <summary>
     /// ExecuteInternal unit which writes incoming value from ValueTransitContext to target object

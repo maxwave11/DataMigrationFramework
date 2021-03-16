@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Utils;
+using DataMigration.Data;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Expressions
+namespace DataMigration.Pipeline.Expressions
 {
     /// <summary>
     /// Object of this class represents the contex for accessing from migration expression in run-time

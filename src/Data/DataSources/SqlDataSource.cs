@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     public class SqlDataSource : DataSourceBase 
     {

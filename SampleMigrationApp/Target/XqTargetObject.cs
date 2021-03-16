@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Utils;
+using DataMigration.Data;
+using DataMigration.Utils;
 
 namespace XQTargetProvider
 {

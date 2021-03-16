@@ -1,4 +1,4 @@
-﻿namespace XQ.DataMigration.Enums
+﻿namespace DataMigration.Enums
 {
     public enum TransitionFlow
     {

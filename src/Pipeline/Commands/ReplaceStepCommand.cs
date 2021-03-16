@@ -2,10 +2,10 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Utils;
+using DataMigration.Enums;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     [Command("REPLACE_STEP")]
     public class ReplaceStepCommand : CommandBase

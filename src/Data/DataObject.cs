@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data
+namespace DataMigration.Data
 {
     public class DataObject : IDataObject
     {

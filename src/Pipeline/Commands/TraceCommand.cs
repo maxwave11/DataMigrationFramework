@@ -1,6 +1,6 @@
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     [Command("TRACE")]
     public class TraceCommand : CommandBase

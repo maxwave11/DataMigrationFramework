@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Utils;
+using DataMigration.Pipeline;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     /// <summary>
     /// Base data source functionality. Use it as base for your custom data providers.

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     public class CsvDataSource : DataSourceBase
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Utils;
+using DataMigration.Enums;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Trace
+namespace DataMigration.Pipeline.Trace
 {
     public class MigrationEventTraceEntry
     {

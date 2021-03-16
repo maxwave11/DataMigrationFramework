@@ -1,15 +1,16 @@
+using DataMigration.Data.DataSources;
+using DataMigration.Enums;
+using DataMigration.Pipeline;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Pipeline.Expressions;
+using DataMigration.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using XQ.DataMigration.Data.DataSources;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Pipeline.Expressions;
-using XQ.DataMigration.Utils;
 using YamlDotNet.Serialization;
 
-namespace XQ.DataMigration
+namespace DataMigration
 {
     public class MapConfig
     {

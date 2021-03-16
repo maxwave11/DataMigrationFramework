@@ -1,6 +1,6 @@
 ﻿using System;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
+using DataMigration.Pipeline;
+using DataMigration.Pipeline.Commands;
 
 namespace SampleMigrationApp.PipelineCommands
 {

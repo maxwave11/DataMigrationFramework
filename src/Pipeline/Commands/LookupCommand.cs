@@ -1,13 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Data.DataSources;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Pipeline.Expressions;
-using XQ.DataMigration.Utils;
+using DataMigration.Data;
+using DataMigration.Data.DataSources;
+using DataMigration.Enums;
+using DataMigration.Pipeline.Expressions;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     public enum LookupMode
     {

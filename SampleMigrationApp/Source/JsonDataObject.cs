@@ -2,8 +2,8 @@
 using System;
 using System.Linq;
 using System.Text;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Utils;
+using DataMigration.Data;
+using DataMigration.Utils;
 
 namespace XQ.EqDataMigrator.TargetProvider
 {

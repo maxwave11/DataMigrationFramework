@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using XQ.DataMigration.Enums;
+using DataMigration.Enums;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     [Command("TRANSIT")]
     public class CommandSet<T> : CommandBase, IList<T>  where T : CommandBase

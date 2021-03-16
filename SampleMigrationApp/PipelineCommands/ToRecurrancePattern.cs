@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Text;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Utils;
+using DataMigration.Pipeline;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Utils;
 
 namespace SampleMigrationApp.PipelineCommands
 {

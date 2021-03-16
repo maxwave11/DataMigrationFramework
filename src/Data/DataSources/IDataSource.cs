@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     /// <summary>
     /// Common interface for any data source which returns data from some sources

@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Pipeline.Trace;
-using XQ.DataMigration.Utils;
+using DataMigration.Data;
+using DataMigration.Enums;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Pipeline.Trace;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline
+namespace DataMigration.Pipeline
 {
     public class ValueTransitContext
     {

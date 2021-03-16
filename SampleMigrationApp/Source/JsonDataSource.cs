@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Data.DataSources;
+using DataMigration.Data;
+using DataMigration.Data.DataSources;
 
 namespace XQ.EqDataMigrator.TargetProvider
 {

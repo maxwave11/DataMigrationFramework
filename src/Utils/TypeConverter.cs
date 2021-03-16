@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace XQ.DataMigration.Utils
+namespace DataMigration.Utils
 {
     public static class TypeConverter
     {

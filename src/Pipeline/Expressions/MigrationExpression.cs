@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using XQ.DataMigration.Data;
+using DataMigration.Data;
 
-namespace XQ.DataMigration.Pipeline.Expressions
+namespace DataMigration.Pipeline.Expressions
 {
     public sealed class MigrationExpression: MigrationExpression<object>
     {

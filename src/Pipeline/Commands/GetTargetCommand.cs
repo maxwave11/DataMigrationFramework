@@ -1,8 +1,8 @@
 using System;
-using XQ.DataMigration.Data.DataSources;
-using XQ.DataMigration.Enums;
+using DataMigration.Data.DataSources;
+using DataMigration.Enums;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     [Command("TARGET")]
     public class GetTargetCommand : CommandBase

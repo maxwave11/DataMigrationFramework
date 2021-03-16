@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Data.DataSources;
+using DataMigration.Data;
+using DataMigration.Data.DataSources;
 using XQTargetProvider;
 
 namespace XQ.EqDataMigrator.TargetProvider

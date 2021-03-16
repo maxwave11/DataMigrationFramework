@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reflection;
 
-namespace XQ.DataMigration.Pipeline.Commands.Validation
+namespace DataMigration.Pipeline.Commands.Validation
 {
     /// <summary>
     /// Provides conditional validation based on related property value.

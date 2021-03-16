@@ -2,7 +2,7 @@ using FastMember;
 using System;
 using System.Collections.Generic;
 
-namespace XQ.DataMigration.Utils
+namespace DataMigration.Utils
 {
     public static class FastReflection
     {

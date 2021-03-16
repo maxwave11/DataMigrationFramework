@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     /// <summary>
     /// Assign TAG name to the command. You can use it in YAML configuration

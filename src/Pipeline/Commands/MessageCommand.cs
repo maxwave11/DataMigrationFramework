@@ -1,7 +1,7 @@
-﻿using XQ.DataMigration.Enums;
-using XQ.DataMigration.Pipeline.Expressions;
+﻿using DataMigration.Enums;
+using DataMigration.Pipeline.Expressions;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     /// <summary>
     /// Transition which allows to write custom messages to migration trace

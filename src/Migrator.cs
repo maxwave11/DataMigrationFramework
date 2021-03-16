@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Pipeline.Trace;
+using DataMigration.Pipeline;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Pipeline.Trace;
 
-namespace XQ.DataMigration
+namespace DataMigration
 {
     public class Migrator
     {

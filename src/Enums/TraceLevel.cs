@@ -1,6 +1,6 @@
-using XQ.DataMigration.Pipeline;
+using DataMigration.Pipeline;
 
-namespace XQ.DataMigration.Enums
+namespace DataMigration.Enums
 {
     /// <summary>
     /// Determines the level of trace details

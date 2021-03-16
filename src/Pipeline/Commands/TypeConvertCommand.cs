@@ -1,7 +1,7 @@
 using System;
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     [Command("TYPE")]
     public class TypeConvertCommand : CommandBase

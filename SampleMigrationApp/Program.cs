@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
-using XQ.DataMigration;
-using XQ.DataMigration.Pipeline.Trace;
+using DataMigration;
+using DataMigration.Pipeline.Trace;
 using XQ.EqDataMigrator.TargetProvider;
 
 namespace SampleMigrationApp

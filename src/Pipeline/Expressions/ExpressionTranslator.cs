@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace XQ.DataMigration.Pipeline.Expressions
+namespace DataMigration.Pipeline.Expressions
 {
     /// <summary>
     /// This util class allows to translate and compile "Migration expression" to delegate. 
