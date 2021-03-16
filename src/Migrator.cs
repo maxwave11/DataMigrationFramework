@@ -18,6 +18,9 @@ namespace XQ.DataMigration
 
         public Migrator(MapConfig mapConfig, bool throwExeptionOnError = false)
         {
+            if (mapConfig == null)
+                throw new ArgumentNullException(nameof(mapConfig));
+
             _mapConfig = mapConfig;
             ThrowExeptionOnError = throwExeptionOnError;
             Current = this;
@@ -26,27 +29,15 @@ namespace XQ.DataMigration
 
         public void Run()
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            var migrationTimeCounter = new Stopwatch();
+            migrationTimeCounter.Start();
 
-            Tracer.TraceLine("====== Migration start ======");
+            Tracer.TraceLine(" - Migration start...");
 
             try
             {
-                foreach (string name in _mapConfig.Variables.Keys.ToList())
-                {
-                    if (_mapConfig.Variables[name] is CommandBase command)
-                    {
-                        var ctx = new ValueTransitContext(null, null);
-                        ctx.Execute(command);
-                        _mapConfig.Variables[name] = ctx.TransitValue;
-                    }
-                }
-
-                foreach (var pipeline in _mapConfig.Pipeline.Where(i => i.Enabled)) 
-                {
-                    pipeline.Run();
-                }
+                InitializeVariables();
+                InitializePipeline();
             }
             catch (DataMigrationException e)
             {
@@ -61,9 +52,35 @@ namespace XQ.DataMigration
                     throw;
             }
                 
-            stopwatch.Stop();
+            migrationTimeCounter.Stop();
+
             Tracer.SaveLogs();
-            Tracer.TraceLine($"====== END {stopwatch.Elapsed.TotalMinutes} mins ======");
+            Tracer.TraceLine($" - Migration end {migrationTimeCounter.Elapsed.TotalMinutes} mins");
+        }
+
+        private void InitializeVariables() 
+        {
+            if (_mapConfig.Variables == null)
+                return;
+
+            //Calculate variable values from appropriate YAML expressions
+            foreach (string varName in _mapConfig.Variables.Keys)
+            {
+                if (_mapConfig.Variables[varName] is CommandBase command)
+                {
+                    var ctx = new ValueTransitContext(null, null);
+                    ctx.Execute(command);
+                    _mapConfig.Variables[varName] = ctx.TransitValue;
+                }
+            }
+        }
+
+        private void InitializePipeline() 
+        {
+            foreach (var pipeline in _mapConfig.Pipeline.Where(i => i.Enabled))
+            {
+                pipeline.Run();
+            }
         }
     }
 }

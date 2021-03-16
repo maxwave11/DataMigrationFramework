@@ -1,10 +1,12 @@
-﻿using System;
+﻿using SampleMigrationApp.PipelineCommands;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
 using XQ.DataMigration;
 using XQ.DataMigration.Pipeline.Trace;
+using XQ.EqDataMigrator.TargetProvider;
 
 namespace SampleMigrationApp
 {
@@ -20,10 +22,20 @@ namespace SampleMigrationApp
             Console.BufferHeight = 30000;
 
 
+            var commands = new[] {
+                // typeof(AssetTransition),
+                typeof(SetCustomField),
+                typeof(SetCashFlowValue),
+                typeof(XqDataSource),
+                typeof(SetAssumption),
+                typeof(JsonDataSource),
+                typeof(ToRecurrancePattern),
+            };
+
 
             Console.WriteLine("Reading Map config file");
 
-            var mapConfig = MapConfig.ReadFromFile("SampleConfig.yaml", null);
+            var mapConfig = MapConfig.ReadFromFile("SampleBigConfig.yaml", commands);
 
             var migrator = new Migrator(mapConfig);
             migrator.Tracer.TransitValueStarted += (s, e) =>

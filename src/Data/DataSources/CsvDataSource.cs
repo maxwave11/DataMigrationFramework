@@ -44,35 +44,33 @@ namespace XQ.DataMigration.Data.DataSources
         private IEnumerable<IDataObject> GetDataFromFile(string filePath)
         {
             Migrator.Current.Tracer.TraceLine("Reading " + filePath);
-            var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            var txtReader = new StreamReader(stream, System.Text.Encoding.GetEncoding(Encoding));
+            using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var txtReader = new StreamReader(stream);
 
-            var csvConfiguration = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.CurrentCulture);
+            var csvConfiguration = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture);
             csvConfiguration.Delimiter = Delimiter ?? MapConfig.Current.DefaultCsvDelimiter;
-            csvConfiguration.Encoding = System.Text.Encoding.GetEncoding(Encoding);
+           // csvConfiguration.Encoding = System.Text.Encoding.GetEncoding(Encoding);
             csvConfiguration.TrimOptions = CsvHelper.Configuration.TrimOptions.Trim;
             csvConfiguration.IgnoreBlankLines = true;
             //csvConfiguration.TrimHeaders = true;
-            var csvReader = new CsvReader(txtReader, csvConfiguration);
+            using var csvReader = new CsvReader(txtReader, csvConfiguration);
 
             Key.TraceColor = ConsoleColor.Green;
-            
-            using (txtReader)
+
+            while (csvReader.Read())
             {
-                using (csvReader)
+                if (csvReader.HeaderRecord==null)
+                    csvReader.ReadHeader();
+
+                var result = new DataObject();
+
+                csvReader.HeaderRecord.ToList().ForEach(header =>
                 {
-                    while (csvReader.Read())
-                    {
-                        var result = new DataObject();
-                        csvReader.HeaderRecord.ToList().ForEach(i =>
-                        {
-                            if (i.IsNotEmpty())
-                                result.SetValue(i.Trim(), csvReader[i.Trim()]);
-                        });
+                    if (header.IsNotEmpty())
+                        result.SetValue(header.Trim(), csvReader[header.Trim()]);
+                });
                         
-                        yield return result;
-                    }
-                }
+                yield return result;
             }
         }
     }

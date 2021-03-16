@@ -1,0 +1,268 @@
+﻿Nimi;Kustannuspaikan numero;Market Value EUR;Market Rent Growth Rate;General Vacancy Rate-%;TI Cost /sqm (or /pcs);Idle time (months);Leasing Commission (% of first year rental income);Extension Length (months);Opex Growth Rate;Sale Price Growth Rate;Hankintapäivämäärä;Acquisition price;Divestointipäivämäärä;Exit price;Exit Vacancy Rate;Exit Cap Rate;Repairs EUR/m2/kk;Capex EUR/m2/kk
+5523 Kiinteistö Oy Espoon Martinsillantie 10;5523;49900000.00;Change of market rents (%);0.05;100.00;5.00;0.08;60.00;Change of expenses (%);;01.03.2017;45691914.00;;;0.05;0.06;;0.90
+5502 Kiinteistö Oy Keravan Peltomäenkatu 2-4;5502;7000000.00;Change of market rents (%);0.05;100.00;3.00;0.08;84.00;Change of expenses (%);;01.01.2015;6200000.00;;;0.05;0.07;;0.60
+5503 Kiinteistö Oy Hämeenlinnan Katsastusmiehentie 6-8;5503;40900000.00;Change of market rents (%);0.07;100.00;3.00;0.00;120.00;Change of expenses (%);;28.05.2015;38000000.00;;;0.07;0.07;;0.90
+5504 Kiinteistö Oy Hämeenlinnan Katsastusmiehentie 10;5504;10100000.00;Change of market rents (%);0.05;100.00;3.00;0.00;120.00;Change of expenses (%);;28.05.2015;10000000.00;;;0.05;0.08;;0.60
+5505 Kiinteistö Oy Seinäjoen Päivölänkatu 40;5505;24500000.00;Change of market rents (%);0.05;100.00;3.00;0.00;120.00;Change of expenses (%);;01.07.2015;21800000.00;;;0.05;0.07;;0.60
+5506 Kiinteistö Oy Tampereen Kauppakatu 4;5506;10400000.00;Change of market rents (%);0.05;100.00;3.00;0.08;60.00;Change of expenses (%);;02.07.2015;9300000.00;;;0.05;0.06;;0.90
+5507 Kiinteistö Oy Tampereen Taninkatu 1;5507;14800000.00;Change of market rents (%);0.05;100.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2015;14100000.00;;;0.05;0.07;;0.90
+5508 Kiinteistö Oy Helsingin Panuntie 4;5508;21800000.00;Change of market rents (%);0.07;50.00;3.00;0.08;36.00;Change of expenses (%);;02.10.2015;20200000.00;;;0.07;0.06;;0.90
+5509 Kiinteistö Oy Nokian Nuijamiestentie 9;5509;8800000.00;Change of market rents (%);0.07;100.00;5.00;0.08;36.00;Change of expenses (%);;16.12.2015;8850000.00;;;0.07;0.08;;0.60
+5510 Kiinteistö Oy Salon Hämeentie 24;5510;18400000.00;Change of market rents (%);0.05;100.00;3.00;0.00;120.00;Change of expenses (%);;07.01.2016;14994000.00;;;0.05;0.06;;0.90
+5512 Kiinteistö Oy Ylöjärven Elotie 9;5512;10100000.00;Change of market rents (%);0.05;100.00;3.00;0.00;120.00;Change of expenses (%);;01.04.2016;9065000.00;;;0.05;0.07;;0.25
+5513 Kiinteistö Oy Espoon Sinikalliontie 1;5513;35000000.00;Change of market rents (%);0.04;100.00;3.00;0.04;60.00;Change of expenses (%);;29.04.2016;32500000.00;;;0.04;0.06;;0.90
+5514 Kiinteistö Oy Kaarinan Jännekatu 2-4;5514;8100000.00;Change of market rents (%);0.07;100.00;5.00;0.08;36.00;Change of expenses (%);;29.04.2016;7200000.00;;;0.07;0.08;;0.90
+5515 Kiinteistö Oy Kangasalan Mäkirinteentie 4;5515;13800000.00;Change of market rents (%);0.07;100.00;5.00;0.08;36.00;Change of expenses (%);;29.04.2016;12500000.00;;;0.07;0.08;;0.60
+5516 Kiinteistö Oy Kontulan Asemakeskus;5516;16800000.00;Change of market rents (%);0.03;100.00;3.00;0.00;120.00;Change of expenses (%);;29.04.2016;16100000.00;;;0.03;0.06;;0.90
+5517 Kiinteistö Oy Länsi-Keskus;5517;12200000.00;Change of market rents (%);0.05;200.00;3.00;0.04;60.00;Change of expenses (%);;29.04.2016;6900000.00;;;0.05;0.07;;0.90
+5518 Kiinteistö Oy Helsingin Sturenkatu 21;5518;30400000.00;Change of market rents (%);0.05;200.00;3.00;0.08;60.00;Change of expenses (%);;01.07.2016;20625000.00;;;0.05;0.05;;0.90
+5519 Kiinteistö Oy Hämeenlinnan Länsiportintie 15;5519;27500000.00;Change of market rents (%);0.05;100.00;6.00;0.00;180.00;Change of expenses (%);;30.11.2016;26286014.00;;;0.05;0.07;;0.60
+5521 Kiinteistö Oy Tampereen Juvankatu 14;5521;10200000.00;Change of market rents (%);0.03;50.00;3.00;0.00;120.00;Change of expenses (%);;11.01.2017;8611190.00;;;0.03;0.06;;0.25
+5522 Kiinteistö Oy Tampereen Biokatu 14;5522;0.00;Change of market rents (%);0.05;50.00;3.00;0.00;36.00;Change of expenses (%);;21.11.2016;25919027.00;30.06.2020;27850000.00;0.05;0.07;;0.90
+5524 Kiinteistö Oy Plaza Presto;5524;14800000.00;Change of market rents (%);0.07;50.00;3.00;0.08;36.00;Change of expenses (%);;28.04.2017;12483078.00;;;0.07;0.07;;0.90
+5525 Kiinteistö Oy Vantaan Peltolantie 1;5525;18200000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.06.2017;15338969.00;;;0.05;0.06;;0.90
+5526 Kiinteistö Oy Vantaan Kalustetie 1;5526;17300000.00;Change of market rents (%);0.05;100.00;5.00;0.05;60.00;Change of expenses (%);;31.05.2017;16647919.00;;;0.05;0.07;;0.90
+5527 Kiinteistö Oy Vantaan Antaksentie 4;5527;28500000.00;Change of market rents (%);0.04;100.00;5.00;0.05;60.00;Change of expenses (%);;02.10.2017;24239311.00;;;0.04;0.06;;0.90
+5528 Kiinteistö Oy Kuopion Haapaniemenkatu 22;5528;25700000.00;Change of market rents (%);0.05;100.00;6.00;0.00;120.00;Change of expenses (%);;14.09.2017;24952500.00;;;0.05;0.07;;0.90
+5529 Kiinteistö Oy Plaza Loiste;5529;25300000.00;Change of market rents (%);0.05;50.00;3.00;0.08;36.00;Change of expenses (%);;02.10.2017;21271342.00;;;0.05;0.06;;0.60
+5530 Kiinteistö Oy Tampereen Hämeenkatu 22;5530;20900000.00;Change of market rents (%);0.05;100.00;3.00;0.08;36.00;Change of expenses (%);;21.12.2017;21000000.00;;;0.05;0.06;;0.90
+5531 Kiinteistö Oy Tampereen Keskustori 5;5531;14000000.00;Change of market rents (%);0.05;100.00;3.00;0.08;36.00;Change of expenses (%);;21.12.2017;13000000.00;;;0.05;0.06;;0.90
+5532 Kiinteistö Oy Helsingin Malminkaari 13-15;5532;34300000.00;Change of market rents (%);0.05;100.00;3.00;0.08;60.00;Change of expenses (%);;28.03.2018;32800000.00;;;0.05;0.06;;0.90
+5533 Kiinteistö Oy Siilinjärven Katekuja 9;5533;0.00;Change of market rents (%);0.05;50.00;3.00;0.00;36.00;Change of expenses (%);;01.05.2018;10000000.00;27.02.2020;10750000.00;0.05;0.07;;0.90
+5534 Kiinteistö Oy Helsingin Siltasaarenkatu 14;5534;36900000.00;Change of market rents (%);0.05;150.00;6.00;0.00;120.00;Change of expenses (%);;28.06.2018;37176000.00;;;0.05;0.06;;0.90
+5535 Kiinteistö Oy Tampereen Harjuntausta 12-14;5535;13000000.00;Change of market rents (%);0.05;100.00;3.00;0.04;84.00;Change of expenses (%);;02.07.2018;13300000.00;;;0.05;0.07;;0.90
+5536 Kiinteistö Oy Espoon Juvankartanontie 32;5536;8400000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;02.07.2018;8500000.00;;;0.05;0.06;;0.25
+5537 Kiinteistö Oy Nurmijärven Kiljavantie 5;5537;13300000.00;Change of market rents (%);0.05;50.00;3.00;0.04;120.00;Change of expenses (%);;30.11.2018;12700000.00;;;0.05;0.06;;0.25
+5538 Kiinteistö Oy Espoon Sinimäentie 18-22;5538;39200000.00;Change of market rents (%);0.04;50.00;3.00;0.04;120.00;Change of expenses (%);;29.03.2019;39273000.00;;;0.04;0.06;;0.90
+5539 Kiinteistö Oy Järvenpään Yhteiskouluntie 13;5539;6300000.00;Change of market rents (%);0.05;50.00;5.00;0.00;60.00;Change of expenses (%);;31.08.2018;6300000.00;;;0.05;0.08;;0.90
+5540 Kiinteistö Oy Valkeakosken Hakalantie 1;5540;20200000.00;Change of market rents (%);0.05;100.00;3.00;0.00;120.00;Change of expenses (%);;31.08.2018;18800000.00;;;0.05;0.07;;0.60
+5541 Kiinteistö Oy Tampereen Jäähallinkaari 3;5541;14457122.00;Change of market rents (%);0.05;50.00;3.00;0.04;60.00;Change of expenses (%);;21.11.2019;4714968.00;;;0.05;0.05;;0.25
+5542 Kiinteistö Oy Helsingin Hiomotie 30;5542;11100000.00;Change of market rents (%);0.10;100.00;6.00;0.08;36.00;Change of expenses (%);;20.12.2018;10800000.00;;;0.10;0.07;;0.90
+5543 Kiinteistö Oy Plaza Piano;5543;13500000.00;Change of market rents (%);0.07;50.00;3.00;0.08;36.00;Change of expenses (%);;20.12.2018;13900000.00;;;0.07;0.06;;0.90
+5547 Kiinteistö Oy Helsingin Teollisuuskatu 21;5547;51900000.00;Change of market rents (%);0.07;100.00;5.00;0.04;60.00;Change of expenses (%);;21.12.2018;52300000.00;;;0.07;0.06;;0.90
+5548 Kiinteistö Oy Helsingin Itämerenkatu 5;5548;41200000.00;Change of market rents (%);0.05;50.00;3.00;0.08;36.00;Change of expenses (%);;31.01.2019;41000000.00;;;0.05;0.05;;0.90
+1001 Perhotie 2, Oulu;1001;730000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2012;557450.00;;;0.05;0.06;;0.60
+1002 Vanharaitti 1, Oulu;1002;660000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2012;509400.00;;;0.05;0.07;;0.60
+1003 Kehätie 1, Oulu;1003;960000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2012;762900.00;;;0.05;0.07;;0.60
+1004 Suolatie 5, Kempele;1004;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.10.2012;712850.00;30.04.2019;932175.62;0.05;0.07;;0.90
+1005 Sammontie 4, Muhos;1005;640000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2012;532400.00;;;0.05;0.07;;0.60
+1006 Rautaniementie 1, Kuopio;1006;1560000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2012;1316000.00;;;0.05;0.07;;0.60
+1007 Risulantie 1, Siilinjärvi;1007;1420000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2012;1208000.00;;;0.05;0.07;;0.60
+1008 Pirtinkaari 13, Kuopio;1008;1330000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2012;5944104.00;;;0.05;0.08;;0.60
+1009 Metsänvartijantie 1, Oulu;1009;1390000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2012;1208000.00;;;0.05;0.07;;0.60
+1010 Varuskunta 44, Tuusula;1010;8180000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.01.2013;6256551.00;;;0.05;0.05;;0.90
+1011 Peltisepänkatu 9, Lahti;1011;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.04.2013;262000.00;30.09.2018;154000.00;0.05;0.07;;0.90
+1012 Puotikatu 3-5, Lahti;1012;2380000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.04.2013;1302000.00;;;0.05;0.06;;0.60
+1013 Onnentaival 6, Pornainen;1013;5460000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.04.2013;4362023.00;;;0.05;0.06;;0.60
+1014 Varuskunta 45, Tuusula;1014;8220000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;07.06.2013;6450000.00;;;0.05;0.05;;0.90
+1015 Tornitie 4, Ylöjärvi;1015;2060000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.04.2013;2066870.00;;;0.05;0.07;;0.60
+1016 Kuhilaskuja 4, Joensuu;1016;1700000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.04.2013;1971535.00;;;0.05;0.08;;0.60
+1017 Laivurinkatu 1, Nokia;1017;2040000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.07.2013;1490000.00;;;0.05;0.06;;0.60
+1018 Leikkitie 5, Vantaa;1018;1710000.00;Change of market rents (%);0.05;50.00;1.00;0.00;120.00;Change of expenses (%);;01.07.2013;1288000.00;;;0.05;0.06;;0.60
+1019 Koppelintie 40, Riihimäki;1019;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2013;888000.00;30.04.2019;1294079.10;0.05;0.07;;0.90
+1020 Mäntylammintie 6, Kurikka;1020;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2013;2280000.00;30.04.2019;3355832.24;0.05;0.07;;0.90
+1021 Kytökankaantie 2, Nivala;1021;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2013;1850000.00;30.04.2019;2456556.93;0.05;0.07;;0.90
+1022 Sähkötie 7, Vihti;1022;4860000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.07.2013;4400000.00;;;0.05;0.05;;0.60
+1023 Elmerannantie 39,  Salo;1023;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;06.09.2013;2000000.00;30.04.2019;2346889.21;0.05;0.07;;0.90
+1024 Lakaniementie 85, Vimpeli;1024;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2013;2797000.00;30.04.2019;3816436.67;0.05;0.07;;0.90
+1025 Ruuhimäentie 1 A ja B, Laukaa;1025;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2013;1750000.00;30.04.2019;1995952.51;0.05;0.07;;0.90
+1026 Lautatarhankatu 8, Hamina;1026;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2013;2782000.00;30.04.2019;3300998.38;0.05;0.07;;0.90
+1027 Kauppiaankatu 13, Hamina;1027;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2013;1828000.00;30.04.2019;3322931.93;0.05;0.07;;0.90
+1028 Ojasalonkuja 2-5, Seinäjoki;1028;4060000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.10.2013;3464159.00;;;0.05;0.08;;0.60
+1029 Vaajakoskentie 56, Jyväskylä;1029;940000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.10.2013;1200000.00;;;0.05;0.09;;0.90
+1030 Seppäläntie 109, Masku;1030;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.10.2013;1800000.00;30.04.2019;2149487.32;0.05;0.07;;0.90
+1031 Olkkolantie 1, Joensuu;1031;2850000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.10.2013;2880000.00;;;0.05;0.07;;0.60
+1032 Pitkäkoskentie 1, Liminka;1032;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.10.2013;1395836.00;30.04.2019;1721783.21;0.05;0.07;;0.90
+1033 Poukamankatu 4, Kuopio;1033;1430000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2013;1351358.00;;;0.05;0.07;;0.60
+1034 Sipulitie 17, Vantaa;1034;2920000.00;Change of market rents (%);0.05;50.00;1.00;0.00;120.00;Change of expenses (%);;01.10.2013;2233409.00;;;0.05;0.06;;0.60
+1035 Aurinkokatu 47, Joensuu;1035;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.01.2014;2575180.00;30.04.2019;2928128.13;0.05;0.07;;0.90
+1036 Tiaispolku 1, Joensuu;1036;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.01.2014;2989520.00;30.04.2019;3388732.56;0.05;0.07;;0.90
+1037 Vehkakuja 4, Joensuu;1037;4560000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.01.2014;3725300.00;;;0.05;0.05;;0.60
+1039 Schalininkatu 2, Turku;1039;1810000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.01.2014;1526566.00;;;0.05;0.06;;0.60
+1040 Uuraistentie 112, Äänekoski;1040;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2014;786000.00;30.04.2019;1195378.15;0.05;0.07;;0.90
+1041 Kolpeneentie 69,  Rovaniemi;1041;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2014;1726000.00;30.04.2019;1853384.47;0.05;0.07;;0.90
+1042 Käärmeniementie 20, Varkaus;1042;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2014;2420000.00;30.04.2019;2774593.32;0.05;0.07;;0.90
+1043 Kiinteistö Oy Suonenjoen Väinönkatu 7;1043;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2014;880005.00;30.04.2019;997976.25;0.05;0.07;;0.90
+1045 Kiinteistö Oy Ilmajoen Jussintie 2;1045;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.07.2014;2341079.00;30.04.2019;2642992.06;0.05;0.07;;0.90
+1046 Ohjastie 2, Nurmijärvi;1046;3420000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;16.06.2014;2852000.00;;;0.05;0.06;;0.60
+1047 Sinivuokontie 2, Porvoo;1047;3280000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.07.2014;2802400.00;;;0.05;0.07;;0.60
+1048 Sundetin Puistotie 15, Kirkkonummi;1048;2620000.00;Change of market rents (%);0.05;50.00;1.00;0.00;120.00;Change of expenses (%);;01.07.2014;1999500.00;;;0.05;0.05;;0.25
+1049 Kiviojantie 12, Järvenpää;1049;9530000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;16.09.2014;7164253.00;;;0.05;0.05;;0.25
+1050 Kaskelantie 20 a, Kirkkonummi;1050;2950000.00;Change of market rents (%);0.05;50.00;1.00;0.00;120.00;Change of expenses (%);;01.07.2014;2213000.00;;;0.05;0.05;;0.25
+1051 Metsolantie 4, Vantaa;1051;10100000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.07.2014;7100568.00;;;0.05;0.05;;0.90
+1052 Kaskelantie 20 b, Kirkkonummi;1052;7110000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.10.2014;5152500.00;;;0.05;0.05;;0.25
+1053 Hyvinkää, Yli-Anttilantie 29;1053;8790000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;26.02.2015;6696000.00;;;0.05;0.05;;0.25
+1054 Tetriahontie 10, Juuka;1054;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.10.2014;2950000.00;30.04.2019;3399699.33;0.05;0.07;;0.90
+1055 Nuutinkorventie 7 A, Jyväskylä;1055;2280000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.10.2014;2040000.00;;;0.05;0.07;;0.60
+1056 Kiinteistö Oy Rovaniemen Talvitie 34;1056;1530000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2014;1394656.00;;;0.05;0.07;;0.60
+1057 Kiinteistö Oy Oulun Kaartintie 6;1057;2280000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2014;2078934.00;;;0.05;0.07;;0.60
+1058 Kohokuja 4, Pyhtää;1058;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.10.2014;395000.00;30.04.2019;493504.74;0.05;0.07;;0.90
+1059 Kaunismäenkatu 2, Kotka;1059;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.10.2014;405000.00;30.04.2019;526405.06;0.05;0.07;;0.90
+1060 Jokipolku 1b, Kotka;1060;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.10.2014;392000.00;30.04.2019;482537.97;0.05;0.07;;0.90
+1061 Hiirulaisenkuja 6, Oulu;1061;2090000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.10.2014;1612000.00;;;0.05;0.06;;0.60
+1062 Kurikka, Koskitie 5 C;1062;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.01.2015;4649000.00;30.04.2019;5560153.42;0.05;0.07;;0.90
+1063 Kiinteistö Oy Seinäjoen Törnäväntie 30 B;1063;4050000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;05.02.2015;3477115.00;;;0.05;0.07;;0.90
+1064 Kanervatie 5, Oulu;1064;8990000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.01.2015;6405000.00;;;0.05;0.06;;0.90
+1065 Kiinteistö Oy Hämeenlinnan Kekkurinkuja 3;1065;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.01.2015;1432276.00;30.04.2019;1853384.47;0.05;0.07;;0.90
+1066 Kyllöläntie 3, Jyväskylä;1066;1520000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.01.2015;1180000.00;;;0.05;0.06;;0.90
+1067 Päivänpaiste 5, Kokemäki;1067;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.04.2015;3505000.00;30.04.2019;5187283.17;0.05;0.07;;0.90
+1068 Ruokosenniementie 15, Mänttä-Vilppula;1068;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.04.2015;384000.00;30.04.2019;537371.83;0.05;0.07;;0.90
+1069 Tammitie 2, Jämsä;1069;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.04.2015;2619000.00;30.04.2019;3816436.67;0.05;0.07;;0.90
+1070 Kiinteistö Oy Rovaniemen Miehentie 10;1070;2320000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;01.04.2015;2075035.00;;;0.05;0.07;;0.60
+1071 Ruissalontie 4, Hamina;1071;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;16.04.2015;4891104.00;30.04.2019;5889156.58;0.05;0.07;;0.90
+1072 Jungonkatu 17, Kemi;1072;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.04.2015;3230140.00;30.04.2019;4013838.56;0.05;0.07;;0.90
+1073 Kivimiehenkatu 10, Nokia;1073;6950000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.04.2015;2716222.00;;;0.05;0.05;;0.90
+1074 Kiinteistö Oy Espoon Töyhtötiaisentie 3;1074;5380000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.04.2015;4045649.00;;;0.05;0.05;;0.60
+1075 Kiinteistö Oy Espoon Nimismiehenmäki 1;1075;6610000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.04.2015;4994784.00;;;0.05;0.05;;0.60
+1076 Cajanuksentie 5A, Kempele;1076;2910000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.04.2015;2250000.00;;;0.05;0.06;;0.60
+1077 Järvenpää, Valimokuja 3;1077;2640000.00;Change of market rents (%);0.05;50.00;1.00;0.00;120.00;Change of expenses (%);;30.06.2015;1985280.00;;;0.05;0.05;;0.25
+1078 Kiinteistö Oy Helsingin Läkkisepänkuja 5;1078;3000000.00;Change of market rents (%);0.10;50.00;1.00;0.00;180.00;Change of expenses (%);;01.07.2015;3011488.00;;;0.10;0.09;;0.90
+1079 Kiinteistö Oy Helsingin Läkkisepänkuja 8;1079;10500000.00;Change of market rents (%);0.05;50.00;1.00;0.00;180.00;Change of expenses (%);;01.07.2015;8377650.00;;;0.05;0.07;;0.90
+1080 Ämmöntie 4, Oulu;1080;3680000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;02.07.2015;3197348.00;;;0.05;0.06;;0.25
+1081 Kaskitie 1, Ylöjärvi;1081;3810000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.09.2015;3185006.00;;;0.05;0.06;;0.25
+1082 Pärnäläntie 10, Savonlinna;1082;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;25.08.2015;3310991.00;30.04.2019;3915137.61;0.05;0.07;;0.90
+1083 Kiinteistö Oy Turun Humalistonkatu 11;1083;24900000.00;Change of market rents (%);0.05;50.00;6.00;0.08;60.00;Change of expenses (%);;01.10.2015;22535750.00;;;0.05;0.06;;0.90
+1084 Aittokalliontie 23, Saarijärvi;1084;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;20.10.2015;3411397.00;30.04.2019;4200273.69;0.05;0.07;;0.90
+1085 Kivikaudentie 8-10, Rovaniemi;1085;1590000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;29.11.2015;1367297.00;;;0.05;0.07;;0.25
+1086 Ohrapäänkatu 3, Turku;1086;1880000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;29.11.2015;1505279.00;;;0.05;0.06;;0.25
+1087 Puotikatu 7a, Lahti;1087;1770000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;29.11.2015;1447869.00;;;0.05;0.06;;0.25
+1088 Aurinkotuulentie 15, Joensuu;1088;1890000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;29.11.2015;1638304.00;;;0.05;0.06;;0.25
+1089 Jouttikankaantie 57, Rovaniemi;1089;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;29.11.2015;400000.00;30.04.2019;537371.83;0.05;0.07;;0.90
+1090 Kimalaisentie 2, Rovaniemi;1090;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;29.11.2015;500000.00;30.04.2019;668973.09;0.05;0.07;;0.90
+1091 Kaplastie 8, Kajaani;1091;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;07.12.2015;5030000.00;30.04.2019;6536196.13;0.05;0.07;;0.90
+1092 Korkeemäenkatu 7,  Nokia;1092;1000000.00;Change of market rents (%);0.07;50.00;6.00;0.04;120.00;Change of expenses (%);;11.12.2015;2401923.00;;;0.07;0.07;;0.90
+1093 Hytösenkuja 3, Laukaa;1093;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;15.12.2015;3193480.00;30.04.2019;3959004.70;0.05;0.07;;0.90
+1094 Kiinteistö Oy Oulun Savottatie 56;1094;6960000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;6210852.00;;;0.05;0.06;;0.25
+1095 Hammarinkuja 6, Jämsä;1095;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.02.2016;3250841.00;30.04.2019;3969971.47;0.05;0.07;;0.90
+1096 Virkkulantie 4, Kuusjärvi (Outokumpu);1096;3090000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;4042727.00;;;0.05;0.08;;0.25
+1097 Kiinteistö Oy Espoon Pyyntitie 5;1097;10820000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.02.2016;8715676.00;;;0.05;0.04;;0.90
+1098 Kiinteistö Oy Turun Elisabetinkatu 3;1098;8640000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;11256503.00;;;0.05;0.06;;0.60
+1099 Kiinteistö Oy Kajaanin Kaplastie 4;1099;6480000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;10949116.00;;;0.05;0.07;;0.60
+1100 Kiinteistö Oy Siilinjärven Mantunkuja 4;1100;6700000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;9942780.00;;;0.05;0.07;;0.60
+1102 Kiinteistö Oy Liedon Hyvättyläntie 9;1102;10800000.00;Change of market rents (%);0.05;50.00;0.00;0.00;0.00;Change of expenses (%);;01.02.2016;13924170.00;;;0.05;0.06;;0.60
+1103 Kiinteistö Oy Mikkelin Ylännetie 3;1103;5980000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;9537042.00;;;0.05;0.08;;0.60
+1104 Kiinteistö Oy Kuopion Kemilänrinne 1;1104;5180000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;8653436.00;;;0.05;0.07;;0.90
+1105 Kiinteistö Oy Mäntsälän Laurintie 3;1105;6130000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;7173101.00;;;0.05;0.06;;0.60
+1106 Kiinteistö Oy Tyrnävän Villentie 3-5;1106;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.02.2016;5445088.00;30.04.2019;6733598.03;0.05;0.07;;0.90
+1107 Kiinteistö Oy Hyvinkään Martinlähteentie 13;1107;5180000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.02.2016;6485808.00;;;0.05;0.06;;0.60
+1108 Kiinteistö Oy Nokian Lähdeniityntie 13;1108;4730000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;6093415.00;;;0.05;0.07;;0.60
+1109 Kiinteistö Oy Kuopion Pirtinkaari 3;1109;4340000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;1208000.00;;;0.05;0.07;;0.90
+1110 Kiinteistö Oy Sulkavan Tiiterontie 3 B;1110;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.02.2016;5645056.00;30.04.2019;4781512.61;0.05;0.07;;0.90
+1111 Kiinteistö Oy Nokian Keskisentie 31;1111;2980000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;4515964.00;;;0.05;0.09;;0.60
+1112 Kiinteistö Oy Mikkelin Tuukkalankylätie 3;1112;4810000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;6215837.00;;;0.05;0.06;;0.60
+1113 Kiinteistö Oy Hämeenlinnan Teerentie 3;1113;3970000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;4615368.00;;;0.05;0.06;;0.60
+1114 Kiinteistö Oy Mikkelin Tuukkalankylätie 3 C;1114;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.02.2016;5133772.00;30.04.2019;4255107.55;0.05;0.07;;0.90
+1115 Kiinteistö Oy Oulun Kaplastie 6;1115;3700000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;3870226.00;;;0.05;0.06;;0.60
+1116 Kiinteistö Oy Lapuan Myllykyläntie 16;1116;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.02.2016;3120306.00;30.04.2019;3410666.10;0.05;0.07;;0.90
+1117 Kiinteistö Oy Veikkolan Metsälampi;1117;200000.00;Change of market rents (%);0.10;50.00;3.00;0.00;120.00;Change of expenses (%);;01.02.2016;69668.00;;;0.10;0.07;;0.90
+1118 Kiinteistö Oy Lahden Kaarlaaksonkatu 2;1118;7820000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.07.2016;6240484.00;;;0.05;0.05;;0.25
+1119 Kiinteistö Oy Joensuun Kiikarikatu 38;1119;5920000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.07.2016;4863337.00;;;0.05;0.06;;0.25
+1120 Kiinteistö Oy Hollolan Liinuminkatu 3;1120;6130000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.07.2016;5144867.00;;;0.05;0.05;;0.25
+1121 Kiinteistö Oy Kuopion Kalliokatu 2;1121;4720000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.07.2016;4285031.00;;;0.05;0.05;;0.25
+1122 Kiinteistö Oy Espoon Harmaaniityntie 5;1122;11800000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.07.2016;9284729.00;;;0.05;0.04;;0.90
+1123 Lahti, Pitkämäenkatu 2;1123;3740000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;28.09.2016;2950000.00;;;0.05;0.05;;0.25
+1124 Kiinteistö Oy Hyvinkään Harjukuja 3;1124;5280000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.02.2016;3649394.00;;;0.05;0.06;;0.60
+1125 Kiinteistö Oy Pedersören Skrufvilankatu 10;1125;1090000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;814430.00;;;0.05;0.08;;0.60
+1126 Kiinteistö Oy Kuusamon Noitiniementie 24;1126;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.02.2016;3127164.00;30.04.2019;5713688.23;0.05;0.07;;0.90
+1127 Kiinteistö Oy Porvoon Laamanninpolku 5;1127;9150000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.02.2016;4874148.00;;;0.05;0.05;;0.60
+1128 Kiinteistö Oy Hyvinkään Sinivuokontie 19;1128;3050000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;01.02.2016;2051619.00;;;0.05;0.06;;0.60
+1129 Kiinteistö Oy Kouvolan Tanhuantie 26;1129;3240000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;2101355.00;;;0.05;0.07;;0.90
+1130 Kiinteistö Oy Lohjan Lasitehtaantie 37;1130;1570000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.02.2016;1081763.00;;;0.05;0.07;;0.60
+1131 Kiinteistö Oy Helsingin Hattulantie 2;1131;32100000.00;Change of market rents (%);0.03;50.00;1.00;0.00;180.00;Change of expenses (%);;07.11.2016;25982829.00;;;0.03;0.05;;0.90
+1132 Kiinteistö Oy Helsingin Bulevardi 22;1132;19800000.00;Change of market rents (%);0.03;50.00;0.00;0.00;0.00;Change of expenses (%);;25.11.2016;17403409.00;;;0.03;0.05;;0.90
+1133 Kiinteistö Oy Tampereen Biokatu 14;1133;53000000.00;Change of market rents (%);0.05;50.00;6.00;0.08;60.00;Change of expenses (%);;21.11.2016;50122048.00;;;0.05;0.06;;0.60
+1134 Kiinteistö Oy F-Medi;1134;1000000.00;Change of market rents (%);0.10;50.00;6.00;0.08;60.00;Change of expenses (%);;21.11.2016;1145155.00;;;0.10;0.10;;0.90
+1136 Kiinteistö Oy Jyväskylän Puistokatu 35;1136;12700000.00;Change of market rents (%);0.05;50.00;0.00;0.00;0.00;Change of expenses (%);;31.05.2017;10886117.00;;;0.05;0.05;;0.90
+1137 Kiinteistö Oy Kuopion Asemakatu 22-24;1137;10000000.00;Change of market rents (%);0.04;50.00;0.00;0.00;0.00;Change of expenses (%);;06.04.2017;8588290.00;;;0.04;0.07;;0.90
+1138 Kiinteistö Oy Helsingin Elimäenkadun Kantaatti;1138;9500000.00;Change of market rents (%);0.07;50.00;1.00;0.00;180.00;Change of expenses (%);;03.05.2017;10392225.00;;;0.07;0.07;;0.90
+1139 Kiinteistö Oy Maskun Mynämäentie 1;1139;5300000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;29.05.2017;4164787.00;;;0.05;0.05;;0.90
+1140 Kiinteistö Oy Uudenkaupungin Kaljuunakuja 5;1140;3960000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;16.04.2018;3450000.00;;;0.05;0.06;;0.25
+1141 Kiinteistö Oy Helsingin Runeberginkatu 22-24;1141;30000000.00;Change of market rents (%);0.05;50.00;1.00;0.00;180.00;Change of expenses (%);;15.06.2017;8202500.00;;;0.05;0.05;;0.90
+1142 Kiinteistö Oy Helsingin Vattuniemenkatu 23;1142;52000000.00;Change of market rents (%);0.05;50.00;1.00;0.00;180.00;Change of expenses (%);;06.07.2017;10211245.00;;;0.05;0.05;;0.25
+1143 Kiinteistö Oy Helsingin Saukonpaadenranta;1143;43500000.00;Change of market rents (%);0.04;50.00;0.00;0.00;0.00;Change of expenses (%);;05.10.2017;40059479.00;;;0.04;0.06;;0.60
+1144 Kiinteistö Oy Helsingin Mannerheimintie 164;1144;40600000.00;Change of market rents (%);0.05;50.00;3.00;0.00;60.00;Change of expenses (%);;08.11.2017;33846767.00;;;0.05;0.04;;0.90
+1145 Kiinteistö Oy Oulun Puntarikankaantie 7;1145;1730000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;14.12.2017;1582000.00;;;0.05;0.06;;0.25
+1146 Kiinteistö Oy Vaasan Ansanevantie 1;1146;3990000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;14.12.2017;3745487.00;;;0.05;0.06;;0.25
+1147 Kiinteistö Oy Vaasan Gerbyn Rantatie 380;1147;3060000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;14.12.2017;2879160.00;;;0.05;0.06;;0.90
+1148 Kiinteistö Oy Jyväskylän Sysmäläntie 5;1148;2580000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;14.12.2017;2618097.00;;;0.05;0.06;;0.90
+1149 Kiinteistö Oy Kouvolan Osonojantie 3;1149;2600000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;14.12.2017;2476133.00;;;0.05;0.06;;0.25
+1150 Kiinteistö Oy Helsingin Haartmaninkatu 1;1150;54809206.00;Change of market rents (%);0.03;50.00;3.00;0.00;60.00;Change of expenses (%);;27.06.2018;15000000.00;;;0.03;0.05;;0.90
+1151 Kiinteistö Oy Helsingin Linnanrakentajantie 2;1151;13700000.00;Change of market rents (%);0.03;50.00;3.00;0.00;120.00;Change of expenses (%);;23.05.2018;1372515.00;;;0.03;0.05;;0.25
+1152 Kiinteistö Oy Laitilan Jokirinteenpolku  5;1152;3790000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;01.03.2018;3122796.00;;;0.05;0.05;;0.90
+1153 Kiinteistö Oy Kärsämäen Frosteruksenkatu 8;1153;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;01.03.2018;3007317.00;30.04.2019;3421632.87;0.05;0.07;;0.90
+1154 Kiinteistö Oy Lempäälän Linnajärventie 2;1154;1640000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;04.04.2018;1350000.00;;;0.05;0.06;;0.90
+1155 Kiinteistö Oy Vaasan Kiillekuja 0;1155;1500000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;04.04.2018;1450000.00;;;0.05;0.06;;0.60
+1156 Kiinteistö Oy Porin Itsenäisyydenkatu 33;1156;17000000.00;Change of market rents (%);0.03;50.00;6.00;0.08;60.00;Change of expenses (%);;16.04.2018;16100000.00;;;0.03;0.07;;0.90
+1157 Kiinteistö Oy Helsingin Mannerheimintie 164 A;1157;17800000.00;Change of market rents (%);0.05;50.00;3.00;0.00;60.00;Change of expenses (%);;09.05.2018;11250000.00;;;0.05;0.05;;0.60
+1158 Kiinteistö Oy Oulun Kasarmintie 3;1158;7840000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;09.05.2018;163097.00;;;0.05;0.05;;0.90
+1159 Kiinteistö Oy Kajaanin Suksikatu 14;1159;1770000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;16.05.2018;1608742.00;;;0.05;0.06;;0.25
+1160 Kiinteistö Oy Kajaanin Samoojantie 2;1160;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;16.05.2018;1801658.00;30.04.2019;2072719.91;0.05;0.07;;0.90
+1161 Kiinteistö Oy Haapajärven Männistönkatu 8;1161;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;16.05.2018;2190990.00;30.04.2019;2544291.11;0.05;0.07;;0.90
+1162 Kiinteistö Oy Vaasan Hiilloskuja 5;1162;2670000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;12.06.2018;2265612.00;;;0.05;0.05;;0.90
+1163 Kiinteistö Oy Porin Viittatie 11;1163;2550000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;03.07.2018;2400000.00;;;0.03;0.07;;0.60
+1164 Kiinteistö Oy Tammelan Ruustinnantie 2;1164;4200000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;03.07.2018;3640000.00;;;0.03;0.06;;0.90
+1165 Kiinteistö Oy Hämeenlinnan Palkkisillantie 17;1165;1950000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;03.07.2018;1900000.00;;;0.03;0.06;;0.25
+1166 Kiinteistö Oy Harjavallan Siltalanranta 2;1166;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;03.07.2018;3170000.00;30.04.2019;3399699.33;0.05;0.07;;0.90
+1167 Kiinteistö Oy Ulvilan Mukulamäentie 2;1167;2500000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;03.07.2018;2440000.00;;;0.03;0.06;;0.60
+1168 Kiinteistö Oy Huittisten Kravilankatu 4;1168;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;03.07.2018;2240000.00;30.04.2019;2522357.57;0.05;0.07;;0.90
+1169 Kiinteistö Oy Huittisten Sahakatu 3;1169;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;03.07.2018;1500000.00;30.04.2019;1809517.38;0.05;0.07;;0.90
+1170 Kiinteistö Oy Auran Puusepänkuja 2;1170;3100000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;03.07.2018;2800000.00;;;0.03;0.06;;0.90
+1171 Kiinteistö Oy Auran Sillankorvantie 30;1171;3100000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;03.07.2018;2683000.00;;;0.03;0.06;;0.90
+1172 Kiinteistö Oy Vantaan Spinellikuja 4;1172;4430000.00;Change of market rents (%);0.05;50.00;1.00;0.00;120.00;Change of expenses (%);;09.08.2018;3600000.00;;;0.05;0.05;;0.25
+1173 Kiinteistö Oy Turun Kukolantie 40;1173;2150000.00;Change of market rents (%);0.03;50.00;3.00;0.08;120.00;Change of expenses (%);;30.08.2018;2000000.00;;;0.03;0.06;;0.60
+1174 Kiinteistö Oy Ulvilan Peltotie 28;1174;2250000.00;Change of market rents (%);0.03;50.00;3.00;0.08;120.00;Change of expenses (%);;30.08.2018;2200000.00;;;0.03;0.07;;0.25
+1175 Kiinteistö Oy Kouvolan Toukomiehentie 3;1175;1900000.00;Change of market rents (%);0.03;50.00;3.00;0.08;120.00;Change of expenses (%);;30.08.2018;1900000.00;;;0.03;0.07;;0.90
+1176 Kiinteistö Oy Nurmijärven Vehnäpellontie 4;1176;2100000.00;Change of market rents (%);0.03;50.00;1.00;0.00;120.00;Change of expenses (%);;30.08.2018;2100000.00;;;0.03;0.06;;0.25
+1177 Kiinteistö Oy Paimion Kämmekkä 4;1177;2350000.00;Change of market rents (%);0.03;50.00;3.00;0.08;120.00;Change of expenses (%);;30.08.2018;2200000.00;;;0.03;0.06;;0.60
+1178 Kiinteistö Oy Uudenkaupungin Salmenkatu 6;1178;5900000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;30.08.2018;6000000.00;;;0.03;0.06;;0.60
+1179 Kiinteistö Oy Tampereen Biokatu 12;1179;21800000.00;Change of market rents (%);0.05;50.00;6.00;0.08;60.00;Change of expenses (%);;30.08.2018;17000000.00;;;0.05;0.07;;0.90
+1180 Kiinteistö Oy Rauman Rantasentie 1;1180;3000000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;07.09.2018;2780000.00;;;0.03;0.06;;0.25
+1181 Kiinteistö Oy Rovaniemen Hangaspisto 3;1181;2700000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;07.09.2018;2570000.00;;;0.03;0.06;;0.90
+1182 Kiinteistö Oy Kirkkonummen Hvittorpintie 16;1182;1950000.00;Change of market rents (%);0.03;50.00;3.00;0.00;120.00;Change of expenses (%);;07.09.2018;3500.00;;;0.03;0.06;;0.25
+1183 Kiinteistö Oy Pellon Kotitie 5;1183;0.00;Change of market rents (%);0.05;50.00;1.00;0.00;0.00;Change of expenses (%);;13.09.2018;3090000.00;30.04.2019;3564200.91;0.05;0.07;;0.90
+1184 Kiinteistö Oy Espoon Kutsuntatie 5;1184;5960000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;13.09.2018;5000000.00;;;0.05;0.04;;0.25
+1186 Kiinteistö Oy Hämeenlinnan Sammontie 3;1186;4100000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;18.12.2018;3857290.00;;;0.05;0.05;;0.25
+1187 Kiinteistö Oy Salon Muuraintie 9;1187;3810000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;06.06.2019;5000.00;;;0.05;0.05;;0.90
+1188 Kiinteistö Oy Huittisten Kyntäjänkatu 4 B;1188;3640000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;06.06.2019;5000.00;;;0.05;0.05;;0.90
+1191 Kiinteistö Oy Keravan Kettinkikuja 1;1191;2180000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;03.02.2018;1680000.00;;;0.05;0.06;;0.25
+1192 Kiinteistö Oy Helsingin Livornonkatu 6;1192;7100000.00;Change of market rents (%);0.03;50.00;1.00;0.00;120.00;Change of expenses (%);;03.12.2018;2500.00;;;0.03;0.06;;0.25
+1193 Kiinteistö Oy Rauman Steniuksenkatu 14;1193;8410000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;14.12.2018;2500.00;;;0.05;0.05;;0.25
+1194 Kiinteistö Oy Espoon Tietotie 6;1194;132500000.00;Change of market rents (%);0.05;50.00;0.00;0.00;0.00;Change of expenses (%);;19.12.2018;129300000.00;;;0.05;0.04;;0.90
+1195 Kiinteistö Oy Helsingin Konalantie 6-8;1195;32200000.00;Change of market rents (%);0.05;50.00;3.00;0.00;60.00;Change of expenses (%);;30.08.2019;26485012.00;;;0.05;0.05;;0.90
+1196 Kiinteistö Oy Kuopion Tuuttikuja 3-5;1196;3500000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;14.12.2018;3297520.00;;;0.03;0.06;;0.90
+1197 Kiinteistö Oy Ylöjärven Soppeentie 21;1197;1680000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;30.01.2019;1460000.00;;;0.05;0.06;;0.90
+1198 Kiinteistö Oy Lahden Rautatienkatu 20;1198;11700000.00;Change of market rents (%);0.05;50.00;6.00;0.08;60.00;Change of expenses (%);;14.02.2019;10700000.00;;;0.05;0.06;;0.90
+1199 Kiinteistö Oy Lohjan Laurinkatu 34;1199;4700000.00;Change of market rents (%);0.05;50.00;6.00;0.08;60.00;Change of expenses (%);;14.02.2019;4700000.00;;;0.05;0.07;;0.90
+1200 Kiinteistö Oy Helsingin Korvatunturintie 2;1200;14800000.00;Change of market rents (%);0.03;50.00;3.00;0.00;120.00;Change of expenses (%);;14.02.2019;13500000.00;;;0.03;0.05;;0.25
+1202 Kiinteistö Oy Porvoon Näsin Koulukatu 2;1202;6380000.00;Change of market rents (%);0.05;50.00;3.00;0.00;60.00;Change of expenses (%);;28.02.2019;5800000.00;;;0.05;0.06;;0.60
+1185 Kiinteistö Oy Turun Pernontie 33;1185;3170000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;16.10.2018;2500.00;;;0.05;0.05;;0.25
+1189 Kiinteistö Oy Lahden Piisamikatu 6;1189;2830000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;06.06.2019;5000.00;;;0.05;0.06;;0.90
+1190 Kiinteistö Oy Espoon Lugnetintie 22;1190;12200000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;02.12.2019;11100000.00;;;0.05;0.04;;0.25
+1203 Kiinteistö Oy Kuopion Letkukaari 5;1203;7380000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;29.03.2019;6494054.00;;;0.05;0.06;;0.25
+1204 Kiinteistö Oy Jyväskylän Kirkkokatu 14-16;1204;3600000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;29.03.2019;3460000.00;;;0.03;0.06;;0.25
+1038 Asunto Oy Nummela Vihdintie 1;1038;1360000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;05.03.2014;1200000.00;;;0.05;0.06;;0.60
+1044 Asunto Oy Seinäjoen Satoomomäki I;1044;;;;;;;;;;;;;;;;;0.90
+5501 Kiinteistö Oy Järvenpään Myllytie 1A;5501;21000000.00;Change of market rents (%);0.05;50.00;3.00;0.08;36.00;Change of expenses (%);;31.12.2014;17000000.00;;;0.05;0.06;;0.60
+5511 Kiinteistö Oy Helsingin Insinöörinkatu 2;5511;24800000.00;Change of market rents (%);0.05;100.00;3.00;0.08;60.00;Change of expenses (%);;18.02.2016;12450000.00;;;0.05;0.06;;0.90
+5549 Kiinteistö Oy Vantaan Ratatie 11;5549;67200000.00;Change of market rents (%);0.05;100.00;3.00;0.08;60.00;Change of expenses (%);;28.06.2019;66200000.00;;;0.05;0.05;;0.25
+5550 Kiinteistö Oy Tampereen Hämeenkatu 19;5550;11600000.00;Change of market rents (%);0.05;100.00;3.00;0.08;36.00;Change of expenses (%);;02.07.2019;10700000.00;;;0.05;0.06;;0.90
+5551 Kiinteistö Oy Helsingin Länsisatamankatu 45;5551;22993789.00;Change of market rents (%);0.05;50.00;3.00;0.00;180.00;Change of expenses (%);;02.07.2019;576000.00;;;0.05;0.04;;0.90
+1205 Kiinteistö Oy Hämeenlinnan Talaskuja 3;1205;19300000.00;Change of market rents (%);0.05;50.00;6.00;0.04;120.00;Change of expenses (%);;29.05.2019;19200000.00;;;0.05;0.06;;0.60
+1206 Kiinteistö Oy Espoon Lämpömiehenkuja 2;1206;27400000.00;Change of market rents (%);0.05;50.00;1.00;0.00;180.00;Change of expenses (%);;06.06.2019;27700000.00;;;0.05;0.04;;0.90
+1207 Kiinteistö Oy Espoon Lämpömiehenkuja 3;1207;12100000.00;Change of market rents (%);0.05;50.00;1.00;0.00;180.00;Change of expenses (%);;15.08.2019;11100000.00;;;0.05;0.04;;0.90
+1208 Kiinteistö Oy Espoon Tekniikantie 3;1208;10200000.00;Change of market rents (%);0.05;50.00;1.00;0.00;180.00;Change of expenses (%);;06.06.2019;8700000.00;;;0.05;0.04;;0.90
+1209 Kiinteistö Oy Espoon Maarintie 6;1209;27900000.00;Change of market rents (%);0.05;50.00;1.00;0.00;180.00;Change of expenses (%);;06.06.2019;25000000.00;;;0.05;0.06;;0.60
+1210 Kiinteistö Oy Kuopion Julkulanniementie 16;1210;2030000.00;Change of market rents (%);0.05;50.00;3.00;0.08;120.00;Change of expenses (%);;11.06.2019;1830000.00;;;0.05;0.06;;0.90
+1211 Kiinteistö Oy Hämeenlinnan Rengonraitti 9;1211;3700000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;28.06.2019;3600000.00;;;0.03;0.06;;0.90
+1212 Kiinteistö Oy Tuusulan Päivärinteentie 2 AB;1212;5990000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;27.06.2019;5000.00;;;0.05;0.05;;0.90
+1213 Kiinteistö Oy Kuopion Näkinpolku 17;1213;6700000.00;Change of market rents (%);0.03;50.00;6.00;0.04;120.00;Change of expenses (%);;16.08.2019;6350820.00;;;0.03;0.06;;0.25
+5552 Kiinteistö Oy Espoon Keilaranta 5-7;5552;47800000.00;Change of market rents (%);0.05;50.00;3.00;0.08;36.00;Change of expenses (%);;18.09.2019;45500000.00;;;0.05;0.04;;0.90
+5553 Kiinteistö Oy Espoon Alberga Talo B;5553;25900000.00;Change of market rents (%);0.07;50.00;3.00;0.08;36.00;Change of expenses (%);;22.11.2019;23500000.00;;;0.07;0.05;;0.60
+5554 Kiinteistö Oy Espoon Alberga Talo C;5554;24700000.00;Change of market rents (%);0.07;50.00;3.00;0.08;36.00;Change of expenses (%);;22.11.2019;23500000.00;;;0.07;0.05;;0.60
+1215 Kiinteistö Oy Helsingin Maistraatinportti 2;1215;50100000.00;Change of market rents (%);0.05;50.00;3.00;0.00;60.00;Change of expenses (%);;29.11.2019;46500000.00;;;0.05;0.05;;0.90
+1218 Kiinteistö Oy Espoon Lukiotie 2;1218;2142000.00;Change of market rents (%);0.05;50.00;3.00;0.00;120.00;Change of expenses (%);;29.04.2020;6940000.00;;;0.05;0.04;;0.90
+6001 Asunto Oy Vantaan Norkkokuja 1b;6001;;;0.02;3.00;0.00;0.04;36.00;;;03.07.2020;10500000.00;;;0.02;0.04;;0.25
+6002 Asunto Oy Tampereen Rantatie 29;6002;;;0.02;3.00;;0.04;36.00;;;03.07.2020;9800000.00;;;0.02;0.04;;0.90
+6004 Asunto Oy Helsingin Yliskylän Puistokatu 7;6004;;;;;;;;;;30.09.2020;2500.00;;;;;;0.25
+6005 Asunto Oy Turun Nuutintie 7;6005;;;;;;;;;;29.10.2020;;;;;;;0.25
+6007 Asunto Oy Turun Vähäheikkiläntie 37 A;6007;;;;;;;;;;29.10.2020;;;;;;;0.25

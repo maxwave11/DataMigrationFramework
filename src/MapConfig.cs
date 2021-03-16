@@ -52,7 +52,6 @@ namespace XQ.DataMigration
 
         public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customCommands)
         {
-            
             var commandMapping = new Dictionary<string, Type>()
             {
                 { CommandUtils.GetCommandYamlName(typeof(ReplaceCommandSet)), typeof(ReplaceCommandSet) },
@@ -78,7 +77,7 @@ namespace XQ.DataMigration
 
             var builder = new DeserializerBuilder();
 
-            customCommands?
+            (customCommands ?? new List<Type>())
                 .Select(type => new KeyValuePair<string, Type>(type.Name, type))
                 .Union(commandMapping)
                 .ToList()
