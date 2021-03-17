@@ -2,7 +2,7 @@
 
 TraceMode: Auto
 DefaultDecimalSeparator: ','
-SourceBaseDir: G:\My Drive\Client Data Import\eQ
+SourceBaseDir: .\SampleData
 
 Variables:
   ConnectionString: data source=some_server;Database=some_db;MultipleActiveResultSets=True;App=EntityFramework;User=user;Password=pwd
@@ -12,7 +12,7 @@ Variables:
   analysis_date: !GET new DateTime(2020,10,31)
   analysis_key: !GET '${((DateTime)%analysis_date%):yyyyMM}'
   prev_analysis_key: !GET '${((DateTime)%analysis_date%).AddMonths(-1):yyyyMM}'
-  src_path: !GET '$Original files\\{%analysis_date%:yyyy-MM-dd}'
+  src_path: !GET '$\\{%analysis_date%:yyyy-MM-dd}'
   postfix: !GET '${%analysis_date%:yyyyMM}'
 
 
@@ -95,16 +95,11 @@ Pipeline:
 
       - [ <City> , !LOOKUP { Source: !DummyTargetSystem { Query: city, Key: <name> } } , !SET city ]  
 
-      - [ 10 , !LOOKUP { Source: !DummyTargetSystem { Query: cash_flow_template, Key: <id> } } , !SetCashFlowTemplate DataObject ]  
-
       - [ !CONCAT ['%prev_analysis_key%',<Kustannuspaikan numero>], 
           !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: SkipValue } , 
           !GET 'DataObject[cash_flow_model]',
           !SET cash_flow_model ]  
     
-        # WARNING: need to reimport budgets afer this command!
-      - [ !InitAssetCommand { ClearForecasts: true } ]  
-
 
       - [ <Kaupallinen nimi>, !SetCustomField AssetProperty_Commercial_Name ] 
       - [ <Kohteen status>, !SetCustomField AssetProperty_Status ] 
@@ -213,12 +208,9 @@ Pipeline:
     Enabled: true
     # Source: !csv { Query: !GET '${%src_path%}\\asset_assumptions_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>], Delimiter: "\t"  }
     Source: !csv { Query: !GET '${%src_path%}\\asset_assumptions_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>] }
-    Saver:  !CashFlowSaver { SaveCount: 100 }
     Commands:
 
       - [ !TARGET { Target: !DummyTargetSystem { Query: asset,  Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
-
-      - [ !InitAssetCommand {}]  
 
       - [ !CONCAT [ "TARGET[master_analysis_id]", $Change of market rents (%) ] , 
           !LOOKUP { Source: !DummyTargetSystem { Query: rate_growth, Key: !CONCAT [<master_analysis_id>, <name>] } } , 
@@ -245,11 +237,11 @@ Pipeline:
       - [ !GET? <Exit price>, 
           !TYPE decimal, 
           !GET -(decimal)VALUE,
-          !SetCashFlowValue { Date: <Divestointipäivämäärä:DateTime>, CashFlowItemId: 587 } ] 
+          !SetCashFlowValue { Date: '<Divestointipäivämäärä:DateTime>', CashFlowItemId: 587 } ] 
 
       - [ !GET? <Acquisition price>, 
           !TYPE decimal, 
-          !SetCashFlowValue { Date: <Hankintapäivämäärä:DateTime>, CashFlowItemId: 561 }]
+          !SetCashFlowValue { Date: '<Hankintapäivämäärä:DateTime>', CashFlowItemId: 561 }]
           # !SetCashFlowValue { Date: <Hankintapäivämäärä (omistusoikeus):DateTime>, CashFlowItemId: 561 }]
 
       - [ !GET? <Repairs EUR/m2/kk>, 
@@ -523,7 +515,7 @@ Pipeline:
       - [ !CONCAT [<Basis of rent increase>, <Index type>],
           !IF "!'No rent adjustments'.Equals(<Basis of rent increase>)",
           !REPLACE [ 
-            { Condition: Index-based/Cost-of-living index (1951:10 = 100), ReplaceValue: Cost-of-living index (%), Important: true },
+            { Condition: 'Index-based/Cost-of-living index (1951:10 = 100)', ReplaceValue: Cost-of-living index (%), Important: true },
             { Condition: Index-based/Index of real estate maintenance costs (2015=100), ReplaceValue: Index of real estate maintenance costs (%), Important: true },
             { Condition: Other/, ReplaceValue: Inflation (%), Important: true },
             { Condition: Prosenttikorotus/, ReplaceValue: Inflation (%), Important: true },
@@ -553,7 +545,6 @@ Pipeline:
         # this part only for monhly migration 
         - !csv { Query: !GET '${%src_path%}\\actuals_*.csv | {%src_path%}\\budgets_*.csv', Key: !CONCAT ['%analysis_key%',<eQkpaikka>] } 
     
-    Saver:  !CashFlowSaver { SaveCount: 100 }
     Commands:
 
       - [ !SET '=> %is_actuals% = true', !IF SRC.Query.Contains('budgets_'), !SET '=> %is_actuals% = false']
@@ -586,66 +577,19 @@ Pipeline:
     # WARNING: run this block only from EU zone 
   - Name: FimX data
     Enabled: false
-    Source: !FimXDataProvider { Query: '$..YearlySums', Key: !CONCAT ['%analysis_key%',<^CustomerNumber>] } 
-    Saver:  !CashFlowSaver { SaveCount: 100 }
+    Source: !JsonDataSource { Query: '$..YearlySums', Key: !CONCAT ['%analysis_key%',<^CustomerNumber>] } 
     Commands:
 
       - [ !TARGET { Target: !DummyTargetSystem { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
 
-      - [ <MaintenanceInProcess:decimal> + <MaintenanceSuggestion:decimal>,
+      - [ '<MaintenanceInProcess:decimal> + <MaintenanceSuggestion:decimal>',
           !SetCashFlowValue { Date: 'new DateTime(<Year:int>,1,1)', CashFlowItemId: 663, IsActuals: false, IsAnnualValue: true } ]
 
-      - [ <InvestmentInProcess:decimal> + <InvestmentSuggestion:decimal>,
+      - [ '<InvestmentInProcess:decimal> + <InvestmentSuggestion:decimal>',
           !SetCashFlowValue { Date: 'new DateTime(<Year:int>,1,1)', CashFlowItemId: 745, IsActuals: false, IsAnnualValue: true } ]
 
-      - [ <EnergyInvestmentInProcess:decimal> + <EnergyInvestmentSuggestion:decimal>,
+      - [ '<EnergyInvestmentInProcess:decimal> + <EnergyInvestmentSuggestion:decimal>',
           !SetCashFlowValue { Date: 'new DateTime(<Year:int>,1,1)', CashFlowItemId: 746, IsActuals: false, IsAnnualValue: true } ]
 
-      - [ -<Year:decimal>,
+      - [ '-<Year:decimal>',
           !SetCashFlowValue { Date: '((DateTime)%analysis_date%).AddDays(1)', CashFlowItemId: 748, IsActuals: false, Accumulate: false } ]
-
-
-
-    # this pipeline needed only once at first picures uploading 
-  # - Name: Images (initial)
-  #   Enabled: false
-  #   Source: !FileListProvider { Query: !GET '${%src_path%}\\..\\Pictures', 
-  #                               Key: !CONCAT [<GrandDirectoryName>, <DirectoryName>, <FileName>], 
-  #                               SearchMask: "*.jpg|*.jpeg|*.png" }
-  #   SaveCount: 5
-  #   Commands:
-
-  #     - [ !TARGET { Target: !DummyTargetSystem { Query: picture, Key: !GET <filename> ,TransitMode: OnlyNewObjects  }   } ] 
-
-  #     - [ SRC.Key, !SET filename ] 
-
-  #     - [ <Path>, !FileToImageCommand {}, !SET picture_raw ] 
-
-
-
-
-    # this pipeline needed only once at first picures uploading 
-  # - Name: Asset images (initial)
-  #   Enabled: false
-  #   Source: !FileListProvider { Query: !GET '${%src_path%}\\..\\Pictures', 
-  #                               Key: !CONCAT [<GrandDirectoryName>, <DirectoryName>, <FileName>], 
-  #                               SearchMask: "*.jpg|*.jpeg|*.png" }
-  #   SaveCount: 100
-  #   Commands:
-
-  #     - [ !TARGET { Target: !DummyTargetSystem { Query: assetPicture, Key: !GET "Field(<picture>,'filename')"  } } ] 
-
-
-  #     - [ !CONCAT [ $202005, <DirectoryName> ],
-  #         !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> } },
-  #         !SET asset ] 
-
-
-  #     - [ SRC.Key,
-  #         !LOOKUP { Source: !DummyTargetSystem { Query: picture, Key: <filename> } },
-  #         !SET picture ] 
-
-  #     - [ true, !SET is_main ] 
-
-
-
