@@ -1,6 +1,6 @@
 ---
 
-TraceMode: Auto
+TraceMode: Objects
 DefaultDecimalSeparator: ','
 SourceBaseDir: .\SampleData
 
@@ -30,16 +30,12 @@ Pipeline:
 
 
   - Name: Analyses
-    Enabled: false
+    Enabled: true
     Source: !excel { Query: projects.xlsx,    Key: !CONCAT [ <Name>, '%analysis_key%' ] }
     SaveCount: 15
     Commands:
 
       - [ !TARGET { Target: !DummyTargetSystem { Query: master_analysis,  Key: <external_id> }} ] 
-
-      - [ <Name>, 
-          !LOOKUP { Source: !DummyTargetSystem { Query: project, Key: <name> } } , 
-          !SET project ]
 
       - [ SRC.Key, !SET external_id ] 
 
@@ -51,12 +47,11 @@ Pipeline:
 
       - [ 36, !SET owner_user_id ] 
 
-      - [ "TARGET[uuid] ?? Guid()" , !SET uuid ]
 
 
 
   - Name: Assets
-    Enabled: false
+    Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\assets_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>]  }
     SaveCount: 100
     Commands:
@@ -75,7 +70,7 @@ Pipeline:
 
       - [ 10 , !SET forecasting_period_years ]  
 
-      - [ "%main_currency_id%" , !LOOKUP { Source: !DummyTargetSystem { Query: currency, Key: <id> } } , !SET currency ]  
+      - [ "%main_currency_id%" , !SET currency ]  
 
       - [ <Kohteen nimi>, !SET name ]  
 
@@ -142,52 +137,14 @@ Pipeline:
           !SET segment_id ] 
 
 
-      - [ <Region>, 
-          !LOOKUP { Source: !DummyTargetSystem { Query: region, Key: <name> } } , 
-          !SET region ]
-
-      - [ <Submarket>, 
-          !LOOKUP { Source: !DummyTargetSystem { Query: microlocation, Key: <name> } } , 
-          !SET microlocation ]
-
-      - [ !CONCAT [<Grades>, 'TARGET[segment_id]'], 
-          !LOOKUP { Source: !DummyTargetSystem { Query: asset_grade, Key: !CONCAT [<name>,<segment_id>] }, OnNotFound: Continue} , 
-          !SET asset_grade ]
-
       - [ 0.1 , !TYPE float,!SET valuation_accuracy ]  
 
-      - [ !CONCAT ['%prev_analysis_key%',<Kustannuspaikan numero>], 
-          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: Continue } , 
-          !GET 'DataObject?[uuid] ?? TARGET[uuid] ?? Guid()',
-          !SET uuid ]  
-
-
-  - Name: Asset images
-    Enabled: false
-    Source: !sql { Query: !GET "$select asset_id, picture_id, is_main, number
-                            from asset_picture ap 
-                            join asset on asset.id = ap.asset_id
-                            join master_analysis ma on ma.id = asset.master_analysis_id 
-                            where FORMAT(ma.valuation_date, ''yyyyMM'') = ''{%prev_analysis_key%}''", 
-                   Key: !CONCAT [ '%analysis_key%', <number>, <picture_id> ] }
-
-    SaveCount: 100
-    Commands:
-
-      - [ !TARGET { Target: !DummyTargetSystem { Query: assetPicture, Key: !CONCAT [ "Field(<asset>, 'external_id')", <picture_id>]  } } ] 
-
-      - [ !CONCAT [ '%analysis_key%', <number>],
-          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> } },
-          !SET asset ] 
-
-      - [ <picture_id>, !TYPE int, !SET picture_id ] 
-
-      - [ <is_main>, !TYPE bool, !SET is_main ] 
+ 
 
 
 
   - Name: Asset investment types
-    Enabled: false
+    Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\assets_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>]  }
     SaveCount: 100
     Commands:
@@ -211,12 +168,6 @@ Pipeline:
     Commands:
 
       - [ !TARGET { Target: !DummyTargetSystem { Query: asset,  Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
-
-      - [ !CONCAT [ "TARGET[master_analysis_id]", $Change of market rents (%) ] , 
-          !LOOKUP { Source: !DummyTargetSystem { Query: rate_growth, Key: !CONCAT [<master_analysis_id>, <name>] } } , 
-          !GET 'DataObject[id]',
-          !TYPE double,
-          !SetAssumption EstimatedRentalValueGrowthRate]  
 
       - [ 50, !TYPE double, !SetAssumption TiCostPerSqm]  
 
@@ -253,26 +204,10 @@ Pipeline:
           !SetCashFlowValue { Date: ((DateTime)%analysis_date%).AddDays(1), CashFlowItemId: 750, IsActuals: false } ] 
 
 
-  - Name: Asset assumptions (investment)
-    Enabled: false
-    Source: !csv { Query: !GET '${%src_path%}\\asset_assumptions_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>]  }
-    SaveCount: 100
-    Commands:
-
-      - [ !TARGET { Target: !DummyTargetSystem { Query: asset_investment, Key: "Field(<asset>,'external_id')", TransitMode: OnlyExistedObjects  } } ] 
-
-      - [ 0.06, !TYPE float, !SET holdsell_irr_criteria ] 
-
-      - [ 0.3, !TYPE float, !SET holdsell_irr_scale ] 
-
-      - [ <Hankintapäivämäärä>, !TYPE DateTime, !SET acquisition_date ] 
-
-      - [ <Divestointipäivämäärä>, !TYPE DateTime, !SET exit_date ] 
-
 
 
   - Name: Assets coordiantes
-    Enabled: false
+    Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\buildings_sites_{%postfix%}.csv', Key: !CONCAT ['%analysis_key%', <Kustannuspaikan nro>]  }
     SaveCount: 100
     Commands:
@@ -286,7 +221,7 @@ Pipeline:
 
 
   - Name: Buildings
-    Enabled: false
+    Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\buildings_sites_{%postfix%}.csv', 
                    Key: !CONCAT [ '%analysis_key%', <Kustannuspaikan nro>, <Rakennusnro>],
                    Encoding: UTF-8 }
@@ -320,45 +255,14 @@ Pipeline:
 
       - [ <Valmistumisvuosi>, !SET construction_year ] 
 
-      - [ "TARGET[uuid] ?? Guid()", !SET uuid ] 
-
       - [ <Peruskorjausvuosi>, !REPLACE 'NULL=', !SetCustomField PpeProperty_Year_of_Fundamental_Repair  ] 
 
 
-  - Name: Dummy buildings
-    Enabled: false
-    Source: !csv { Query: !GET '${%src_path%}\\rentroll_*.csv', 
-                   Key: !CONCAT [ '%analysis_key%', <Property no.>, $DummyBuilding ] }
-    SaveCount: 100
-    Commands:
-
-      - [ !TARGET { Target: !DummyTargetSystem { Query: ppe, Key: !GET <external_id>  } } ] 
-
-      - [ SRC.Key, !SET external_id ] 
-
-      - [ !CONCAT [ '%analysis_key%', <Property no.>, 2], 
-          !LOOKUP { Source: !DummyTargetSystem { Query: ppe, Key: !CONCAT [ "Field(<asset>,'external_id')", <ppe_type_id> ] },
-                    OnNotFound: Continue,
-                    Mode: First } , 
-          !IF VALUE != null,
-          !FLOW SkipObject ] # skip object if ppe already exist
-
-      - [ !CONCAT [ '%analysis_key%', <Property no.>], 
-          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: SkipObject }, 
-          !SET asset ] 
-
-      - [ 2, !SET ppe_type_id ] 
-
-      - [ 3, !SET ppe_category_id ] 
-
-      - [ $Main building, !SET name, !SET fullname ] 
      
-      - [ "TARGET[uuid] ?? Guid()" , !SET uuid ] 
-
 
 
   - Name: Sites (Lands)
-    Enabled: false
+    Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\buildings_sites_{%postfix%}.csv', Key: !CONCAT ['%analysis_key%', <Kustannuspaikan nro>, <Kiinteiston id> ] }
     SaveCount: 100
     Commands:
@@ -381,12 +285,11 @@ Pipeline:
 
       - [ 13, !SET ppe_category_id ] 
 
-      - [ "TARGET[uuid] ?? Guid()" , !SET uuid ] 
 
 
 
   - Name: Premises
-    Enabled: false
+    Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\rentroll_*.csv', 
                    Key: !CONCAT [ '%analysis_key%', <Property no.>, <Lease unit>, <Lease no.> ]}
     SaveCount: 300
@@ -395,12 +298,6 @@ Pipeline:
       - [ !TARGET { Target: !DummyTargetSystem { Query: premis, Key: !GET <external_id>  } } ] 
 
       - [ SRC.Key, !SET external_id ] 
-
-      - [ !CONCAT [ '%analysis_key%', <Property no.>, 2] , 
-          !LOOKUP { Source: !DummyTargetSystem { Query: ppe, Key: !CONCAT [ "Field(<asset>,'external_id')", <ppe_type_id> ] },
-                    OnNotFound: SkipObject,
-                    Mode: First },
-          !SET ppe ]
 
       - [ <Lease unit>, !SET number ] 
 
@@ -420,36 +317,9 @@ Pipeline:
           !SET quantity ] 
 
 
-      - [ "<ERV €/m2:double?> > 0.0 ? <ERV €/m2:double?> : (double?)null", !SetAssumption EstimatedRentalValue ]
-
-      - [ !IF "(<ERV €/m2:double?> > 0.0)!=true",
-          !IF  "<Leasable area (sqm):double?> > 0.0",
-          !GET "<Leasable area (sqm):double>", #for tracing purposes
-          "((<Capital rent:double?> ?? 0) + (<Maintenance rent:double?> ?? 0) + (<Supplements:double?> ?? 0))/(double)VALUE",
-          !IF (double)VALUE > 0.0,
-          !SetAssumption EstimatedRentalValue ]
-
-    
-
-      - [ !IF "(<ERV €/m2:double?> > 0.0)!=true",
-          !IF  "<Quantity (pcs):int?> > 0",
-          !GET "<Quantity (pcs):int>", #for tracing purposes
-          '((<Capital rent:double?> ?? 0) + (<Maintenance rent:double?> ?? 0) + (<Supplements:double?> ?? 0))/(int)VALUE',
-          !IF (double)VALUE > 0.0,
-          !SetAssumption EstimatedRentalValue ]
-
-      - [ "TARGET[uuid] ?? Guid()" , !SET uuid ] 
-
-
-      - [ !CONCAT [ "Field(TARGET[ppe],'ppe_category_id')", <Type of use>], 
-          !LOOKUP { Source: !DummyTargetSystem { Query: use, Key: !CONCAT [ <ppe_category_id>, "Field(<use_type>,'name')" ] },
-                    OnNotFound: Continue,
-                    Mode: First },
-          !SET use ]
-
 
   - Name: Tenants
-    Enabled: false
+    Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\rentroll_*.csv', Key: !GET <Tenant group> }
     SaveCount: 500
     Commands:
@@ -465,7 +335,7 @@ Pipeline:
 
 
   - Name: Rentroll
-    Enabled: false
+    Enabled: true
     Source: !csv { Query: !GET '${%src_path%}\\rentroll_*.csv', 
                    Key: !CONCAT [ '%analysis_key%', <Property no.>, <Lease unit>, <Lease no.> ] }
     SaveCount: 300
@@ -522,12 +392,6 @@ Pipeline:
             { Condition: "@any", ReplaceValue: Building cost index (%) },
            ],
           !SET "=> %rate_growth_name% = VALUE", #place value to temporary variable 
-          !GET "TARGET[premis]",
-          !GET "Field(VALUE,'ppe')",
-          !GET "Field(VALUE,'asset')",
-          !GET "Field(VALUE,'master_analysis_id')",
-          !CONCAT [ VALUE, "%rate_growth_name%"],
-          !LOOKUP { Source: !DummyTargetSystem { Query: rate_growth, Key: !CONCAT [<master_analysis_id>, <name>] } },
           !SET rate_growth ] 
 
       - [ <Month(s) of rent increase>, !ToRecurrancePattern {},  !SET rate_growth_recurrance_pattern ] #this field must be imported only after rate_growth 
@@ -535,7 +399,7 @@ Pipeline:
 
 
   - Name: Asset actuals and budgets 
-    Enabled: false
+    Enabled: true
     Source: 
       !composite-source
         # this part only for first migration (historical cash flow values)
@@ -562,6 +426,7 @@ Pipeline:
           !LOOKUP { 
                     Source: !excel { Query: cf_mapping.xlsx, Key: !CONCAT [<tili_MIN>, <tili_MAX>] }, 
                     LookupPredicate: (double)<tili_MIN> <= (double)VALUE && (double)VALUE <= (double)<tili_MAX>,
+                    TraceNotFound: false,
                     OnNotFound: SkipObject },
           !GET "DataObject[cf_item.id]",
           !TYPE int,
@@ -576,7 +441,7 @@ Pipeline:
 
     # WARNING: run this block only from EU zone 
   - Name: FimX data
-    Enabled: false
+    Enabled: true
     Source: !JsonDataSource { Query: '$..YearlySums', Key: !CONCAT ['%analysis_key%',<^CustomerNumber>] } 
     Commands:
 

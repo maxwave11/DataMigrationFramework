@@ -55,7 +55,7 @@ namespace DataMigration
             migrationTimeCounter.Stop();
 
             Tracer.SaveLogs();
-            Tracer.TraceLine($" - Migration end {migrationTimeCounter.Elapsed.TotalMinutes} mins");
+            Tracer.TraceLine($"\n - Migration end {migrationTimeCounter.Elapsed.TotalMinutes} mins");
         }
 
         private void InitializeVariables() 

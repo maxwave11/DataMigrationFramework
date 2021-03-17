@@ -35,7 +35,7 @@ namespace SampleMigrationApp.Source
 
         protected virtual string GetJson() {
             //Here could be your web request to recieve some JSON data
-            return File.ReadAllText(@"fimx_data_01_11_20.json");
+            return File.ReadAllText(@"SampleData\2020-10-31\FimX_data.json");
         }
     }
 }
