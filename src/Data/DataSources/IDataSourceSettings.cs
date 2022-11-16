@@ -1,4 +1,4 @@
-﻿namespace XQ.DataMigration.Data.DataSources
+﻿namespace DataMigration.Data.DataSources
 {
     public interface IDataSourceSettings
     {

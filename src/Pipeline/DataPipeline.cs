@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Data.DataSources;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Pipeline.Trace;
+using DataMigration.Data;
+using DataMigration.Data.DataSources;
+using DataMigration.Enums;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Pipeline.Trace;
 
-namespace XQ.DataMigration.Pipeline
+namespace DataMigration.Pipeline
 {
     /// <summary>
     /// Transition which transit objects data from DataSet of source system to DataSet of target system

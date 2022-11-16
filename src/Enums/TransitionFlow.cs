@@ -1,5 +1,8 @@
-﻿namespace XQ.DataMigration.Enums
+﻿namespace DataMigration.Enums
 {
+    /// <summary>
+    /// Determines migration engine behaviour
+    /// </summary>
     public enum TransitionFlow
     {
         Continue,

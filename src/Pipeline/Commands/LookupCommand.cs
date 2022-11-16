@@ -1,27 +1,17 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Data.DataSources;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Pipeline.Expressions;
-using XQ.DataMigration.Utils;
+using DataMigration.Data.DataSources;
+using DataMigration.Enums;
+using DataMigration.Pipeline.Expressions;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
-    public enum LookupMode
-    {
-        //Find single object by key from data source
-        Single, 
-        //Find first object by key from data source (when data source have have multiple objects with same search key)
-        First,
-        //Use this mode to find all objects by search key
-        All
-    }
-    
     /// <summary>
-    /// Transition unit which allows to find a specific value from some reference data set. For example, find an asset and get its name 
-    /// by asset's id or find a city id by city name or by any other condition. Lookup condition determined by <c>LookupKeyExpr</c> or 
+    /// Command allows to find a specific value from some datat source(defined by Source property). 
+    /// For example, find an asset and get its name by asset ID or find a city id by city name or 
+    /// by any other condition. Lookup condition defined by <c>LookupKeyExpr</c> or 
     /// <c>LookupAlternativeExpr</c> migration expression.
     /// </summary>
     [Command("LOOKUP")]

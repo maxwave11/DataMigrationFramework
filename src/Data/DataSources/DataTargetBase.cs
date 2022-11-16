@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using XQ.DataMigration.Enums;
+using DataMigration.Enums;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     public abstract class DataTargetBase : DataSourceBase, IDataTarget
     {

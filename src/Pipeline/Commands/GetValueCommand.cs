@@ -1,7 +1,7 @@
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Pipeline.Expressions;
+using DataMigration.Enums;
+using DataMigration.Pipeline.Expressions;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     /// <summary>
     /// Puts the value from expression to pipeline
@@ -25,7 +25,7 @@ namespace XQ.DataMigration.Pipeline.Commands
         }
     }
     /// <summary>
-    /// Puts the not empty value from expression to pipeline. Skip if value is empty
+    /// Puts not empty value from expression to pipeline. Do nothing if value empty
     /// </summary>
     [Command("GET?")]
     public sealed class GetNotEmptyValueCommand : GetValueCommand

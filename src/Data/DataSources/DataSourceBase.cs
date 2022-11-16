@@ -2,16 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Utils;
+using DataMigration.Pipeline;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
+    /// <summary>
+    /// Base data source functionality. Use it as base for your custom data providers.
+    /// </summary>
     public abstract class DataSourceBase : IDataSource, ICachedDataSource
     {
         public object Query { get; set; }
 
+        /// <summary>
+        /// Expression returns unique key for each entry from data source
+        /// </summary>
         public CommandBase Key { get; set; }
         
         public ExpressionCommand<bool> Filter { get; set; }

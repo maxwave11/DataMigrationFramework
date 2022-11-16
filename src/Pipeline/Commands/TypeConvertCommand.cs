@@ -1,8 +1,11 @@
 using System;
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
+    /// <summary>
+    /// Command converts current migration value to some type
+    /// </summary>
     [Command("TYPE")]
     public class TypeConvertCommand : CommandBase
     {
@@ -62,7 +65,7 @@ namespace XQ.DataMigration.Pipeline.Commands
                 var typedValue = TypeConverter.GetTypedValue(_typeCode, value, decimalSeparator, Format);
                 ctx.SetCurrentValue(typedValue);
             }
-            catch (Exception e)
+            catch
             {
                 if (OnError == null)
                     throw;
@@ -70,7 +73,6 @@ namespace XQ.DataMigration.Pipeline.Commands
                 ctx.Execute(OnError);
             }
         }
-
 
         public override string GetParametersInfo() => Type;
        

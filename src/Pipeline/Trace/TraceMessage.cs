@@ -1,6 +1,6 @@
 using System;
 
-namespace XQ.DataMigration.Pipeline.Trace
+namespace DataMigration.Pipeline.Trace
 {
     public class TraceMessage
     {

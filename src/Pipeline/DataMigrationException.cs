@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Utils;
+using DataMigration.Data;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline
+namespace DataMigration.Pipeline
 {
     public class DataMigrationException: Exception 
     {

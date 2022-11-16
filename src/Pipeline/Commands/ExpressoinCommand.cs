@@ -1,11 +1,11 @@
-﻿using XQ.DataMigration.Pipeline.Expressions;
-using XQ.DataMigration.Utils;
+﻿using DataMigration.Pipeline.Expressions;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     public class ExpressionCommand<T>: CommandBase
     {
-        //workaround variable. Need to think how to refactor inheritance from CommandBase
+        //Workaround variable. Need to think how to refactor inheritance from CommandBase
         public  T ReturnValue { get; private set; }
         public MigrationExpression<T> Expression { get; set; }
 

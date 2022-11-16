@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     public class SqlDataSource : DataSourceBase 
     {

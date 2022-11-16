@@ -1,11 +1,12 @@
-﻿using System;
+﻿using CsvHelper;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using CsvHelper;
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     public class CsvDataSource : DataSourceBase
     {
@@ -43,33 +44,36 @@ namespace XQ.DataMigration.Data.DataSources
         private IEnumerable<IDataObject> GetDataFromFile(string filePath)
         {
             Migrator.Current.Tracer.TraceLine("Reading " + filePath);
-            var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            var txtReader = new StreamReader(stream, System.Text.Encoding.GetEncoding(Encoding));
-            var csvReader = new CsvReader(txtReader);
-            csvReader.Configuration.Delimiter = Delimiter ?? MapConfig.Current.DefaultCsvDelimiter;
-            csvReader.Configuration.Encoding = System.Text.Encoding.GetEncoding(Encoding);
-            csvReader.Configuration.TrimFields = true;
-            csvReader.Configuration.IgnoreBlankLines = true;
-            csvReader.Configuration.TrimHeaders = true;
+            using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var txtReader = new StreamReader(stream);
+
+            var csvConfiguration = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture);
+            csvConfiguration.Delimiter = Delimiter ?? MapConfig.Current.DefaultCsvDelimiter;
+           // csvConfiguration.Encoding = System.Text.Encoding.GetEncoding(Encoding);
+            csvConfiguration.TrimOptions = CsvHelper.Configuration.TrimOptions.Trim;
+            csvConfiguration.IgnoreBlankLines = true;
+            csvConfiguration.MissingFieldFound = null;
+            //csvConfiguration.TrimHeaders = true;
+            using var csvReader = new CsvReader(txtReader, csvConfiguration);
 
             Key.TraceColor = ConsoleColor.Green;
-            
-            using (txtReader)
+
+            csvReader.Read();
+            csvReader.ReadHeader();
+
+
+            while (csvReader.Read())
             {
-                using (csvReader)
+               
+                var result = new DataObject();
+
+                csvReader.HeaderRecord.ToList().ForEach(header =>
                 {
-                    while (csvReader.Read())
-                    {
-                        var result = new DataObject();
-                        csvReader.FieldHeaders.ToList().ForEach(i =>
-                        {
-                            if (i.IsNotEmpty())
-                                result.SetValue(i.Trim(), csvReader[i.Trim()]);
-                        });
+                    if (header.IsNotEmpty())
+                        result.SetValue(header.Trim(), csvReader[header.Trim()]);
+                });
                         
-                        yield return result;
-                    }
-                }
+                yield return result;
             }
         }
     }

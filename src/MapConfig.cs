@@ -1,21 +1,19 @@
+using DataMigration.Data.DataSources;
+using DataMigration.Enums;
+using DataMigration.Pipeline;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Pipeline.Expressions;
+using DataMigration.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using XQ.DataMigration.Data.DataSources;
-using XQ.DataMigration.Pipeline;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Pipeline.Expressions;
-using XQ.DataMigration.Utils;
 using YamlDotNet.Serialization;
 
-namespace XQ.DataMigration
+namespace DataMigration
 {
     public class MapConfig
     {
-        private Dictionary<string, object> _variableValues { get; set; } = new Dictionary<string, object>();
-
         public Dictionary<string, object> Variables { get; set; } = new Dictionary<string, object>();
 
         public Dictionary<string, string> Mappings { get; set; } = new Dictionary<string, string>();
@@ -44,20 +42,17 @@ namespace XQ.DataMigration
         {
             var yaml = File.ReadAllText(yamlFilePath);
             return ReadFromString(yaml, customCommands);
-
         }
+
         public static MapConfig ReadFromStream(Stream yamlFileStream, IEnumerable<Type> customCommands)
         {
-            using (StreamReader reader = new StreamReader(yamlFileStream))
-            {
-                var yaml = reader.ReadToEnd();
-                return ReadFromString(yaml, customCommands);
-            }
+            using StreamReader reader = new StreamReader(yamlFileStream);
+            var yaml = reader.ReadToEnd();
+            return ReadFromString(yaml, customCommands);
         }
 
         public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customCommands)
         {
-            
             var commandMapping = new Dictionary<string, Type>()
             {
                 { CommandUtils.GetCommandYamlName(typeof(ReplaceCommandSet)), typeof(ReplaceCommandSet) },
@@ -83,7 +78,7 @@ namespace XQ.DataMigration
 
             var builder = new DeserializerBuilder();
 
-            customCommands
+            (customCommands ?? new List<Type>())
                 .Select(type => new KeyValuePair<string, Type>(type.Name, type))
                 .Union(commandMapping)
                 .ToList()

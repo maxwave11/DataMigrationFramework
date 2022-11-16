@@ -1,7 +1,7 @@
 using System;
-using XQ.DataMigration.Pipeline.Commands;
+using DataMigration.Pipeline.Commands;
 
-namespace XQ.DataMigration.Utils
+namespace DataMigration.Utils
 {
     public static class CommandUtils{
         public static string GetCommandYamlName(Type commandType)

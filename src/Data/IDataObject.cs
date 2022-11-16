@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace XQ.DataMigration.Data
+namespace DataMigration.Data
 {
     public interface IDataObject
     {

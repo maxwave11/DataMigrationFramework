@@ -1,0 +1,66 @@
+---
+# %variable_name% - access to items from Variables section
+# exmaple => %file_path
+# $ ... - means that this string is expression
+# commands
+# !transit
+# !condition
+# !lookup
+# !replace
+# !transit-data
+
+# $ abc {} abc {} abc
+# $ abc {} abc {} abc:dd-mm-yyyy
+
+#Rules:
+# - edit this config in SUBLIME or other editor/IDE with good YAML syntax highlighting
+# - keep empty line separation between value transitions for easy reading
+# - quote expressions which contains YAML's syntax symbols,
+#     example1 => SRC[fieldName] to '=> SRC[fieldName]' or "=> SRC[fieldName]" 
+#     example2 ${ var } to '${ var }' or "${ var }" 
+
+
+
+_examples:
+  plain_code1: true   #returns (bool)true
+  plain_code2: 234    #returns (int)234
+  plain_code3: <field name>    #returns (object)
+  plain_code4: (int)SRC[Field name] + (int)SRC[second field]  #returns (int)sum of two fields
+  plain_code5: <field name:double>  #returns (double) value from source object's field
+  plain_string1: $some value #returns (sting)'some value'
+  plain_string2: "$some value" #returns (sting)'some value'
+  plain_string3: '$some value' #returns (sting)'some value'
+  string_template: "${ SRC[sdf] } abc { SRC[sdf] } abc" #returns result from string interpolation expr. $"{ SRC["sdf"] } abc { SRC["sdf"] } abc" 
+  string_template2: "${ %variable% } abc { <sdf> } abc" #returns result from string interpolation expr. $"{ GLOBALS["variable"] } abc { SRC["sdf"] } abc" 
+
+
+
+TraceMode: Auto
+DefaultDecimalSeparator: ','
+SourceBaseDir: G:\My Drive\Client Data Import\eQ
+
+Variables:
+  ConnectionString: data source=some_server;Database=some_db;MultipleActiveResultSets=True;App=EntityFramework;User=user;Password=pwd
+  asset_country_id: 71
+  main_currency_id: 49 
+  analysis_date: !GET new DateTime(2020,10,31)
+  analysis_key: !GET '${((DateTime)%analysis_date%):yyyyMM}'
+  prev_analysis_key: !GET '${((DateTime)%analysis_date%).AddMonths(-1):yyyyMM}'
+  src_path: !GET '$Original files\\{%analysis_date%:yyyy-MM-dd}'
+  
+
+
+
+Pipeline:
+
+  - Name: Cities
+    Enabled: false
+    Source: !csv { Query: !GET '${%src_path%}\\assets_*.csv', Key: <City> }
+    Commands:
+      - [ !TARGET { Target: !XqDataSource { Query: city, Key: <name> } } ] 
+
+      - [ <City> , !SET name] 
+
+      - [ 71 , !SET country_id] 
+
+

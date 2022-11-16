@@ -1,0 +1,460 @@
+---
+
+TraceMode: Objects
+DefaultDecimalSeparator: ','
+SourceBaseDir: .\SampleData
+
+Variables:
+  ConnectionString: data source=some_server;Database=some_db;MultipleActiveResultSets=True;App=EntityFramework;User=user;Password=pwd
+  asset_country_id: 71
+  main_currency_id: 49 
+
+  analysis_date: !GET new DateTime(2020,10,31)
+  analysis_key: !GET '${((DateTime)%analysis_date%):yyyyMM}'
+  prev_analysis_key: !GET '${((DateTime)%analysis_date%).AddMonths(-1):yyyyMM}'
+  src_path: !GET '$\\{%analysis_date%:yyyy-MM-dd}'
+  postfix: !GET '${%analysis_date%:yyyyMM}'
+
+
+Pipeline:
+
+  - Name: Cities
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\assets_*.csv', Key: <City> }
+    Commands:
+      - [ !TARGET { Target: !DummyTargetSystem { Query: city, Key: <name> } } ] 
+
+      - [ <City> , !SET name] 
+
+      - [ 71 , !SET country_id] 
+
+
+  - Name: Analyses
+    Enabled: true
+    Source: !excel { Query: projects.xlsx,    Key: !CONCAT [ <Name>, '%analysis_key%' ] }
+    SaveCount: 15
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: master_analysis,  Key: <external_id> }} ] 
+
+      - [ SRC.Key, !SET external_id ] 
+
+      - [ '%analysis_date%' , !SET valuation_date ] 
+
+      - [ "${%analysis_date%:MM\\\\/yyyy}" , !SET name ] 
+
+      - [ '%main_currency_id%',!TYPE int, !SET value_currency_id ] 
+
+      - [ 36, !SET owner_user_id ] 
+
+
+
+
+  - Name: Assets
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\assets_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>]  }
+    SaveCount: 100
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset,  Key: !CONCAT [<external_id>] } } ] 
+
+      - [ !CONCAT [ <Rahasto>,'%analysis_key%'], 
+          !LOOKUP { Source: !DummyTargetSystem { Query: master_analysis, Key: <external_id>  } }, 
+          !SET master_analysis ]
+
+      - [ SRC.Key, !SET external_id ] 
+
+      - [ <Kustannuspaikan numero>, !SET number ] 
+
+      - [ 71 , !SET country_id ] 
+
+      - [ 10 , !SET forecasting_period_years ]  
+
+      - [ "%main_currency_id%" , !SET currency ]  
+
+      - [ <Kohteen nimi>, !SET name ]  
+
+      - [ <Kaupallinen nimi>, !SET fullname ]  
+
+      - [ <Osoite>, !REPLACE '@empty={null}' , !SET address ]
+
+      - [ <Postinumero>, !SET zip ]  
+
+      - [ <Lisätieto>, !SET description ]  
+
+      - [ <Arvioitsija>, !SET valuator_name ]  
+
+      - [ <Kohdevastaava>, !SET asset_manager_name ]  
+
+      - [ "%asset_country_id%" , !TYPE int , !SET country_id ]  
+
+      - [ <City> , !LOOKUP { Source: !DummyTargetSystem { Query: city, Key: <name> } } , !SET city ]  
+
+      - [ !CONCAT ['%prev_analysis_key%',<Kustannuspaikan numero>], 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: SkipValue } , 
+          !GET 'DataObject[cash_flow_model]',
+          !SET cash_flow_model ]  
+    
+
+      - [ <Kaupallinen nimi>, !SetCustomField AssetProperty_Commercial_Name ] 
+      - [ <Kohteen status>, !SetCustomField AssetProperty_Status ] 
+      - [ <State>, !SetCustomField AssetProperty_State ] 
+      - [ <Tyyppi (Kustannuspaikka)>, !SetCustomField AssetProperty_Type ] 
+      - [ <Hankintaprosessi>, !SetCustomField AssetProperty_Acquisition_Process ] 
+      - [ <Kohdepäällikkö / PM>, !SetCustomField AssetProperty_Property_Manager ] 
+      - [ <Omistusosuus kohteesta (%)>, !TYPE decimal, !SetCustomField AssetProperty_Ownership ] 
+      - [ <ALV-aste (%)>, !TYPE decimal, !SetCustomField AssetProperty_VAT ] 
+      - [ <Vuokrauksen prioriteetti>, !SetCustomField AssetProperty_Leasing_Priority ] 
+      - [ <Ylläpidon tyyppi>, !SetCustomField AssetProperty_Maintenance_Type ] 
+      - [ <Ylläpitovuokrat>, !SetCustomField AssetProperty_Maintenance_Rents ] 
+      - [ <Autopaikat lkm yhteensä>, !TYPE long, !SetCustomField AssetProperty_Parking_Places_Total ] 
+      - [ <Paikka lkm (hoiva/päiväkoti)>, !TYPE long, !SetCustomField AssetProperty_Quantity_care_nursery ] 
+      - [ <Huoneisto lkm (hoiva)>, !TYPE long, !SetCustomField AssetProperty_Amount_of_Rooms_care ] 
+      - [ <Asuntojen lukumäärä>, !TYPE { Type: long, DecimalSeparator: '.'}, !SetCustomField AssetProperty_Amount_of_Flats ] 
+      - [ <Myyntiprosessi>, !SetCustomField AssetProperty_Sales_Process ] 
+      - [ <Property type>, !SetCustomField AssetProperty_Property_Type ] 
+      - [ <Maan omistus>, !SetCustomField AssetProperty_Land_Ownership ] 
+      - [ <Vuokralaiskonserni>, !SetCustomField AssetProperty_Tenant_Group ] 
+        # ask EQ to provide this field in same format always (with , or . separator)
+      - [ <Arviokirja-arvo (hankintahetki)>, !TYPE { Type: long, DecimalSeparator: '.'}, !SetCustomField AssetProperty_External_Market_Value_at_acquisition ] 
+      - [ <Arvioitu valmistuminen>, !TYPE DateTime, !SetCustomField AssetProperty_Estimated_Completion_Date ] 
+      - [ <Vahvistettu valmistuminen>, !TYPE DateTime, !SetCustomField AssetProperty_Approved_Completion_Date ] 
+
+
+      - [ !GET? <Vuokratyyppi>,
+          !CONCAT [ VALUE, '$Rent Type' ] , 
+          !LOOKUP { Source: !excel { Query: mappings.xlsx, Key: !CONCAT [<Source item>,<ModelTree category>] }, OnNotFound: RiseError },
+          !GET "DataObject[Model Tree name]",
+          !SetCustomField AssetProperty_RentType ] 
+
+
+      - [ <Kiinteistökohteen tyyppi>,
+          !IF "!IsEmpty(VALUE)", 
+          !CONCAT [ VALUE, $Segment ] , 
+          !LOOKUP { Source: !excel { Query: mappings.xlsx, Key: !CONCAT [<Source item>,<ModelTree category>] }, OnNotFound: SkipValue },
+          !GET "DataObject[ModelTree item id]",
+          !TYPE int,
+          !SET segment_id ] 
+
+
+      - [ 0.1 , !TYPE float,!SET valuation_accuracy ]  
+
+ 
+
+
+
+  - Name: Asset investment types
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\assets_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>]  }
+    SaveCount: 100
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset_investment, Key: "Field(<asset>,'external_id')", TransitMode: OnlyExistedObjects  } } ] 
+
+      - [ <Omistustyyppi>,
+          !IF "!IsEmpty(VALUE)", 
+          !CONCAT [ VALUE, '$Investment Type' ] , 
+          !LOOKUP { Source: !excel { Query: mappings.xlsx, Key: !CONCAT [<Source item>,<ModelTree category>] }, OnNotFound: RiseError },
+          !GET "DataObject[ModelTree item id]",
+          !TYPE int,
+          !SET investment_type_id ] 
+
+
+
+  - Name: Asset assumptions
+    Enabled: true
+    # Source: !csv { Query: !GET '${%src_path%}\\asset_assumptions_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>], Delimiter: "\t"  }
+    Source: !csv { Query: !GET '${%src_path%}\\asset_assumptions_*.csv', Key: !CONCAT ['%analysis_key%',<Kustannuspaikan numero>] }
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset,  Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
+
+      - [ 50, !TYPE double, !SetAssumption TiCostPerSqm]  
+
+      - [ 3, !TYPE double, !SetAssumption IdleTime]  
+
+      - [ 0.05 , !TYPE double, !SetAssumption GeneralVacancyRate] 
+
+      - [ 0.0 , !TYPE double, !SetAssumption LeasingCommissions]  
+
+      - [ <Exit Vacancy Rate>, !REPLACE '%=', !TYPE double, !SetAssumption ExitVacancyRate] 
+
+      - [ <Exit Cap Rate>, !REPLACE '%=', !TYPE double, !SetAssumption ExitCapRate]  
+
+      - [ '<Market Value EUR:decimal?> * -1', 
+          !SetCashFlowValue { Date: '(DateTime)%analysis_date%', CashFlowItemId: 616 }]
+
+
+      - [ !GET? <Exit price>, 
+          !TYPE decimal, 
+          !GET -(decimal)VALUE,
+          !SetCashFlowValue { Date: '<Divestointipäivämäärä:DateTime>', CashFlowItemId: 587 } ] 
+
+      - [ !GET? <Acquisition price>, 
+          !TYPE decimal, 
+          !SetCashFlowValue { Date: '<Hankintapäivämäärä:DateTime>', CashFlowItemId: 561 }]
+          # !SetCashFlowValue { Date: <Hankintapäivämäärä (omistusoikeus):DateTime>, CashFlowItemId: 561 }]
+
+      - [ !GET? <Repairs EUR/m2/kk>, 
+          !TYPE decimal, 
+          !SetCashFlowValue { Date: ((DateTime)%analysis_date%).AddDays(1), CashFlowItemId: 749, IsActuals: false } ] 
+
+      - [ !GET? <Capex EUR/m2/kk>, 
+          !TYPE decimal, 
+          !SetCashFlowValue { Date: ((DateTime)%analysis_date%).AddDays(1), CashFlowItemId: 750, IsActuals: false } ] 
+
+
+
+
+  - Name: Assets coordiantes
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\buildings_sites_{%postfix%}.csv', Key: !CONCAT ['%analysis_key%', <Kustannuspaikan nro>]  }
+    SaveCount: 100
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects  } } ] 
+
+      - [ <Longitude>, !TYPE double, !SET longitude ] 
+
+      - [ <Latitude>, !TYPE double, !SET latitude  ] 
+
+
+
+  - Name: Buildings
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\buildings_sites_{%postfix%}.csv', 
+                   Key: !CONCAT [ '%analysis_key%', <Kustannuspaikan nro>, <Rakennusnro>],
+                   Encoding: UTF-8 }
+    SaveCount: 200
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: ppe, Key: <external_id>  } } ] 
+
+      - [ SRC.Key, !SET external_id ] 
+
+      - [ !CONCAT ['%analysis_key%', <Kustannuspaikan nro>], 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: <external_id> }, OnNotFound: SkipObject } , 
+          !SET asset ]  
+
+      - [ 2, !SET ppe_type_id ] 
+
+      - [ !GET '<Rakennuksen kayttotarkoitus> ?? "Unknown"',
+          !CONCAT [ VALUE, $ppe_category ] , 
+          !LOOKUP { Source: !excel { Query: mappings.xlsx, Key: !CONCAT [<Source item>,<ModelTree category>]} , OnNotFound: Continue },
+          !GET "DataObject?[ModelTree item id] ?? 15",
+          !TYPE int,
+          !SET ppe_category_id ] 
+
+      - [ <Rakennuksen nimi>, !SET name, !SET fullname ] 
+
+      - [ <Rakennusnro>, !SET number ] 
+
+      - [ <Rakennuksen osoite>, !REPLACE NULL= , !SET address ] 
+
+      - [ <Rakennuksen brutto pinta-ala>, !REPLACE 'NULL=', !TYPE float, !SET area_size ] 
+
+      - [ <Valmistumisvuosi>, !SET construction_year ] 
+
+      - [ <Peruskorjausvuosi>, !REPLACE 'NULL=', !SetCustomField PpeProperty_Year_of_Fundamental_Repair  ] 
+
+
+     
+
+
+  - Name: Sites (Lands)
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\buildings_sites_{%postfix%}.csv', Key: !CONCAT ['%analysis_key%', <Kustannuspaikan nro>, <Kiinteiston id> ] }
+    SaveCount: 100
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: ppe, Key: !GET <external_id> } } ] 
+
+      - [ SRC.Key, !SET external_id ] 
+
+      - [ !CONCAT ['%analysis_key%', <Kustannuspaikan nro>], 
+          !LOOKUP { Source: !DummyTargetSystem { Query: asset, Key: !GET <external_id> }, OnNotFound: SkipObject } , 
+          !SET asset ] 
+
+      - [ <Kiinteistotunnus>, !SET name, !SET fullname  ] 
+
+      - [ <Kiinteiston osoite>, !REPLACE NULL=, !SET address ] 
+
+      - [ <Kiinteiston pinta-ala> , !REPLACE 'NULL=', !TYPE float, !SET area_size ] 
+
+      - [ 1, !SET ppe_type_id ] 
+
+      - [ 13, !SET ppe_category_id ] 
+
+
+
+
+  - Name: Premises
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\rentroll_*.csv', 
+                   Key: !CONCAT [ '%analysis_key%', <Property no.>, <Lease unit>, <Lease no.> ]}
+    SaveCount: 300
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: premis, Key: !GET <external_id>  } } ] 
+
+      - [ SRC.Key, !SET external_id ] 
+
+      - [ <Lease unit>, !SET number ] 
+
+      - [ <Conditions for lease extension>, !SET description ] 
+
+      - [ true, !SET is_leasable ] 
+
+      - [ <Leasable area (sqm)>, 
+          !TYPE float, 
+          !GET "(VALUE as float?) == 0.0f ? null : VALUE",
+          !SET area_size ]
+
+      - [ <Quantity (pcs)>, 
+          !TYPE int , 
+          !GET "(VALUE as int?) == 0 ? null : VALUE",
+          !GET "<Leasable area (sqm):float?> > 0.0f ? null : VALUE",
+          !SET quantity ] 
+
+
+
+  - Name: Tenants
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\rentroll_*.csv', Key: !GET <Tenant group> }
+    SaveCount: 500
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: tenant, Key: !GET <name>  } } ] 
+
+      - [ <Tenant group>, !SET name ] 
+
+      - [ <Business ID>, !SET business_code ] 
+
+      - [ <Tenant brand>, !SET brand_name ] 
+
+
+
+  - Name: Rentroll
+    Enabled: true
+    Source: !csv { Query: !GET '${%src_path%}\\rentroll_*.csv', 
+                   Key: !CONCAT [ '%analysis_key%', <Property no.>, <Lease unit>, <Lease no.> ] }
+    SaveCount: 300
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: rent_roll, Key: <external_id> } } ] 
+
+      - [ SRC.Key, !SET external_id ] 
+
+      - [ !CONCAT [ '%analysis_key%', <Property no.>, <Lease unit>, <Lease no.> ], 
+          !LOOKUP { Source: !DummyTargetSystem { Query: premis, Key: <external_id> },
+                    OnNotFound: SkipObject},
+          !SET premis ]
+          
+      - [ !IF IsEmpty(<Tenant group>), !FLOW SkipObject]
+
+      - [ !GET <Tenant group>, 
+          !LOOKUP { Source: !DummyTargetSystem { Query: tenant, Key: <name> } },
+          !SET tenant ]
+
+      - [ <Lease no.>, !SET agreement_number ] 
+
+      - [ <Lease type>, !REPLACE "!Rolling=2;@any=1", !TYPE int , !SET lease_type_id ] 
+
+      - [ <Lease started>, !TYPE DateTime, !SET lease_start_date ] 
+
+      - [ <Lease expiry date (fixed term)>, !TYPE DateTime, !SET lease_end_date ] 
+
+      - [ <Earliest possible expiry date>, !TYPE DateTime, !SET earliest_notice_date ] 
+
+      - [ <Notice period (tenant)>, !TYPE int , !SET notice_period_months ] 
+
+      - [ <Minimum rent increase>, !REPLACE "%=", !TYPE double , !GET "(VALUE as double?) * 0.01", !SET minimum_lease_indexation ] 
+
+      - [ <Capital rent>, !TYPE double , !SetAssumption CurrentRentAmountPerMonth ] 
+
+      - [ <Maintenance rent>, !TYPE double , !SetAssumption OpexAmountPerMonth ] 
+
+      - [ <Supplements>, !TYPE double , !SetAssumption UtilitiesAmountPerMonth ] 
+
+      - [ 36 , !SET extension_length_months ] 
+
+      - [ "%main_currency_id%", !TYPE int , !SET current_rent_currency_id ] 
+
+      - [ 0, !SET indexation_type ] 
+
+      - [ !CONCAT [<Basis of rent increase>, <Index type>],
+          !IF "!'No rent adjustments'.Equals(<Basis of rent increase>)",
+          !REPLACE [ 
+            { Condition: 'Index-based/Cost-of-living index (1951:10 = 100)', ReplaceValue: Cost-of-living index (%), Important: true },
+            { Condition: Index-based/Index of real estate maintenance costs (2015=100), ReplaceValue: Index of real estate maintenance costs (%), Important: true },
+            { Condition: Other/, ReplaceValue: Inflation (%), Important: true },
+            { Condition: Prosenttikorotus/, ReplaceValue: Inflation (%), Important: true },
+            { Condition: "@any", ReplaceValue: Building cost index (%) },
+           ],
+          !SET "=> %rate_growth_name% = VALUE", #place value to temporary variable 
+          !SET rate_growth ] 
+
+      - [ <Month(s) of rent increase>, !ToRecurrancePattern {},  !SET rate_growth_recurrance_pattern ] #this field must be imported only after rate_growth 
+
+
+
+  - Name: Asset actuals and budgets 
+    Enabled: true
+    Source: 
+      !composite-source
+        # this part only for first migration (historical cash flow values)
+        # - !excel { Query: !GET '${%src_path%}\\..\\Data to be imported at once (to 31.5.2020 MA)\\actuals_all_201701 - 202004.xlsx', Key: <eQkpaikka> }
+        # - !csv { Query: !GET '${%src_path%}\\..\\Data to be imported at once (to 31.5.2020 MA)\\actuals_market_values.csv', Key: <eQkpaikka> }
+        # - !csv { Query: !GET '${%src_path%}\\..\\Data to be imported at once\\actuals_capital_rent.csv', Key: !CONCAT ['%analysis_key%',<eQkpaikka>] }
+        # this part only for monhly migration 
+        - !csv { Query: !GET '${%src_path%}\\actuals_*.csv | {%src_path%}\\budgets_*.csv', Key: !CONCAT ['%analysis_key%',<eQkpaikka>] } 
+    
+    Commands:
+
+      - [ !SET '=> %is_actuals% = true', !IF SRC.Query.Contains('budgets_'), !SET '=> %is_actuals% = false']
+
+        # skip values from budgets with date < analysis date
+      - [ !IF '(bool)%is_actuals% == false',
+          !GET '<Kausi:int> * 100 + <period:int>',
+          !IF "(int)VALUE <= int.Parse($'{%analysis_date%:yyyyMM}')", 
+          !FLOW SkipObject] 
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
+
+      - [  <tili>,
+          !TYPE double, 
+          !LOOKUP { 
+                    Source: !excel { Query: cf_mapping.xlsx, Key: !CONCAT [<tili_MIN>, <tili_MAX>] }, 
+                    LookupPredicate: (double)<tili_MIN> <= (double)VALUE && (double)VALUE <= (double)<tili_MAX>,
+                    TraceNotFound: false,
+                    OnNotFound: SkipObject },
+          !GET "DataObject[cf_item.id]",
+          !TYPE int,
+          !SET "=> %actuals_cf_item_id%=VALUE" ] 
+
+      - [ <eur>, 
+          !TYPE decimal, 
+          !SetCashFlowValue { Date: 'new DateTime(<Kausi:int>, <period:int>,01)', 
+                              CashFlowItemId: '(int)%actuals_cf_item_id%', 
+                              IsActuals: '(bool)%is_actuals%'  }        
+        ] 
+
+    # WARNING: run this block only from EU zone 
+  - Name: FimX data
+    Enabled: true
+    Source: !JsonDataSource { Query: '$..YearlySums', Key: !CONCAT ['%analysis_key%',<^CustomerNumber>] } 
+    Commands:
+
+      - [ !TARGET { Target: !DummyTargetSystem { Query: asset, Key: <external_id>, TransitMode: OnlyExistedObjects } } ] 
+
+      - [ '<MaintenanceInProcess:decimal> + <MaintenanceSuggestion:decimal>',
+          !SetCashFlowValue { Date: 'new DateTime(<Year:int>,1,1)', CashFlowItemId: 663, IsActuals: false, IsAnnualValue: true } ]
+
+      - [ '<InvestmentInProcess:decimal> + <InvestmentSuggestion:decimal>',
+          !SetCashFlowValue { Date: 'new DateTime(<Year:int>,1,1)', CashFlowItemId: 745, IsActuals: false, IsAnnualValue: true } ]
+
+      - [ '<EnergyInvestmentInProcess:decimal> + <EnergyInvestmentSuggestion:decimal>',
+          !SetCashFlowValue { Date: 'new DateTime(<Year:int>,1,1)', CashFlowItemId: 746, IsActuals: false, IsAnnualValue: true } ]
+
+      - [ '-<Year:decimal>',
+          !SetCashFlowValue { Date: '((DateTime)%analysis_date%).AddDays(1)', CashFlowItemId: 748, IsActuals: false, Accumulate: false } ]

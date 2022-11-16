@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ExcelDataReader;
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     public class ExcelDataSource : DataSourceBase
     {
@@ -15,38 +15,36 @@ namespace XQ.DataMigration.Data.DataSources
             var baseDir = MapConfig.Current.SourceBaseDir;
 
             var filePath = $"{baseDir}\\{ActualQuery}";
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             
-            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using var reader = ExcelReaderFactory.CreateReader(stream);
+
+            string[] headerRow = null;
+            int rowCounter = 0;
+            while (reader.Read())
             {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                rowCounter++;
+            
+                //init header row
+                if (rowCounter == 1)
                 {
-                    string[] headerRow = null;
-                    int rowCounter = 0;
-                    while (reader.Read())
-                    {
-                        rowCounter++;
+                    headerRow = new string[reader.FieldCount];
+                    for (int i = 0; i < reader.FieldCount; i++)
+                        headerRow[i] = reader.GetString(i)?.Replace("\n", " ").Replace("\r", String.Empty);
             
-                        //init header row
-                        if (rowCounter == 1)
-                        {
-                            headerRow = new string[reader.FieldCount];
-                            for (int i = 0; i < reader.FieldCount; i++)
-                                headerRow[i] = reader.GetString(i)?.Replace("\n", " ").Replace("\r", String.Empty);
-            
-                            continue;
-                        }
-            
-                        if (rowCounter < 2)
-                            continue;
-            
-                        if (IsRowEmpty(reader))
-                            continue;
-                        
-                        var valuesObject = RowToValuesObject(reader, headerRow);
-                        valuesObject.Query = ActualQuery;
-                        yield return valuesObject;
-                    }
+                    continue;
                 }
+            
+                if (rowCounter < 2)
+                    continue;
+            
+                if (IsRowEmpty(reader))
+                    continue;
+                        
+                var valuesObject = RowToValuesObject(reader, headerRow);
+                valuesObject.Query = ActualQuery;
+                yield return valuesObject;
             }
         }
         

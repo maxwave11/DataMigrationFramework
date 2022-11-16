@@ -1,16 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using CsvHelper;
-using CsvHelper.Configuration;
-using XQ.DataMigration.Data;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Utils;
+using DataMigration.Enums;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Trace
+namespace DataMigration.Pipeline.Trace
 {
     public class MigrationEventTraceEntry
     {
@@ -124,11 +118,11 @@ namespace XQ.DataMigration.Pipeline.Trace
 
         public void SaveLogs()
         {
-            using (var writer = new StreamWriter("events.csv"))
-            using (var csv = new CsvWriter(writer, new CsvConfiguration() { Delimiter = ";" }))
-            {
-                csv.WriteRecords(_migrationEvents);
-            }
+            //using (var writer = new StreamWriter("events.csv"))
+            //using (var csv = new CsvWriter(writer, new CsvConfiguration() { Delimiter = ";" }))
+            //{
+            //    csv.WriteRecords(_migrationEvents);
+            //}
         }
     }
 }

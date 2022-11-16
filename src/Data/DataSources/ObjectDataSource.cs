@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Utils;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data.DataSources
+namespace DataMigration.Data.DataSources
 {
     public class ObjectDataSource //INHERIT FROM DataSourceBase!
     {

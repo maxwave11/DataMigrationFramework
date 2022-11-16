@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Utils;
+using DataMigration.Enums;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
+    /// <summary>
+    /// Command allows to implement complex string replacing logic
+    /// </summary>
     [Command("REPLACE")]
     public class ReplaceCommandSet : CommandSet<ReplaceStepCommand>
     {

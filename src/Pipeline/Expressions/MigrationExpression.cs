@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using XQ.DataMigration.Data;
+using DataMigration.Data;
 
-namespace XQ.DataMigration.Pipeline.Expressions
+namespace DataMigration.Pipeline.Expressions
 {
     public sealed class MigrationExpression: MigrationExpression<object>
     {
@@ -17,6 +17,10 @@ namespace XQ.DataMigration.Pipeline.Expressions
         public MigrationExpression(string expression) : base(expression) { }
     }
 
+    /// <summary>
+    /// Represents compilable C# expression wiht migration sugar
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class MigrationExpression<T>
     {
         public string Expression { get; }
@@ -47,7 +51,7 @@ namespace XQ.DataMigration.Pipeline.Expressions
         /// <returns>Compiled delegate</returns>
         private ScriptRunner<T> Compile(string migrationExpression, List<Type> customTypes)
         {
-            _translatedExpression = ExpressionCompiler.TranslateExpression(migrationExpression);
+            _translatedExpression = ExpressionTranslator.Translate(migrationExpression);
 
             if (_script == null)
             {
@@ -74,9 +78,10 @@ namespace XQ.DataMigration.Pipeline.Expressions
                 var script = _script.ContinueWith<T>(_translatedExpression);
                 return script.CreateDelegate();
             }
-            catch (Exception e)
+            catch
             {
-                throw;//left it for debuggin purposes
+                //ONLY for debugging purposes
+                throw;
             }
         }
 

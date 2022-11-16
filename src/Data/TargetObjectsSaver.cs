@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using XQ.DataMigration.Data.DataSources;
-using XQ.DataMigration.Pipeline.Commands;
-using XQ.DataMigration.Utils;
+using DataMigration.Data.DataSources;
+using DataMigration.Pipeline.Commands;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data
+namespace DataMigration.Data
 {
     public class TargetObjectsSaver 
     {

@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
-using System.Text.RegularExpressions;
-using XQ.DataMigration.Utils;
+using DataMigration.Utils;
 
-namespace XQ.DataMigration.Data
+namespace DataMigration.Data
 {
     public class DataObject : IDataObject
     {
         public object this[string name] { get => GetValue(name); set => SetValue(name, value); }
         public string[] FieldNames => _dataContainer.Keys.ToArray();
-        public bool IsNew { get; }
+        public bool IsNew { get; set; }
         public uint RowNumber { get; set; }
         public string Key { get; set; }
         public object Native { get; private set; }
@@ -68,7 +66,7 @@ namespace XQ.DataMigration.Data
 
         public bool IsEmpty()
         {
-            throw new NotImplementedException();
+            return _dataContainer.Count == 0;
         }
 
         public string GetInfo()

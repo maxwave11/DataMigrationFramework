@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using XQ.DataMigration.Enums;
-using XQ.DataMigration.Pipeline.Expressions;
+using DataMigration.Enums;
+using DataMigration.Pipeline.Expressions;
 
-namespace XQ.DataMigration.Pipeline.Commands
+namespace DataMigration.Pipeline.Commands
 {
     [Command("IF")]
     public class IfCommand: CommandBase
