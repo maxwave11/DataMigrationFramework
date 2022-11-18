@@ -24,8 +24,8 @@ namespace DataMigration.Data.DataSources
 
         
         /// <summary>
-        /// Some addition commands to preare (unify) data when using many data sources with different structure
-        /// For example in case when there is fiew files with same data but with different headers
+        /// Some addition commands to prepare (unify) data when using many data sources with different structure
+        /// For example in case when there is few files with same data but with different headers
         /// </summary>
         public CommandSet<CommandBase> PrepareData { get; set; }
 

@@ -14,7 +14,7 @@ namespace DataMigration.Pipeline.Commands
     /// by any other condition. Lookup condition defined by <c>LookupKeyExpr</c> or 
     /// <c>LookupAlternativeExpr</c> migration expression.
     /// </summary>
-    [Command("LOOKUP")]
+    [Yaml("LOOKUP")]
     internal class LookupCommand: CommandBase
     {
         /// <summary>

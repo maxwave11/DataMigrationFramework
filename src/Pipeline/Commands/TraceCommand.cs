@@ -2,7 +2,7 @@ using DataMigration.Utils;
 
 namespace DataMigration.Pipeline.Commands
 {
-    [Command("TRACE")]
+    [Yaml("TRACE")]
     public class TraceCommand : CommandBase
     {
         public bool Trace { get; set; }

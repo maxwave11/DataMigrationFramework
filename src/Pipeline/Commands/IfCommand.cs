@@ -5,7 +5,7 @@ using DataMigration.Pipeline.Expressions;
 
 namespace DataMigration.Pipeline.Commands
 {
-    [Command("IF")]
+    [Yaml("IF")]
     public class IfCommand: CommandBase
     {
         [Required]

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DataMigration.Pipeline.Commands;
 
 namespace DataMigration.Data.DataSources
 {
@@ -8,6 +9,8 @@ namespace DataMigration.Data.DataSources
     /// Complex data source which consiss of many others. Jus return union of results from all
     /// nested data source. Represents a generic list of nested data sources.
     /// </summary>
+    
+    [Yaml("composite-source")]
     public class CompositeDataSource : List<IDataSource>, IDataSource
     {
         public IEnumerable<IDataObject> GetData()

@@ -38,7 +38,7 @@ namespace DataMigration.Pipeline.Expressions
             var exprContext = new ExpressionContext(ctx);
             var task = _scriptRunner(exprContext);
             if (!task.IsCompleted)
-               throw new Exception("TASK NOT COMPLETED!!! ALARM!");
+               throw new InvalidOperationException("Task was not completed");
                 
             return  task.Result;
         }

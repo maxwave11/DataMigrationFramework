@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using DataMigration.Pipeline.Commands;
 using DataMigration.Utils;
 
 namespace DataMigration.Data.DataSources
 {
+    [Yaml("csv")]
     public class CsvDataSource : DataSourceBase
     {
         public string Delimiter { get; set; }

@@ -38,58 +38,61 @@ namespace DataMigration
             Pipeline.ForEach(i => i.Initialize());
         }
 
-        public static MapConfig ReadFromFile(string yamlFilePath, IEnumerable<Type> customCommands) 
+        public static MapConfig ReadFromFile(string yamlFilePath, IEnumerable<Type> customCommands, IEnumerable<object> instances = null) 
         {
             var yaml = File.ReadAllText(yamlFilePath);
-            return ReadFromString(yaml, customCommands);
+            return ReadFromString(yaml, customCommands, instances);
         }
 
-        public static MapConfig ReadFromStream(Stream yamlFileStream, IEnumerable<Type> customCommands)
+        public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customCommands, IEnumerable<object> instances = null)
         {
-            using StreamReader reader = new StreamReader(yamlFileStream);
-            var yaml = reader.ReadToEnd();
-            return ReadFromString(yaml, customCommands);
-        }
-
-        public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customCommands)
-        {
-            var commandMapping = new Dictionary<string, Type>()
-            {
-                { CommandUtils.GetCommandYamlName(typeof(ReplaceCommandSet)), typeof(ReplaceCommandSet) },
-                { CommandUtils.GetCommandYamlName(typeof(SetFlowCommand)), typeof(SetFlowCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(LookupCommand)), typeof(LookupCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(TypeConvertCommand)), typeof(TypeConvertCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(SetCommand)), typeof(SetCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(ConcatCommand)), typeof(ConcatCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(GetValueCommand)), typeof(GetValueCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(GetNotEmptyValueCommand)), typeof(GetNotEmptyValueCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(IfCommand)), typeof(IfCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(TraceCommand)), typeof(TraceCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(CommandSet<CommandBase>)), typeof(CommandSet<CommandBase>) },
-                { CommandUtils.GetCommandYamlName(typeof(GetTargetCommand)), typeof(GetTargetCommand) },
-                { CommandUtils.GetCommandYamlName(typeof(MessageCommand)), typeof(MessageCommand) },
-
-                { "csv", typeof(CsvDataSource) },
-                { "composite-source", typeof(CompositeDataSource) },
-                { "excel", typeof(ExcelDataSource) },
-                { "sql", typeof(SqlDataSource) },
-
-            };
+            var yamlTokens = GetInternalCommands()
+                .Union(customCommands ??  new List<Type>())
+                .Select(type => (Token: CommandUtils.GetCommandYamlName(type), Type: type ))
+                .ToList();
+            
 
             var builder = new DeserializerBuilder();
+            yamlTokens.ForEach(type => builder = builder.WithTagMapping("!" + type.Token, type.Type));
 
-            (customCommands ?? new List<Type>())
-                .Select(type => new KeyValuePair<string, Type>(type.Name, type))
-                .Union(commandMapping)
-                .ToList()
-                .ForEach(type => builder = builder.WithTagMapping("!" + type.Key, type.Value));
+            builder.WithObjectFactory(type =>
+            {
+                var instance = instances?.FirstOrDefault(instance => instance.GetType() == type);
+                return instance ?? new DefaultObjectFactory().Create(type);
+            });
+            
 
             var deserializer = builder.Build();
-
+            
             var mapConfig = deserializer.Deserialize<MapConfig>(yamlString);
+            
             mapConfig.Initialize();
 
             return mapConfig;
+        }
+
+        private static IEnumerable<Type> GetInternalCommands()
+        {
+            return new[]
+            {
+                typeof(SetFlowCommand),
+                typeof(LookupCommand),
+                typeof(ReplaceCommandSet),
+                typeof(TypeConvertCommand),
+                typeof(SetCommand),
+                typeof(ConcatCommand),
+                typeof(GetValueCommand),
+                typeof(GetNotEmptyValueCommand),
+                typeof(IfCommand),
+                typeof(TraceCommand),
+                typeof(CommandSet<CommandBase>),
+                typeof(GetTargetCommand),
+                typeof(MessageCommand),
+                typeof(CsvDataSource),
+                typeof(CompositeDataSource),
+                typeof(ExcelDataSource),
+                typeof(SqlDataSource),
+            };
         }
     }
 }

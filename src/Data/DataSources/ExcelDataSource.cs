@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DataMigration.Pipeline.Commands;
 using ExcelDataReader;
 using DataMigration.Utils;
 
 namespace DataMigration.Data.DataSources
 {
+    [Yaml("excel")]
     public class ExcelDataSource : DataSourceBase
     {
         public IDataSourceSettings Settings { get; set; }

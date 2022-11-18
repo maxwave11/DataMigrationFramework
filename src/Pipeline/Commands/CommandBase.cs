@@ -6,19 +6,6 @@ using System.Configuration;
 namespace DataMigration.Pipeline.Commands
 {
     /// <summary>
-    /// Assign TAG name to the command. You can use it in YAML configuration
-    /// instead of full command class name
-    /// </summary>
-    public class CommandAttribute: Attribute
-    {
-        public string Name { get; }
-        public CommandAttribute(string name)
-        {
-            Name = name;
-        }
-    }
-    
-    /// <summary>
     /// Base class for all commands in migration configuration
     /// </summary>
     public abstract class CommandBase

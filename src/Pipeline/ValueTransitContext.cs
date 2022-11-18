@@ -25,7 +25,7 @@ namespace DataMigration.Pipeline
 
         public readonly List<TraceMessage> TraceEntries = new List<TraceMessage>();
         
-        //for debug purposes
+        // For debug purposes
         public string _traceEntries => TraceEntries.Select(i => i.Text).Join(" ");
 
         public bool Trace { get; set; }

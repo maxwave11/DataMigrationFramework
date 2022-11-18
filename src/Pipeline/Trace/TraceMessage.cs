@@ -11,5 +11,10 @@ namespace DataMigration.Pipeline.Trace
             Text = text;
             Color = color;
         }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

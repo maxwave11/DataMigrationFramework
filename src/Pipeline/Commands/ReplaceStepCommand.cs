@@ -5,7 +5,7 @@ using DataMigration.Utils;
 
 namespace DataMigration.Pipeline.Commands
 {
-    [Command("REPLACE_STEP")]
+    [Yaml("REPLACE_STEP")]
     public class ReplaceStepCommand : CommandBase
     {
         public bool Important { get; set; }
@@ -26,10 +26,6 @@ namespace DataMigration.Pipeline.Commands
 
         private string Replace(ValueTransitContext ctx)
         {
-            // if (ReplaceValue.Contains("{"))
-            // {
-            //     return ExpressionEvaluator.EvaluateString(ReplaceValue, ctx); 
-            // }
             if (Condition.StartsWith("@regexp:"))
             {
                 var regex = new Regex(Condition.Replace("@regexp:", ""), RegexOptions.IgnoreCase);
@@ -60,11 +56,6 @@ namespace DataMigration.Pipeline.Commands
                 var regex = new Regex(Condition.Replace("@regexp:", ""), RegexOptions.IgnoreCase);
                 return regex.IsMatch(transitValue);
             }
-
-            //if (Condition.StartsWith("{"))
-            //{
-            //    return (bool)ExpressionEvaluator.Evaluate(Condition, ctx);
-            //}
 
             return transitValue?.Contains(Condition) ?? false;
         }

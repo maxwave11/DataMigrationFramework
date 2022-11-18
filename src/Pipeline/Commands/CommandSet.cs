@@ -5,7 +5,7 @@ using DataMigration.Enums;
 
 namespace DataMigration.Pipeline.Commands
 {
-    [Command("TRANSIT")]
+    [Yaml("TRANSIT")]
     public class CommandSet<T> : CommandBase, IList<T>  where T : CommandBase
     {
         public List<T> Commands { get; set; } = new List<T>();

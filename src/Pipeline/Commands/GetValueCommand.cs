@@ -6,7 +6,7 @@ namespace DataMigration.Pipeline.Commands
     /// <summary>
     /// Puts the value from expression to pipeline
     /// </summary>
-    [Command("GET")]
+    [Yaml("GET")]
     public class GetValueCommand : CommandBase
     {
         public MigrationExpression Expression { get; set; }
@@ -27,7 +27,7 @@ namespace DataMigration.Pipeline.Commands
     /// <summary>
     /// Puts not empty value from expression to pipeline. Do nothing if value empty
     /// </summary>
-    [Command("GET?")]
+    [Yaml("GET?")]
     public sealed class GetNotEmptyValueCommand : GetValueCommand
     {
         public override void ExecuteInternal(ValueTransitContext ctx)

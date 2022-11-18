@@ -10,7 +10,7 @@ using DataMigration.Pipeline.Trace;
 namespace DataMigration.Pipeline
 {
     /// <summary>
-    /// Transition which transit objects data from DataSet of source system to DataSet of target system
+    /// Transition which transit data from DataSet of source system to DataSet of target system
     /// </summary>
     public class DataPipeline
     {
@@ -34,8 +34,11 @@ namespace DataMigration.Pipeline
 
         public void Initialize()
         {
+            if (Enabled == false)
+                return;
+            
             if (Source == null)
-                throw new ArgumentNullException();
+                throw new InvalidOperationException($"{nameof(Source)} must be set");
 
             if (Saver == null)
             {
@@ -49,7 +52,7 @@ namespace DataMigration.Pipeline
 
         public void Run()
         {
-            TraceLine($"\nPIPELINE '{Name}' start ", null);
+            TraceLine($"\nPIPELINE '{Name}' started ", null);
             Tracer.Indent();
 
             var srcDataSet = Source.GetData();
@@ -84,8 +87,8 @@ namespace DataMigration.Pipeline
                 if (ctx.Flow == TransitionFlow.SkipObject && ctx.Target != null)
                 {
                     //If object just created and skipped by migration logic - need to remove it from cache
-                    //becaus it's invalid and must be removed from cache to avoid any referencing to this object
-                    //by any migration logic (lookups, key ytansitions, etc.)
+                    //because it's invalid and must be removed from cache to avoid any referencing to this object
+                    //by any migration logic (lookups, key transitions, etc.)
                     //If object is not new, it means that it's already saved and passed by migration validation
                     if (ctx.Target.IsNew)
                         _targetSystem.InvalidateObject(ctx.Target);

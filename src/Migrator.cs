@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using DataMigration.Pipeline;
 using DataMigration.Pipeline.Commands;
-using DataMigration.Pipeline.Trace;d
+using DataMigration.Pipeline.Trace;
 
 namespace DataMigration
 {
@@ -12,7 +12,7 @@ namespace DataMigration
         public MigrationTracer Tracer { get; }
 
         public static Migrator Current  {get; private set; }
-        public bool ThrowExeptionOnError { get; }
+        public bool ThrowExceptionOnError { get; }
 
         private MapConfig _mapConfig;
 
@@ -22,7 +22,7 @@ namespace DataMigration
                 throw new ArgumentNullException(nameof(mapConfig));
 
             _mapConfig = mapConfig;
-            ThrowExeptionOnError = throwExeptionOnError;
+            ThrowExceptionOnError = throwExeptionOnError;
             Current = this;
             Tracer = new MigrationTracer();
         }
@@ -42,13 +42,13 @@ namespace DataMigration
             catch (DataMigrationException e)
             {
                 Tracer.TraceMigrationException("Error occured while pipeline processing", e);
-                if (ThrowExeptionOnError)
+                if (ThrowExceptionOnError)
                     throw;
             }
             catch (Exception e)
             {
                 Tracer.TraceLine(e.ToString());
-                if (ThrowExeptionOnError)
+                if (ThrowExceptionOnError)
                     throw;
             }
                 

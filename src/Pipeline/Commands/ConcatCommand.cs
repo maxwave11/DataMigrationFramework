@@ -4,7 +4,7 @@ using DataMigration.Utils;
 
 namespace DataMigration.Pipeline.Commands
 {    
-    [Command("CONCAT")]
+    [Yaml("CONCAT")]
     public class ConcatCommand : CommandSet<ExpressionCommand<object>>
     {
         public override void ExecuteInternal(ValueTransitContext ctx)

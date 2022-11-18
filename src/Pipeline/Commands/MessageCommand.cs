@@ -6,7 +6,7 @@ namespace DataMigration.Pipeline.Commands
     /// <summary>
     /// Command allows to write custom messages to migration trace
     /// </summary>
-    [Command("MSG")]
+    [Yaml("MSG")]
     public class MessageCommand: CommandBase
     {
         public MigrationExpression<string> Message { get; set; }

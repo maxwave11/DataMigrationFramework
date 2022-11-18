@@ -7,9 +7,9 @@ namespace DataMigration.Pipeline.Commands
     /// <summary>
     /// ExecuteInternal unit which writes incoming value from ValueTransitContext to target object
     /// If Expression is just a property name -> unit writes value to appropriate property of target object
-    /// If Expression is Migration expression -> unit exeuctes this expression
+    /// If Expression is Migration expression -> unit executes this expression
     /// </summary>
-    [Command("SET")]
+    [Yaml("SET")]
     public class SetCommand : CommandBase
     {
         public string ToField { get; set; }

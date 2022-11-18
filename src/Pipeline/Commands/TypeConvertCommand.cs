@@ -6,7 +6,7 @@ namespace DataMigration.Pipeline.Commands
     /// <summary>
     /// Command converts current migration value to some type
     /// </summary>
-    [Command("TYPE")]
+    [Yaml("TYPE")]
     public class TypeConvertCommand : CommandBase
     {
         public string Format { get; set; }
@@ -16,8 +16,7 @@ namespace DataMigration.Pipeline.Commands
         public char DecimalSeparator { get; set; }
         
         public CommandBase OnError { get; set; }
-
-
+        
         private TypeCode _typeCode;
 
         public TypeConvertCommand()

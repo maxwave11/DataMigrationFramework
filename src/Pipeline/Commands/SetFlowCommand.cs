@@ -5,7 +5,7 @@ using DataMigration.Utils;
 
 namespace DataMigration.Pipeline.Commands
 {
-    [Command("FLOW")]
+    [Yaml("FLOW")]
     public class SetFlowCommand: CommandBase
     {
         public TransitionFlow Flow { get; set; } = TransitionFlow.Continue;

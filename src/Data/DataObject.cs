@@ -53,8 +53,8 @@ namespace DataMigration.Data
 
             var valueToSet = value;
             
-            //don't allow empty strings in source data
-            //store null always in order to simplify migration expressions
+            // Don't allow empty strings in source data
+            // Store null always in order to simplify migration expressions
             if (value is string strValue)
             {
                 if (strValue.IsEmpty())

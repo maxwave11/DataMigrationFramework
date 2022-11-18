@@ -6,9 +6,9 @@ namespace DataMigration.Utils
     public static class CommandUtils{
         public static string GetCommandYamlName(Type commandType)
         {
-            var attribute = (CommandAttribute)Attribute.GetCustomAttribute(commandType, typeof (CommandAttribute));
+            var attribute = (YamlAttribute)Attribute.GetCustomAttribute(commandType, typeof (YamlAttribute));
             
-            return attribute?.Name ?? commandType.Name;
+            return attribute?.TokenName ?? commandType.Name;
         }
     }
 }

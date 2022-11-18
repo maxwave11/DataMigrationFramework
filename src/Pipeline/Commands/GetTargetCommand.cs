@@ -4,7 +4,7 @@ using DataMigration.Enums;
 
 namespace DataMigration.Pipeline.Commands
 {
-    [Command("TARGET")]
+    [Yaml("TARGET")]
     public class GetTargetCommand : CommandBase
     {
         public IDataTarget Target { get; set; }
