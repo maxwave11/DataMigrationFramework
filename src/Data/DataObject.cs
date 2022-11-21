@@ -46,7 +46,7 @@ namespace DataMigration.Data
             return result;
         }
 
-        public void SetValue(string name, object value)
+        public virtual void SetValue(string name, object value)
         {
             if (name.IsEmpty())
                 throw new ArgumentException($"FromField name can't be empty");

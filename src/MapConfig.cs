@@ -2,13 +2,13 @@ using DataMigration.Data.DataSources;
 using DataMigration.Enums;
 using DataMigration.Pipeline;
 using DataMigration.Pipeline.Commands;
-using DataMigration.Pipeline.Expressions;
 using DataMigration.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.ObjectFactories;
 
 namespace DataMigration
 {
@@ -19,8 +19,6 @@ namespace DataMigration
         public Dictionary<string, string> Mappings { get; set; } = new Dictionary<string, string>();
 
         public List<DataPipeline> Pipeline { get; set; } = new List<DataPipeline>();
-        
-        public Dictionary<string, MigrationExpression> _examples { get; set; }
         
         public static MapConfig Current  {get; private set; }
 

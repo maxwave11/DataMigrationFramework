@@ -6,32 +6,7 @@ using DataMigration.Utils;
 
 namespace DataMigration.Pipeline.Trace
 {
-    public class MigrationEventTraceEntry
-    {
-        public uint RowNumber { get; set; }
-        public string DataSetName { get; set; }
-
-        public MigrationEvent EventType { get; }
-
-        public string Query { get; set; }
-
-        public string ObjectKey { get; set; }
-
-        public string Message { get; }
-
-        public MigrationEventTraceEntry(MigrationEvent eventType, ValueTransitContext ctx, string message)
-        {
-            EventType = eventType;
-            Message = message;
-            ObjectKey = ctx.Source.Key;
-            DataSetName = ctx.DataPipeline?.Name;
-            RowNumber = ctx.Source.RowNumber;
-            Query = ctx.DataPipeline?.Source.ToString();
-        }
-
-    }
-
-    public sealed class MigrationTracer
+    public sealed class MigrationTracer : IMigrationTracer
     {
         /// <summary>
         /// Use this event to trace migration process
@@ -44,11 +19,9 @@ namespace DataMigration.Pipeline.Trace
         /// </summary>
         public event EventHandler TransitValueStarted;
 
-        private const string _indentUnit = "    ";
+        private const string IndentUnit = "    ";
 
         private int _identLevel = 0;
-
-        private List<MigrationEventTraceEntry> _migrationEvents = new List<MigrationEventTraceEntry>();
 
         public void TraceLine(string message, ValueTransitContext ctx = null, ConsoleColor color = ConsoleColor.White)
         {
@@ -58,17 +31,6 @@ namespace DataMigration.Pipeline.Trace
 
             if (ctx == null || ctx.Trace)
                 SendTraceMessage(message, color);
-        }
-
-        public void TraceEvent(MigrationEvent eventType, ValueTransitContext ctx, string message)
-        {
-            message = FormatMessage(message);
-
-            ctx.AddTraceEntry(message, ConsoleColor.Yellow);
-
-            _migrationEvents.Add(new MigrationEventTraceEntry(eventType, ctx, message));
-
-            SendTraceMessage(message, ConsoleColor.Yellow);
         }
 
         public void TraceMigrationException(string message, DataMigrationException ex)
@@ -92,16 +54,19 @@ namespace DataMigration.Pipeline.Trace
             TraceLine("\n" + ex.Context.Target?.GetInfo(), ex.Context, ConsoleColor.Red);
         }
 
-        private void SendTraceMessage(string msg, ConsoleColor color)
+        /// <summary>
+        /// Send trace massage to external subscriber
+        /// </summary>
+        private void SendTraceMessage(string message, ConsoleColor color)
         {
-            Trace.Invoke(this, new TraceMessage(msg, color));
+            Trace.Invoke(this, new TraceMessage(message, color));
         }
 
         private string FormatMessage(string msg)
         {
             var indentString = "";
             for (int i = 0; i < _identLevel; i++)
-                indentString += _indentUnit;
+                indentString += IndentUnit;
 
             return '\n' + msg.Split('\n').Select(i => indentString + i).Join("\n");
         }

@@ -7,24 +7,36 @@ using DataMigration.Pipeline.Trace;
 
 namespace DataMigration
 {
-    public class Migrator
+    public interface IMigrationLogger
     {
-        public MigrationTracer Tracer { get; }
+        void Log(ConsoleColor color, string text);
+    }
+
+    public class Migrator : IMigrator
+    {
+        internal MigrationTracer Tracer { get; }
 
         public static Migrator Current  {get; private set; }
-        public bool ThrowExceptionOnError { get; }
+        public bool BreakOnError { get; }
 
-        private MapConfig _mapConfig;
+        private readonly MapConfig _mapConfig;
+        private readonly IMigrationLogger _logger;
 
-        public Migrator(MapConfig mapConfig, bool throwExeptionOnError = false)
+        public Migrator(MapConfig mapConfig, IMigrationLogger logger)
         {
             if (mapConfig == null)
                 throw new ArgumentNullException(nameof(mapConfig));
 
             _mapConfig = mapConfig;
-            ThrowExceptionOnError = throwExeptionOnError;
+            _logger = logger;
             Current = this;
             Tracer = new MigrationTracer();
+            Tracer.Trace += Migrator_Trace;
+        }
+
+        private void Migrator_Trace(object sender, TraceMessage e)
+        {
+            _logger.Log(e.Color, e.Text);
         }
 
         public void Run()
@@ -37,24 +49,23 @@ namespace DataMigration
             try
             {
                 InitializeVariables();
-                InitializePipeline();
+                RunPipelines();
             }
             catch (DataMigrationException e)
             {
                 Tracer.TraceMigrationException("Error occured while pipeline processing", e);
-                if (ThrowExceptionOnError)
+                if (BreakOnError)
                     throw;
             }
             catch (Exception e)
             {
                 Tracer.TraceLine(e.ToString());
-                if (ThrowExceptionOnError)
+                if (BreakOnError)
                     throw;
             }
                 
             migrationTimeCounter.Stop();
-
-            Tracer.SaveLogs();
+            
             Tracer.TraceLine($"\n - Migration end {migrationTimeCounter.Elapsed.TotalMinutes} mins");
         }
 
@@ -75,7 +86,7 @@ namespace DataMigration
             }
         }
 
-        private void InitializePipeline() 
+        private void RunPipelines() 
         {
             foreach (var pipeline in _mapConfig.Pipeline.Where(i => i.Enabled))
             {
