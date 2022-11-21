@@ -12,12 +12,15 @@ namespace DataMigration.Pipeline
     /// <summary>
     /// Transition which transit data from DataSet of source system to DataSet of target system
     /// </summary>
-    public class DataPipeline
+    public class DataPipeline<TSource, TTarget> : IDataPipeline 
+        where TSource: IDataObject 
+        where TTarget: IDataObject
     {
         public bool Enabled { get; set; } = true;
         public string Name { get; set; }
 
-        public IDataSource Source { get; set; }
+        public IDataSource<TSource> Source { get; set; }
+        public IDataTarget Target { get; set; }
         
         private IDataTarget _targetSystem { get; set; }
 
@@ -27,7 +30,9 @@ namespace DataMigration.Pipeline
         
         public TraceMode TraceMode { get; set; }
 
-        public List<CommandSet<CommandBase>> Commands { get; set; }
+        public IEnumerable<CommandSet<CommandBase>> Commands { get; set; }
+        
+        public IEnumerable<IEnumerable<CommandBase>> Commands2 { get; set; }
 
         private MigrationTracer Tracer => Migrator.Current.Tracer;
         
@@ -46,15 +51,19 @@ namespace DataMigration.Pipeline
                 Saver.SaveCount = SaveCount;
             }
             //shitty workaround, need to refactor!
-            _targetSystem = Commands.SelectMany(i => i.Commands).OfType<GetTargetCommand>().Single().Target;
-            Saver.TargetSource = _targetSystem;
+            //_targetSystem = Commands.SelectMany(i => i.Commands).OfType<GetTargetCommand>().Single().Target;
+            Saver.TargetSource = Target ?? _targetSystem;
         }
 
         public void Run()
         {
+            if (!Enabled)
+                return;
+            
             TraceLine($"\nPIPELINE '{Name}' started ", null);
             Tracer.Indent();
 
+            TraceLine($"DataSource ({ Source }) - Get data...", null);
             var srcDataSet = Source.GetData();
         
             foreach (var sourceObject in srcDataSet)
@@ -79,9 +88,10 @@ namespace DataMigration.Pipeline
         {
             var ctx = new ValueTransitContext(sourceObject, null);
             ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands);
-            ctx.DataPipeline = this;
+           // ctx.DataPipeline = this;
             try
             {
+                SetTargetObject(ctx);
                 RunCommands(ctx);
 
                 if (ctx.Flow == TransitionFlow.SkipObject && ctx.Target != null)
@@ -135,6 +145,23 @@ namespace DataMigration.Pipeline
         { 
             if ((TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Objects) || ctx?.Trace == true)
                 Tracer.TraceLine(message, ctx, ConsoleColor.Magenta);
+        }
+
+        private void SetTargetObject(ValueTransitContext ctx)
+        {
+            var target = _targetSystem.GetObjectByKeyOrCreate(ctx.Source.Key);
+
+            // Target can be empty when using TransitMode = OnlyExitedObjects
+            if (target == null)
+            {
+                ctx.Flow = TransitionFlow.SkipObject;
+                return;
+            }
+
+            ctx.Target = target;
+            
+            //TraceColor = ConsoleColor.Magenta;
+            ctx.TraceLine($"PIPELINE '{ Name }' OBJECT, Row {ctx.Source.RowNumber}, Key [{ctx.Source.Key}], IsNew:  {target.IsNew}");
         }
     }
 }

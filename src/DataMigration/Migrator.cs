@@ -88,7 +88,7 @@ namespace DataMigration
 
         private void RunPipelines() 
         {
-            foreach (var pipeline in _mapConfig.Pipeline.Where(i => i.Enabled))
+            foreach (var pipeline in _mapConfig.Pipeline)
             {
                 pipeline.Run();
             }

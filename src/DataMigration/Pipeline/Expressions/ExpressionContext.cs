@@ -67,13 +67,12 @@ namespace DataMigration.Pipeline.Expressions
 
         public object Field(object obj, string fieldName)
         {
-            if (obj == null)
-                return null;
-
-            if (obj is DataObject)
-                return ((DataObject)obj)[fieldName];
-
-            return FastReflection.GetValue(obj, fieldName);
+            return obj switch
+            {
+                null => null,
+                IDataObject dataObject => dataObject[fieldName],
+                _ => FastReflection.GetValue(obj, fieldName)
+            };
         }
      
 

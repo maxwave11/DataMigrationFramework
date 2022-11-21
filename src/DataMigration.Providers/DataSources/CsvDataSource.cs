@@ -2,20 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using DataMigration.Pipeline.Commands;
 using DataMigration.Utils;
+
 
 namespace DataMigration.Data.DataSources
 {
     [Yaml("csv")]
-    public class CsvDataSource : DataSourceBase
+    public class CsvDataSource : DataSourceBase<DefaultDataObject>
     {
         public string Delimiter { get; set; }
         public string Encoding { get; set; } = "Windows-1252";
 
-        protected override IEnumerable<IDataObject> GetDataInternal()
+        protected override IEnumerable<DefaultDataObject> GetDataInternal()
         {
             string baseDir = MapConfig.Current.SourceBaseDir;
             
@@ -43,9 +42,8 @@ namespace DataMigration.Data.DataSources
             }
         }
 
-        private IEnumerable<IDataObject> GetDataFromFile(string filePath)
+        private IEnumerable<DefaultDataObject> GetDataFromFile(string filePath)
         {
-            Migrator.Current.Tracer.TraceLine("Reading " + filePath);
             using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var txtReader = new StreamReader(stream);
 
@@ -67,7 +65,7 @@ namespace DataMigration.Data.DataSources
             while (csvReader.Read())
             {
                
-                var result = new DataObject();
+                var result = new DefaultDataObject();
 
                 csvReader.HeaderRecord.ToList().ForEach(header =>
                 {

@@ -6,11 +6,11 @@ using DataMigration.Pipeline.Commands;
 namespace DataMigration.Data.DataSources
 {
     [Yaml("sql")]
-    public class SqlDataSource : DataSourceBase 
+    public class SqlDataSource : DataSourceBase<DefaultDataObject>
     {
         public string ConnectionString { get; set; }
 
-        protected override IEnumerable<IDataObject> GetDataInternal()
+        protected override IEnumerable<DefaultDataObject> GetDataInternal()
         {
             var str = ConnectionString ?? MapConfig.Current.Variables["ConnectionString"].ToString();
 
@@ -24,7 +24,7 @@ namespace DataMigration.Data.DataSources
             
             while (reader.Read())
             {
-                DataObject result = new DataObject();
+                DefaultDataObject result = new DefaultDataObject();
                 for (int fieldIndex = 0; fieldIndex < reader.FieldCount; fieldIndex++)
                 {
                     result.SetValue(reader.GetName(fieldIndex), reader.GetValue(fieldIndex));

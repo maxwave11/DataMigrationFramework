@@ -8,11 +8,10 @@ using DataMigration.Utils;
 namespace DataMigration.Data.DataSources
 {
     [Yaml("excel")]
-    public class ExcelDataSource : DataSourceBase
+    public class ExcelDataSource : DataSourceBase<DefaultDataObject>
     {
-        public IDataSourceSettings Settings { get; set; }
 
-        protected override IEnumerable<IDataObject> GetDataInternal()
+        protected override IEnumerable<DefaultDataObject> GetDataInternal()
         {
             var baseDir = MapConfig.Current.SourceBaseDir;
 
@@ -50,10 +49,10 @@ namespace DataMigration.Data.DataSources
             }
         }
         
-        private IDataObject RowToValuesObject(IExcelDataReader reader, string [] headerRow)
+        private DefaultDataObject RowToValuesObject(IExcelDataReader reader, string [] headerRow)
         {
             //fill VlauesObject from row values
-            var valuesObject = new DataObject();
+            var valuesObject = new DefaultDataObject();
             for (int i = 0; i < reader.FieldCount; i++)
             {
                 if (headerRow[i].IsEmpty())

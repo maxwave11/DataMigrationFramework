@@ -44,7 +44,7 @@ namespace DataMigration.Data.DataSources
 
         public IEnumerable<IDataObject> GetObjects(string query, IDataObject sourceObject)
         {
-            List<DataObject> result = null;
+            List<DefaultDataObject> result = null;
 
             if (query.StartsWith("Pivot"))
             {
@@ -64,8 +64,9 @@ namespace DataMigration.Data.DataSources
                         var warningMsg = $"No pivoted columns found by pattern '{pivotPattern}'! All column names: {columnNames}";
                     }
 
-                    if (result == null)
-                        result = pivotColumns.Select(i => new DataObject(sourceObject)).ToList();
+                    // Restore PIVOT getting functionality
+                    // if (result == null)
+                    //     result = pivotColumns.Select(i => new DefaultDataObject(sourceObject)).ToList();
 
                     for (int i = 0; i < pivotColumns.Count(); i++)
                     {

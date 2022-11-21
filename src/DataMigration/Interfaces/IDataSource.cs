@@ -2,13 +2,16 @@
 
 namespace DataMigration.Data.DataSources
 {
+    public interface IDataSource: IDataSource<IDataObject>
+    { 
+    }
     /// <summary>
     /// Common interface for any data source which returns data from some sources
     /// like database, excel, csv, etc...
     /// </summary>
-    public interface IDataSource 
+    public interface IDataSource<T> where T: IDataObject
     { 
-        IEnumerable<IDataObject> GetData();
+        IEnumerable<T> GetData();
     }
 
     public interface ICachedDataSource

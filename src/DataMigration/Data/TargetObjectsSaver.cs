@@ -50,13 +50,13 @@ namespace DataMigration.Data
                 if (newObjectsCount > 0)
                     TraceLine($"New objects: {newObjectsCount}");
 
-                var stopWath = new Stopwatch();
-                stopWath.Start();
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
 
                 TargetSource.SaveObjects(targetObjects);
-                stopWath.Stop();
+                stopWatch.Stop();
 
-                TraceLine($"Saved {targetObjects.Count} objects, time: {stopWath.Elapsed.TotalMinutes} min");
+                TraceLine($"Saved {targetObjects.Count} objects, time: {stopWatch.Elapsed.TotalMinutes} min");
             }
             catch (Exception ex)
             {

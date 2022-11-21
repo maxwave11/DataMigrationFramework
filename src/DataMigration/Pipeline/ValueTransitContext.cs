@@ -19,7 +19,7 @@ namespace DataMigration.Pipeline
 
         public object TransitValue { get; private set; }
         
-        public DataPipeline DataPipeline { get; set; }
+       // public DataPipeline DataPipeline { get; set; }
         
         public CommandBase CurrentCommand { get; set; }
 

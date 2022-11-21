@@ -11,7 +11,7 @@ namespace DataMigration.Data.DataSources
     /// <summary>
     /// Base data source functionality. Use it as base for your custom data providers.
     /// </summary>
-    public abstract class DataSourceBase : IDataSource, ICachedDataSource
+    public abstract class DataSourceBase<T> : IDataSource, ICachedDataSource where T: IDataObject
     {
         public object Query { get; set; }
 
@@ -19,6 +19,9 @@ namespace DataMigration.Data.DataSources
         /// Expression returns unique key for each entry from data source
         /// </summary>
         public CommandBase Key { get; set; }
+        
+        public Func<T, string> Key2 { get; set; }
+
         
         public ExpressionCommand<bool> Filter { get; set; }
 
@@ -31,12 +34,10 @@ namespace DataMigration.Data.DataSources
 
         protected Dictionary<string, List<IDataObject>> _cache;
 
-        protected abstract IEnumerable<IDataObject> GetDataInternal();
+        protected abstract IEnumerable<T> GetDataInternal();
 
         public IEnumerable<IDataObject> GetData()
         {
-            Migrator.Current.Tracer.TraceLine($"DataSource ({ this }) - Get data...");
-
             uint rowCounter = 0;
 
             foreach (var valuesObject in GetDataInternal())
@@ -80,10 +81,10 @@ namespace DataMigration.Data.DataSources
             if (_cache != null)
                 return;
 
-            var tracer = Migrator.Current.Tracer;
-            tracer.TraceLine($"DataSource ({ this })");
-            tracer.Indent();
-            tracer.TraceLine($"Loading objects...");
+            //var tracer = Migrator.Current.Tracer;
+            // tracer.TraceLine($"DataSource ({ this })");
+            // tracer.Indent();
+            // tracer.TraceLine($"Loading objects...");
             
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -93,8 +94,8 @@ namespace DataMigration.Data.DataSources
                 .ToDictionary(i => i.Key, i => i.ToList());
             
             stopwatch.Stop();
-            tracer.TraceLine($"Loading {_cache.Values.Sum(i=>i.Count)} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
-            tracer.IndentBack();
+            // tracer.TraceLine($"Loading {_cache.Values.Sum(i=>i.Count)} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
+            // tracer.IndentBack();
         }
 
         protected void PutObjectToCache(IDataObject tObject)

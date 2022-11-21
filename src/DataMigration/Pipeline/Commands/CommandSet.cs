@@ -8,7 +8,7 @@ namespace DataMigration.Pipeline.Commands
     [Yaml("TRANSIT")]
     public class CommandSet<T> : CommandBase, IList<T>  where T : CommandBase
     {
-        public List<T> Commands { get; set; } = new List<T>();
+        public IList<T> Commands { get; set; } = new List<T>();
 
         public override void ExecuteInternal(ValueTransitContext ctx)
         {
@@ -96,5 +96,10 @@ namespace DataMigration.Pipeline.Commands
         }
         
         #endregion
+
+        public void Add(CommandBase[] item)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

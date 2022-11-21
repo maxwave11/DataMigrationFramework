@@ -6,30 +6,23 @@ using DataMigration.Utils;
 
 namespace DataMigration.Data
 {
-    public class DataObject : IDataObject
+    public sealed class DefaultDataObject : IDataObject
     {
         public object this[string name] { get => GetValue(name); set => SetValue(name, value); }
         public string[] FieldNames => _dataContainer.Keys.ToArray();
         public bool IsNew { get; set; }
         public uint RowNumber { get; set; }
         public string Key { get; set; }
-        public object Native { get; private set; }
         
-        public bool IsValid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Query { get; set; }
 
         private readonly Dictionary<string, object> _dataContainer = new Dictionary<string, object>();
 
-        public DataObject()
+        public DefaultDataObject()
         {
-        }
-        
-        public DataObject(object native)
-        {
-            Native = native;
         }
 
-        public DataObject(IDataObject copy)
+        public DefaultDataObject(DefaultDataObject copy)
         {
             foreach (var fieldName in copy.FieldNames)
             {
@@ -39,17 +32,16 @@ namespace DataMigration.Data
 
         public object GetValue(string name)
         {
-            object result = null;
-            if (!_dataContainer.TryGetValue(name, out result))
-                throw new Exception($"There is no field '{name}' in current {nameof(DataObject)}");
+            if (!_dataContainer.TryGetValue(name, out var result))
+                throw new Exception($"There is no field '{name}' in current {nameof(DefaultDataObject)}");
 
             return result;
         }
 
-        public virtual void SetValue(string name, object value)
+        public void SetValue(string name, object value)
         {
             if (name.IsEmpty())
-                throw new ArgumentException($"FromField name can't be empty");
+                throw new ArgumentException($"{name} name can't be empty");
 
             var valueToSet = value;
             

@@ -4,6 +4,7 @@ using DataMigration.Pipeline;
 using DataMigration.Pipeline.Commands;
 using DataMigration.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace DataMigration
 
         public Dictionary<string, string> Mappings { get; set; } = new Dictionary<string, string>();
 
-        public List<DataPipeline> Pipeline { get; set; } = new List<DataPipeline>();
+        public IList<IDataPipeline> Pipeline { get; set; }
         
         public static MapConfig Current  {get; private set; }
 
@@ -33,17 +34,13 @@ namespace DataMigration
         internal void Initialize()
         {
             Current = this;
-            Pipeline.ForEach(i => i.Initialize());
+            Pipeline.ToList().ForEach(i => i.Initialize());
         }
 
-        public static MapConfig ReadFromFile(string yamlFilePath, IEnumerable<Type> customCommands, IEnumerable<object> instances = null) 
+        public static MapConfig ReadFromFile(string yamlFilePath, IEnumerable<Type> customCommands, Func<Type, object> objectFactory = null)
         {
-            var yaml = File.ReadAllText(yamlFilePath);
-            return ReadFromString(yaml, customCommands, instances);
-        }
-
-        public static MapConfig ReadFromString(string yamlString, IEnumerable<Type> customCommands, IEnumerable<object> instances = null)
-        {
+            var yamlString = File.ReadAllText(yamlFilePath);
+            
             var yamlTokens = GetInternalCommands()
                 .Union(customCommands ??  new List<Type>())
                 .Select(type => (Token: CommandUtils.GetCommandYamlName(type), Type: type ))
@@ -55,17 +52,13 @@ namespace DataMigration
 
             builder.WithObjectFactory(type =>
             {
-                var instance = instances?.FirstOrDefault(instance => instance.GetType() == type);
-                return instance ?? new DefaultObjectFactory().Create(type);
+                return objectFactory?.Invoke(type) ?? new DefaultObjectFactory().Create(type);
             });
             
 
             var deserializer = builder.Build();
-            
             var mapConfig = deserializer.Deserialize<MapConfig>(yamlString);
-            
             mapConfig.Initialize();
-
             return mapConfig;
         }
 
@@ -86,10 +79,10 @@ namespace DataMigration
                 typeof(CommandSet<CommandBase>),
                 typeof(GetTargetCommand),
                 typeof(MessageCommand),
-                typeof(CsvDataSource),
-                typeof(CompositeDataSource),
-                typeof(ExcelDataSource),
-                typeof(SqlDataSource),
+                // typeof(CsvDataSource),
+                // typeof(CompositeDataSource),
+                // typeof(ExcelDataSource),
+                // typeof(SqlDataSource),
             };
         }
     }
