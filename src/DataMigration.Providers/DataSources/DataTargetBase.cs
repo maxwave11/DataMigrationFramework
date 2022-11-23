@@ -6,7 +6,8 @@ namespace DataMigration.Data.DataSources
 {
     public abstract class DataTargetBase<T> : DataSourceBase<T>, IDataTarget where T : IDataObject
     {
-        protected abstract IDataObject CreateObject(string key);
+        protected abstract T CreateObject(string key);
+        
         public abstract void SaveObjects(IEnumerable<IDataObject> objects);
 
         public ObjectTransitMode TransitMode { get; set; }
@@ -40,12 +41,6 @@ namespace DataMigration.Data.DataSources
         public void InvalidateObject(IDataObject dataObject)
         {
             _cache.Remove(dataObject.Key);
-        }
-
-
-        public IEnumerable<IDataObject> GetData()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

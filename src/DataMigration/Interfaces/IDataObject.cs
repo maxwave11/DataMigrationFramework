@@ -6,7 +6,7 @@ namespace DataMigration.Data
     {
         object this[string name] { get; set; }
         string Key { get; set; }
-        bool IsNew { get; }
+        bool IsNew { get; set; }
         uint RowNumber { get; set; }
         string[] FieldNames { get; }
         

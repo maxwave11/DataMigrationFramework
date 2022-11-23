@@ -29,10 +29,10 @@ namespace DataMigration.Pipeline.Commands
             ctx.Execute(childCommand);
         }
 
-        public static implicit operator CommandSet<T>(string expression)
-        {
-            return new CommandSet<T>() { Commands = new List<T>() { (T)expression }};
-        }
+        // public static implicit operator CommandSet<T>(string expression)
+        // {
+        //     return new CommandSet<T>() { Commands = new List<T>() { (T)expression }};
+        // }
         
         #region IList
 

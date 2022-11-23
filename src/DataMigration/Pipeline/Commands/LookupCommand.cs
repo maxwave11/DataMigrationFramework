@@ -15,7 +15,7 @@ namespace DataMigration.Pipeline.Commands
     /// <c>LookupAlternativeExpr</c> migration expression.
     /// </summary>
     [Yaml("LOOKUP")]
-    internal class LookupCommand: CommandBase
+    public class LookupCommand: CommandBase
     {
         /// <summary>
         /// DataSet id in which current transition will try to find a particular object by Key or by LookupPredicate

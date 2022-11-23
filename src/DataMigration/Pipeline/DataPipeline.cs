@@ -1,20 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using DataMigration.Data;
 using DataMigration.Data.DataSources;
 using DataMigration.Enums;
 using DataMigration.Pipeline.Commands;
+using DataMigration.Pipeline.Pipes;
 using DataMigration.Pipeline.Trace;
+using DataMigration.Utils;
 
 namespace DataMigration.Pipeline
 {
     /// <summary>
     /// Transition which transit data from DataSet of source system to DataSet of target system
     /// </summary>
-    public class DataPipeline<TSource, TTarget> : IDataPipeline 
-        where TSource: IDataObject 
-        where TTarget: IDataObject
+    public class DataPipeline<TSource, TTarget>: IDataPipeline 
+        where TSource : IDataObject
     {
         public bool Enabled { get; set; } = true;
         public string Name { get; set; }
@@ -34,6 +36,11 @@ namespace DataMigration.Pipeline
         
         public IEnumerable<IEnumerable<CommandBase>> Commands2 { get; set; }
 
+        public IEnumerable<IPipe> Pipes { get; set; } = new List<IPipe>();
+
+        
+        public IEnumerable<IEnumerable<Func<ValueTransitContext, object>>> Commands3 { get; set; }
+
         private MigrationTracer Tracer => Migrator.Current.Tracer;
         
 
@@ -52,7 +59,8 @@ namespace DataMigration.Pipeline
             }
             //shitty workaround, need to refactor!
             //_targetSystem = Commands.SelectMany(i => i.Commands).OfType<GetTargetCommand>().Single().Target;
-            Saver.TargetSource = Target ?? _targetSystem;
+            _targetSystem = Target;
+            Saver.TargetSource =  _targetSystem;
         }
 
         public void Run()
@@ -88,11 +96,11 @@ namespace DataMigration.Pipeline
         {
             var ctx = new ValueTransitContext(sourceObject, null);
             ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands);
-           // ctx.DataPipeline = this;
+           
             try
             {
                 SetTargetObject(ctx);
-                RunCommands(ctx);
+                RunPipes(ctx);
 
                 if (ctx.Flow == TransitionFlow.SkipObject && ctx.Target != null)
                 {
@@ -140,6 +148,57 @@ namespace DataMigration.Pipeline
                     break;
             }
         }
+        
+        private void RunCommands2(ValueTransitContext ctx)
+        {
+            foreach (var childTransition in Commands2)
+            {
+                //every time after value transition finishes - reset current value to Source object
+                ctx.ResetCurrentValue();
+
+                //childTransition.TraceColor = ConsoleColor.Yellow;
+                
+                TraceLine("", ctx);
+                
+                ExecuteInternal(ctx, childTransition);
+
+                if (ctx.Flow == TransitionFlow.SkipValue)
+                {
+                    ctx.Flow = TransitionFlow.Continue;
+                    //Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"Value skipped");
+                    continue;
+                }
+
+                if (ctx.Flow != TransitionFlow.Continue)
+                    break;
+            }
+        }
+        
+        private void RunPipes(ValueTransitContext ctx)  
+        {
+            foreach (var pipe in Pipes)
+            {
+                //every time after value transition finishes - reset current value to Source object
+                ctx.ResetCurrentValue();
+
+                //childTransition.TraceColor = ConsoleColor.Yellow;
+                
+                TraceLine("", ctx);
+                
+                //ExecuteInternal(ctx, childTransition);
+                ExecutePipe(ctx, pipe);
+
+                if (ctx.Flow == TransitionFlow.SkipValue)
+                {
+                    ctx.Flow = TransitionFlow.Continue;
+                    //Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"Value skipped");
+                    continue;
+                }
+
+                if (ctx.Flow != TransitionFlow.Continue)
+                    break;
+            }
+        }
 
         private void TraceLine(string message, ValueTransitContext ctx)
         { 
@@ -160,8 +219,60 @@ namespace DataMigration.Pipeline
 
             ctx.Target = target;
             
-            //TraceColor = ConsoleColor.Magenta;
-            ctx.TraceLine($"PIPELINE '{ Name }' OBJECT, Row {ctx.Source.RowNumber}, Key [{ctx.Source.Key}], IsNew:  {target.IsNew}");
+            ctx.TraceLine($"PIPELINE '{ Name }' OBJECT, Row {ctx.Source.RowNumber}, Key [{ctx.Source.Key}], IsNew:  {target.IsNew}", ConsoleColor.Magenta);
         }
+        
+         void ExecuteInternal(ValueTransitContext ctx, IEnumerable<CommandBase> commands)
+        {
+            foreach (var childCommand in commands)
+            {
+                ctx.Execute(childCommand);
+
+                if (ctx.Flow != TransitionFlow.Continue)
+                {
+                    ctx.TraceLine($"Breaking {this.GetType().Name}");
+                    break;
+                }
+            }
+        }
+         
+         void ExecutePipe(ValueTransitContext ctx, IPipe pipe)
+         {
+             var pipesSequence = new List<IPipe>();
+             var previousPipe = pipe;
+             
+             do
+             {
+                 pipesSequence.Add(previousPipe);
+                 previousPipe = previousPipe.PreviousPipe;
+             } while (previousPipe != null);
+
+             pipesSequence.Reverse();
+              
+             foreach (var nextPipe in pipesSequence)
+             {
+               
+                 
+                 // TraceLine($"{ CommandUtils.GetCommandYamlName(cmd.GetType()) } { cmd.GetParametersInfo() }");
+                 
+                 TraceLine($"PIPE { nextPipe.ToString() }", ctx);
+                 Migrator.Current.Tracer.Indent();
+            
+                 var result = nextPipe.Execute(ctx.TransitValue, ctx.Source, ctx.Target);
+          
+                 Migrator.Current.Tracer.IndentBack();
+                 
+                 
+                 ctx.SetCurrentValue(result);
+                 
+                // ctx.Execute(childCommand);
+
+                 if (ctx.Flow != TransitionFlow.Continue)
+                 {
+                     ctx.TraceLine($"Breaking {this.GetType().Name}");
+                     break;
+                 }
+             }
+         }
     }
 }

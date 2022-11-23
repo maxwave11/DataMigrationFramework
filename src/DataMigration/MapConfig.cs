@@ -19,7 +19,7 @@ namespace DataMigration
 
         public Dictionary<string, string> Mappings { get; set; } = new Dictionary<string, string>();
 
-        public IList<IDataPipeline> Pipeline { get; set; }
+        public IList<IDataPipeline> Pipeline { get; set; } = new List<IDataPipeline>();
         
         public static MapConfig Current  {get; private set; }
 
@@ -27,11 +27,11 @@ namespace DataMigration
         
         public string DefaultCsvDelimiter { get; set; } = ";";
         public string SourceBaseDir { get; set; }
-        
-        public TraceMode TraceMode { get; set; }
+
+        public TraceMode TraceMode { get; set; } = TraceMode.Commands;
         public static IEnumerable<Type> CustomTypes { get; set; } = new List<Type>();
 
-        internal void Initialize()
+        public void Initialize()
         {
             Current = this;
             Pipeline.ToList().ForEach(i => i.Initialize());
@@ -72,8 +72,7 @@ namespace DataMigration
                 typeof(TypeConvertCommand),
                 typeof(SetCommand),
                 typeof(ConcatCommand),
-                typeof(GetValueCommand),
-                typeof(GetNotEmptyValueCommand),
+                // typeof(GetValueCommand),
                 typeof(IfCommand),
                 typeof(TraceCommand),
                 typeof(CommandSet<CommandBase>),

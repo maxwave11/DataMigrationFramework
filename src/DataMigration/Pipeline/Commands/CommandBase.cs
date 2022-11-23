@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.Linq.Expressions;
 
 namespace DataMigration.Pipeline.Commands
 {
@@ -22,9 +23,12 @@ namespace DataMigration.Pipeline.Commands
 
         public static implicit operator CommandBase(string expression)
         {
-            return new GetValueCommand() { Expression = expression };
+            return new GetValueCommand { Expression = expression };
         }
+        
+        // public static implicit operator CommandBase(Expression<Func<ValueTransitContext, object>> func)
+        // {
+        //     return new LambdaCommand(func);
+        // }
     }
-
-   
 }

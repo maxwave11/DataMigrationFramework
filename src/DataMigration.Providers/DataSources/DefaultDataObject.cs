@@ -6,30 +6,17 @@ using DataMigration.Utils;
 
 namespace DataMigration.Data
 {
-    public sealed class DefaultDataObject : IDataObject
+    public class DefaultDataObject : IDataObject
     {
         public object this[string name] { get => GetValue(name); set => SetValue(name, value); }
         public string[] FieldNames => _dataContainer.Keys.ToArray();
         public bool IsNew { get; set; }
         public uint RowNumber { get; set; }
         public string Key { get; set; }
-        
         public string Query { get; set; }
 
         private readonly Dictionary<string, object> _dataContainer = new Dictionary<string, object>();
-
-        public DefaultDataObject()
-        {
-        }
-
-        public DefaultDataObject(DefaultDataObject copy)
-        {
-            foreach (var fieldName in copy.FieldNames)
-            {
-                SetValue(fieldName, copy[fieldName]);
-            }
-        }
-
+        
         public object GetValue(string name)
         {
             if (!_dataContainer.TryGetValue(name, out var result))
@@ -38,7 +25,7 @@ namespace DataMigration.Data
             return result;
         }
 
-        public void SetValue(string name, object value)
+        public virtual void SetValue(string name, object value)
         {
             if (name.IsEmpty())
                 throw new ArgumentException($"{name} name can't be empty");

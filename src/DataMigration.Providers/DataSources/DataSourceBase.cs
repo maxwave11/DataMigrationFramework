@@ -20,9 +20,6 @@ namespace DataMigration.Data.DataSources
         /// </summary>
         public CommandBase Key { get; set; }
         
-        public Func<T, string> Key2 { get; set; }
-
-        
         public ExpressionCommand<bool> Filter { get; set; }
 
         
@@ -34,31 +31,36 @@ namespace DataMigration.Data.DataSources
 
         protected Dictionary<string, List<IDataObject>> _cache;
 
-        protected abstract IEnumerable<T> GetDataInternal();
+        protected abstract IEnumerable<IDataObject> GetDataInternal();
 
         public IEnumerable<IDataObject> GetData()
         {
             uint rowCounter = 0;
 
-            foreach (var valuesObject in GetDataInternal())
+            foreach (var dataObject in GetDataInternal())
             {
                 rowCounter++;
-                var ctx = new ValueTransitContext(valuesObject, valuesObject);
+                var ctx = new ValueTransitContext(dataObject, dataObject);
 
                 if (Filter != null && ctx.Execute(Filter) == false)
                     continue;
                 
-                ctx.Execute(Key);
-                var strKey = ctx.TransitValue?.ToString();
+                var strKey = GetKey(ctx);
                 
                 if (strKey.IsEmpty())
                     continue;
                 
-                valuesObject.Key = UnifyKey(strKey); 
-                valuesObject.RowNumber = rowCounter;
+                dataObject.Key = UnifyKey(strKey); 
+                dataObject.RowNumber = rowCounter;
                 if (PrepareData!=null) ctx.Execute(PrepareData);
-                yield return valuesObject;
+                yield return dataObject;
             }
+        }
+
+        protected virtual string GetKey(ValueTransitContext ctx)
+        {
+            ctx.Execute(Key);
+            return ctx.TransitValue?.ToString();
         }
 
         public IEnumerable<IDataObject> GetCachedData()
@@ -91,7 +93,8 @@ namespace DataMigration.Data.DataSources
             
             _cache = GetData()
                 .GroupBy(i => i.Key)
-                .ToDictionary(i => i.Key, i => i.ToList());
+                .ToDictionary(i => i.Key, i => i.Cast<IDataObject>().ToList());
+            
             
             stopwatch.Stop();
             // tracer.TraceLine($"Loading {_cache.Values.Sum(i=>i.Count)} objects completed in { stopwatch.Elapsed.TotalSeconds } sec");
@@ -117,6 +120,9 @@ namespace DataMigration.Data.DataSources
         {
             get
             {
+                if (Query == null)
+                    return null;
+                
                 if (_actualQuery != null) return _actualQuery;
                 
                 switch (Query)
@@ -144,7 +150,7 @@ namespace DataMigration.Data.DataSources
 
         public override string ToString()
         {
-            return $"Query: { ActualQuery }, Key: { Key.GetParametersInfo() }";
+            return $"Query: { ActualQuery }, Key: { Key?.GetParametersInfo() }";
         }
     }
 }

@@ -73,9 +73,9 @@ namespace DataMigration.Pipeline
             return cmd.ReturnValue;
         }
 
-        public void TraceLine(string message)
+        public void TraceLine(string message, ConsoleColor? color = null)
         {
-            Migrator.Current.Tracer.TraceLine(message, this, CurrentCommand?.TraceColor ?? ConsoleColor.White);
+            Migrator.Current.Tracer.TraceLine(message, this, CurrentCommand?.TraceColor ?? color ?? ConsoleColor.White);
         }
         
         
