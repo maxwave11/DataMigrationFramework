@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using DataMigration.Data;
 using DataMigration.Data.Interfaces;
 using DataMigration.Enums;
@@ -14,8 +15,6 @@ namespace DataMigration.Pipeline;
 /// Transition which transit data from DataSet of source system to DataSet of target system
 /// </summary>
 public class DataPipeline<TSource, TTarget> : IDataPipeline
-    where TSource : IDataObject
-    where TTarget : IDataObject
 {
     public bool Enabled { get; set; } = true;
     public string Name { get; set; }
@@ -61,25 +60,22 @@ public class DataPipeline<TSource, TTarget> : IDataPipeline
         TraceLine($"\nPIPELINE '{Name}' started ", null, level: TraceMode.Pipeline, ConsoleColor.Magenta);
         _tracer.Indent();
 
-        var srcDataSet = GetSourceDataObjects();
+        var srcDataSet = GetSourceDataWithKeys();
         uint rowCounter = 0;
-        foreach (var sourceObject in srcDataSet)
+        foreach ((string key, TSource sourceObject)  in srcDataSet)
         {
-            if (sourceObject == null)
-                continue;
-
             TraceLine(
-                $"PIPELINE '{Name}' SOURCE OBJECT: Row {rowCounter++}, Key [{sourceObject.Key}]",
+                $"PIPELINE '{Name}' SOURCE OBJECT: Row {rowCounter++}, Key [{key}]",
                 null,
                 level: TraceMode.Object,
                 ConsoleColor.Magenta);
 
-            var target = TransitSourceObject(sourceObject);
+            var target = TransitSourceObject(key, sourceObject);
 
             if (target == null)
                 continue;
 
-            Saver.Push((TTarget)target);
+            Saver.Push(target);
         }
 
         Saver.TrySave();
@@ -89,7 +85,7 @@ public class DataPipeline<TSource, TTarget> : IDataPipeline
         TraceLine($"\nPIPELINE '{Name}' finished ", null, level: TraceMode.Pipeline, ConsoleColor.Magenta);
     }
 
-    private IEnumerable<IDataObject> GetSourceDataObjects()
+    private IEnumerable<(string key, TSource srcObject)> GetSourceDataWithKeys()
     {
         TraceLine($"DataSource ({Source}) - Get data...", null, level: TraceMode.Pipeline);
         var sourceDataObjects = Source.GetData();
@@ -100,37 +96,54 @@ public class DataPipeline<TSource, TTarget> : IDataPipeline
 
             if (key.IsEmpty())
                 continue;
-
-            dataObject.Key = key;
-            yield return dataObject;
+            
+            yield return (key, dataObject);
         }
     }
 
-    private IDataObject TransitSourceObject(IDataObject sourceObject)
+    private TTarget TransitSourceObject(string key,  TSource sourceObject)
     {
         var ctx = new ValueTransitContext(sourceObject, null);
 
+        TTarget target;
+
         try
         {
-            SetTargetObject(ctx);
-            
-            if (ctx.FlowControl == PipelineFlowControl.SkipObject)
-                return null;
+            target = GetObjectByKeyOrCreate(key);
 
+            // Target can be empty when using TransitMode = OnlyExitedObjects
+            if (target == null)
+            {
+                TraceLine("Skipping object because TransitMode = OnlyExitedObjects",
+                    ctx,
+                    level: TraceMode.Object,
+                    ConsoleColor.Magenta);
+                
+                return default;
+            }
+
+            TraceLine(
+                $"\t\tTARGET OBJECT: IsNew=" + Target.IsObjectNew(key),
+                null,
+                level: TraceMode.Object,
+                ConsoleColor.Magenta);
+
+            ctx.Target = target;
+            
             RunPipes(ctx);
 
             if (ctx.FlowControl == PipelineFlowControl.SkipObject && ctx.Target != null)
             {
                 //If object just created and skipped by migration logic - need to remove it from cache
                 //because it's invalid and must be removed from cache to avoid any referencing to this object
-                //by any migration logic (lookups, key transitions, etc.)
+                //by any migration logic (like lookups)
                 //If object is not new, it means that it's already saved and passed by migration validation
-                if (ctx.Target.IsNew)
-                    Target.InvalidateObject((TTarget)ctx.Target);
+                if(Target.IsObjectNew(key))
+                    Target.InvalidateObject(key);
 
                 TraceLine("Source object skipped", ctx, level: TraceMode.Object);
 
-                return null;
+                return default;
             }
         }
         catch (Exception e)
@@ -138,7 +151,7 @@ public class DataPipeline<TSource, TTarget> : IDataPipeline
             throw new DataMigrationException("Error occured while object processing", ctx, e);
         }
 
-        return ctx.Target;
+        return target;
     }
 
     private void RunPipes(ValueTransitContext ctx)
@@ -162,32 +175,8 @@ public class DataPipeline<TSource, TTarget> : IDataPipeline
                 break;
         }
     }
-
-    private void SetTargetObject(ValueTransitContext ctx)
-    {
-        var target = GetObjectByKeyOrCreate(ctx.Source.Key);
-
-        // Target can be empty when using TransitMode = OnlyExitedObjects
-        if (target == null)
-        {
-            ctx.FlowControl = PipelineFlowControl.SkipObject;
-            TraceLine("Skipping object because TransitMode = OnlyExitedObjects",
-                ctx,
-                level: TraceMode.Object,
-                ConsoleColor.Magenta);
-            return;
-        }
-
-        TraceLine(
-            $"\t\tTARGET OBJECT: IsNew=" + target.IsNew,
-            null,
-            level: TraceMode.Object,
-            ConsoleColor.Magenta);
-
-        ctx.Target = target;
-    }
-
-    public IDataObject GetObjectByKeyOrCreate(string key)
+    
+    public TTarget GetObjectByKeyOrCreate(string key)
     {
         var targetObject = Target.GetObjectsByKey(key).SingleOrDefault();
 
@@ -196,7 +185,7 @@ public class DataPipeline<TSource, TTarget> : IDataPipeline
             case ObjectTransitMode.OnlyExistedObjects:
                 return targetObject;
             case ObjectTransitMode.OnlyNewObjects when targetObject != null:
-                return null;
+                return default;
         }
 
         if (targetObject != null)

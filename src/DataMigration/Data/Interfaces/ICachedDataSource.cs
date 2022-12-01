@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace DataMigration.Data.Interfaces;
 
-public interface ICachedDataSource<T>: IDataSource<T> where T : IDataObject
+public interface ICachedDataSource<TSource>: IDataSource<TSource>
 {
-    T GetNewObject(string key)
+    TSource GetNewObject(string key)
     {
         throw new NotImplementedException();
     }
-    IEnumerable<T> GetObjectsByKey(string key);
+    IEnumerable<TSource> GetObjectsByKey(string key);
 }

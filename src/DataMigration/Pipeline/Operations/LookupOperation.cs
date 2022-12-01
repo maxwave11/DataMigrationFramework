@@ -13,8 +13,7 @@ namespace DataMigration.Pipeline.Operations;
 /// by any other condition. Lookup condition defined by <c>LookupKeyExpr</c> or 
 /// <c>LookupAlternativeExpr</c> migration expression.
 /// </summary>
-public class LookupOperation<TContext, TEntity, TOutput>: IOperation<TContext,TOutput> 
-    where TEntity : IDataObject
+public class LookupOperation<TContext, TEntity, TOutput>: IOperation<TContext,TOutput>
     where TContext: IPipeContext
 {
     public IPipeContext Context { get; }

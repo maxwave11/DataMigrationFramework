@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using DataMigration.Data;
-using DataMigration.Data.Interfaces;
 using DataMigration.Enums;
 using DataMigration.Pipeline.Operations;
 using DataMigration.Trace;
@@ -14,8 +12,6 @@ using DataMigration.Utils;
 namespace DataMigration.Pipeline;
 
 public class Pipe<TSource, TTarget>: IPipe
-    where TSource : IDataObject
-    where TTarget : IDataObject
 {
     private readonly IOperation _operation;
     private readonly IMigrationTracer _tracer;
@@ -28,7 +24,7 @@ public class Pipe<TSource, TTarget>: IPipe
 
     public void Execute(ValueTransitContext ctx)
     {
-        var allOperations = getAllOperations();
+        var allOperations = GetAllOperations();
         
         foreach (var operation in allOperations)
         {
@@ -70,7 +66,7 @@ public class Pipe<TSource, TTarget>: IPipe
         }
     }
 
-    private IReadOnlyCollection<IOperation> getAllOperations()
+    private IReadOnlyCollection<IOperation> GetAllOperations()
     {
         var pipesSequence = new List<IOperation>();
         var nextOperation = _operation;

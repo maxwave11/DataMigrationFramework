@@ -12,12 +12,10 @@ public interface IPipeContext
 
     string Message { get; set; }
     object GetValue();
-    void Set(object pipeValue, IDataObject source, IDataObject target);
+    void Set(object pipeValue, object source, object target);
 }
 
 public class PipeContext<TSource, TTarget, TValue>: IPipeContext
-    where TSource: IDataObject
-    where TTarget: IDataObject
 {
     public TValue Value { get; private set; }
     public TSource Source { get; private set;  }
@@ -33,7 +31,7 @@ public class PipeContext<TSource, TTarget, TValue>: IPipeContext
         Previous = previousContext;
     }
 
-    public virtual void Set(object pipeValue, IDataObject source, IDataObject target)
+    public virtual void Set(object pipeValue, object source, object target)
     {
         Source = (TSource)source;
         Target = (TTarget)target;
@@ -55,17 +53,7 @@ public class PipeContext<TSource, TTarget, TValue>: IPipeContext
         
         Value = concretePipeValue;
     }
-
-    public void SetSource(IDataObject source)
-    {
-        Source = (TSource)source;
-    }
-
-    public void SetTarget(IDataObject target)
-    {
-        Target = (TTarget)target;
-    }
-
+    
     public virtual object GetValue()
     {
         return Value;

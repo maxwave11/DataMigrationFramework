@@ -12,8 +12,8 @@ namespace DataMigration.Pipeline
 {
     public class ValueTransitContext
     {
-        public IDataObject Source { get; }
-        public IDataObject Target { get; set; }
+        public object Source { get; }
+        public object  Target { get; set; }
 
         public PipelineFlowControl FlowControl { get; set; }
 
@@ -31,7 +31,7 @@ namespace DataMigration.Pipeline
             TraceEntries.Add(new TraceMessage(msg, color));
         }
 
-        public ValueTransitContext(IDataObject source, object transitValue)
+        public ValueTransitContext(object source, object transitValue)
         {
             Source = source;
             TransitValue = transitValue;
@@ -46,40 +46,5 @@ namespace DataMigration.Pipeline
         {
             TransitValue = null;
         }
-
-        // public void Execute(CommandBase cmd)
-        // {
-        //     Validate(cmd);
-        //     CurrentCommand = cmd;
-        //
-        //    // TraceLine($"{ CommandUtils.GetCommandYamlName(cmd.GetType()) } { cmd.GetParametersInfo() }");
-        //     Migrator.Current.Tracer.Indent();
-        //     
-        //     cmd.ExecuteInternal(this);
-        //   
-        //     Migrator.Current.Tracer.IndentBack();
-        // }
-        //
-        // public T Execute<T>(ExpressionCommand<T> cmd)
-        // {
-        //     Execute((CommandBase)cmd);
-        //     return cmd.ReturnValue;
-        // }
-        //
-        // private List<CommandBase> _validatedCommands = new List<CommandBase>(); 
-        // private void Validate(CommandBase cmd)
-        // {
-        //     if (_validatedCommands.Contains(cmd))
-        //         return;
-        //     
-        //     var results = new List<ValidationResult>();
-        //     if (!Validator.TryValidateObject(cmd, new ValidationContext(cmd), results, true))
-        //     {
-        //         var firstError = results[0];
-        //         throw new ValidationException(firstError, null, cmd);
-        //     }
-        //
-        //     _validatedCommands.Add(cmd);
-        // }
     }
 }

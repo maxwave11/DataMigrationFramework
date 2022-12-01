@@ -49,12 +49,12 @@ namespace DataMigration.Trace
 
             TraceLine("\nSRC:", ex.Context);
             Indent();
-            TraceLine("\n" + ex.Context.Source?.GetInfo(), ex.Context, color: ConsoleColor.DarkGray);
+            TraceLine("\n" + ex.Context.Source, ex.Context, color: ConsoleColor.DarkGray);
             IndentBack();
 
             TraceLine("\nTARGET:", ex.Context);
             Indent();
-            TraceLine("\n" + ex.Context.Target?.GetInfo(), ex.Context, color: ConsoleColor.DarkGray);
+            TraceLine("\n" + ex.Context.Target, ex.Context, color: ConsoleColor.DarkGray);
             IndentBack();
         }
 

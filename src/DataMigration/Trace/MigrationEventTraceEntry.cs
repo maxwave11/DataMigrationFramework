@@ -20,7 +20,7 @@ public class MigrationEventTraceEntry
     {
         EventType = eventType;
         Message = message;
-        ObjectKey = ctx.Source.Key;
+        //ObjectKey = ctx.Source.Key;
         //DataSetName = ctx.DataPipeline?.Name;
         //Query = ctx.DataPipeline?.Source.ToString();
     }

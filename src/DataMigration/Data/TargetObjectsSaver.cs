@@ -8,7 +8,7 @@ using DataMigration.Utils;
 
 namespace DataMigration.Data
 {
-    public class TargetObjectsSaver<TTarget> where TTarget : IDataObject
+    public class TargetObjectsSaver<TTarget>
     {
         private readonly IMigrationTracer _tracer;
         public  IDataTarget<TTarget> TargetSource { get; set; }
@@ -27,8 +27,8 @@ namespace DataMigration.Data
 
         internal void Push(TTarget objectToSave)
         {
-            if (objectToSave.IsEmpty() || objectToSave.Key.IsEmpty())
-                return;
+            // if (objectToSave.IsEmpty() || objectToSave.Key.IsEmpty())
+            //     return;
 
             if (_transittedObjects.Contains(objectToSave))
                 return;
@@ -44,7 +44,7 @@ namespace DataMigration.Data
             try
             {
                 TraceLine($"\nSaving {targetObjects.Count} objects...");
-                TraceLine($"New objects: {targetObjects.Count(i => i.IsNew)}\n");
+                //TraceLine($"New objects: {targetObjects.Count(i => i.IsNew)}\n");
 
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
@@ -57,8 +57,8 @@ namespace DataMigration.Data
             catch (Exception ex)
             {
                 TraceLine("Error while saving transitted objects: \n" + ex, color: ConsoleColor.Red);
-                var objectsInfo = targetObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
-                TraceLine("\nObjects to save: \n\n" + objectsInfo, ConsoleColor.Gray);
+                //var objectsInfo = targetObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
+                //TraceLine("\nObjects to save: \n\n" + objectsInfo, ConsoleColor.Gray);
                 throw;
             }
 

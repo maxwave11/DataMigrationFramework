@@ -7,7 +7,7 @@ using DataMigration.Utils;
 
 namespace DataMigration.Data;
 
-public class Cache<T> where T : IDataObject
+public class Cache<T>
 {
     private Dictionary<string, List<T>> _cache;
     private readonly IDataSource<T> _dataSource;
@@ -37,26 +37,26 @@ public class Cache<T> where T : IDataObject
         var allItems = GetDataWithKeys().ToList();
 
         _cache = allItems
-            .GroupBy(i => NormalizeKey(i.Key))
-            .ToDictionary(i => i.Key, i => i.ToList());
+            .GroupBy(dataWithKey => NormalizeKey(dataWithKey.key))
+            .ToDictionary(group => group.Key, group => group.Select(dataWithKey => dataWithKey.dataObject).ToList());
 
         stopwatch.Stop();
     }
 
-    public void Add(T dataObject)
+    public void Add(string key, T dataObject)
     {
-        if (dataObject.Key.IsEmpty())
-            return;
+        if (key.IsEmpty())
+            throw new InvalidOperationException("Add object with empty key is not allowed");
 
-        var key = NormalizeKey(dataObject.Key);
+        var normalizedKey = NormalizeKey(key);
             
-        if (!_cache.ContainsKey(key))
-            _cache.Add(key, new List<T>());
+        if (!_cache.ContainsKey(normalizedKey))
+            _cache.Add(normalizedKey, new List<T>());
 
-        if (_cache[key].Contains(dataObject))
+        if (_cache[normalizedKey].Contains(dataObject))
             return;
         
-        _cache[key].Add(dataObject);
+        _cache[normalizedKey].Add(dataObject);
     }
 
     public void Remove(string key)
@@ -65,7 +65,7 @@ public class Cache<T> where T : IDataObject
         _cache.Remove(normalizedKey);
     }
 
-    private IEnumerable<T> GetDataWithKeys()
+    private IEnumerable<(string key, T dataObject)> GetDataWithKeys()
     {
         foreach (var dataObject in _dataSource.GetData())
         {
@@ -73,9 +73,8 @@ public class Cache<T> where T : IDataObject
 
             if (key.IsEmpty())
                 continue;
-
-            dataObject.Key  = key;
-            yield return dataObject;
+            
+            yield return (key, dataObject);
         }
     }
 

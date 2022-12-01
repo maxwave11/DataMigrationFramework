@@ -32,7 +32,7 @@ namespace DataMigration.Data.DataSources
         //    return new TransitResult(result);
         //}
 
-        public IEnumerable<IDataObject> GetObjects(string query, IDataObject sourceObject)
+        public IEnumerable<DefaultDataObject> GetObjects(string query, DefaultDataObject sourceObject)
         {
             List<DefaultDataObject> result = null;
 
@@ -72,22 +72,19 @@ namespace DataMigration.Data.DataSources
             throw new NotImplementedException();
         }
 
-            private Dictionary<string, string[]> GetPivotColumnSet(IDataObject source, string[] patterns)
+            private Dictionary<string, string[]> GetPivotColumnSet(DefaultDataObject source, string[] patterns)
             {
                 return patterns
                     .Select(pattern => new { def = pattern, Columns = FindPivotColumns(pattern, source) })
                     .ToDictionary(i => i.def, i => i.Columns);
             }
 
-            private string[] FindPivotColumns(string columnPattern, IDataObject source)
+            private string[] FindPivotColumns(string columnPattern, DefaultDataObject source)
             {
                 var regex = new Regex(columnPattern);
                 return source.FieldNames.Where(f => regex.IsMatch(f.Trim())).ToArray();
             }
 
-        public IEnumerable<IDataObject> GetDataSet(string providerQuery)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

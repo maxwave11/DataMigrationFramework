@@ -26,13 +26,13 @@ $@"Error description:
 { Context.TraceEntries.Select(t => t.Text).Join("") }
 
 ==============SRC==============
-{ Context.Source?.GetInfo() }
+{ Context.Source }
 
 ==============TARGET===========
-{ Context.Target?.GetInfo() }
+{ Context.Target }
 
 ==============TransitValue=====
-{ ((Context.TransitValue as IDataObject)?.GetInfo().Truncate(1024) ?? Context.TransitValue) }
+{  Context.TransitValue }
 
 ==============ValueType: {Context.TransitValue?.GetType()}";
 

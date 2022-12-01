@@ -4,7 +4,7 @@ using DataMigration.Utils;
 
 namespace DataMigration.Data
 {
-    public class DefaultDataObject : IDataObject
+    public class DefaultDataObject //: IDataObject
     {
         public object this[string name] { get => GetValue(name); set => SetValue(name, value); }
         public string[] FieldNames => _dataContainer.Keys.ToArray();
