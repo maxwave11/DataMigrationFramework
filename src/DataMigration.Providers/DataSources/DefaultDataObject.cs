@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using DataMigration.Data.Interfaces;
 using DataMigration.Utils;
 
 namespace DataMigration.Data
@@ -13,7 +11,6 @@ namespace DataMigration.Data
         public bool IsNew { get; set; }
         public uint RowNumber { get; set; }
         public string Key { get; set; }
-        public string Query { get; set; }
 
         private readonly Dictionary<string, object> _dataContainer = new Dictionary<string, object>();
         
@@ -48,7 +45,7 @@ namespace DataMigration.Data
             return _dataContainer.Count == 0;
         }
 
-        public string GetInfo()
+        public virtual string GetInfo()
         {
             var sb = new StringBuilder();
             foreach (var fieldName in FieldNames.OrderBy(i=>i))
@@ -57,10 +54,10 @@ namespace DataMigration.Data
             }
             return sb.ToString();
         }
-
+        
         public override string ToString()
         {
-            return $"key: { Key }, dataObject: { _dataContainer.GetType().Name.Truncate(30, "*") } ";
+            return $"Key: { Key } \n { GetInfo() } ";
         }
     }
 }

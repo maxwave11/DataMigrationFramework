@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using DataMigration.Pipeline.Commands;
+using DataMigration.Data.Interfaces;
 using DataMigration.Utils;
 
 namespace DataMigration.Data.DataSources
@@ -22,13 +19,6 @@ namespace DataMigration.Data.DataSources
         {
             throw new NotImplementedException();
         }
-
-
-        public  void Initialize(CommandBase parent)
-        {
-           // base.Initialize(parent);
-        }
-
 
         //public override TransitResult ExecuteInternal(ValueTransitContext ctx)
         //{

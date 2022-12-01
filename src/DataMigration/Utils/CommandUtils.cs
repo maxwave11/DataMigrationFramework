@@ -2,17 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using DataMigration.Pipeline.Commands;
 
 namespace DataMigration.Utils
 {
     public static class CommandUtils{
-        public static string GetCommandYamlName(Type commandType)
-        {
-            var attribute = (YamlAttribute)Attribute.GetCustomAttribute(commandType, typeof (YamlAttribute));
-            
-            return attribute?.TokenName ?? commandType.Name;
-        }
         
         private static string GetName(Expression e, out Expression parent)
         {   

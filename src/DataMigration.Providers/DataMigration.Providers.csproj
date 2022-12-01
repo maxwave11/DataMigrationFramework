@@ -10,4 +10,10 @@
       <ProjectReference Include="..\DataMigration\DataMigration.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="CsvHelper" Version="26.0.1" />
+      <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+      <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    </ItemGroup>
+
 </Project>

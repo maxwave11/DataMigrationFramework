@@ -2,26 +2,30 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using DataMigration.Data.DataSources;
-using DataMigration.Pipeline.Commands;
+using DataMigration.Data.Interfaces;
+using DataMigration.Trace;
 using DataMigration.Utils;
 
 namespace DataMigration.Data
 {
-    public class TargetObjectsSaver 
+    public class TargetObjectsSaver<TTarget> where TTarget : IDataObject
     {
-        public  IDataTarget TargetSource { get; set; }
+        private readonly IMigrationTracer _tracer;
+        public  IDataTarget<TTarget> TargetSource { get; set; }
 
         /// <summary>
         /// Call SaveObjects when transitioned objects count reached this value
         /// </summary>
         public int SaveCount { get; set; } = 10;
 
-        public CommandBase OnSave { get; set; }
+        private readonly List<TTarget> _transittedObjects = new List<TTarget>();
 
-        private readonly List<IDataObject> _transittedObjects = new List<IDataObject>();
+        public TargetObjectsSaver(IMigrationTracer tracer)
+        {
+            _tracer = tracer;
+        }
 
-        internal void Push(IDataObject objectToSave)
+        internal void Push(TTarget objectToSave)
         {
             if (objectToSave.IsEmpty() || objectToSave.Key.IsEmpty())
                 return;
@@ -35,37 +39,35 @@ namespace DataMigration.Data
                 SaveTargetObjects(_transittedObjects);
         }
 
-        private void TraceLine(string message) 
-        {
-            Migrator.Current.Tracer.TraceLine(message, color:ConsoleColor.DarkCyan);
-        }
-
-        protected virtual void SaveTargetObjects(List<IDataObject> targetObjects)
+        protected virtual void SaveTargetObjects(List<TTarget> targetObjects)
         {
             try
             {
-                TraceLine($"Saving {targetObjects.Count} objects...");
-                var newObjectsCount = targetObjects.Count(i => i.IsNew);
-
-                if (newObjectsCount > 0)
-                    TraceLine($"New objects: {newObjectsCount}");
+                TraceLine($"\nSaving {targetObjects.Count} objects...");
+                TraceLine($"New objects: {targetObjects.Count(i => i.IsNew)}\n");
 
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
 
                 TargetSource.SaveObjects(targetObjects);
+                
                 stopWatch.Stop();
-
-                TraceLine($"Saved {targetObjects.Count} objects, time: {stopWatch.Elapsed.TotalMinutes} min");
+                TraceLine($"Saved {targetObjects.Count} objects, time: {stopWatch.Elapsed.TotalMinutes} min\n");
             }
             catch (Exception ex)
             {
+                TraceLine("Error while saving transitted objects: \n" + ex, color: ConsoleColor.Red);
                 var objectsInfo = targetObjects.Select(i => i.GetInfo()).Join("\n===========================\n");
-                TraceLine("=====Error while saving transitted objects: " + ex + objectsInfo);
+                TraceLine("\nObjects to save: \n\n" + objectsInfo, ConsoleColor.Gray);
                 throw;
             }
 
             targetObjects.Clear();
+        }
+
+        void TraceLine(string message, ConsoleColor color = ConsoleColor.Blue)
+        {
+            _tracer.TraceLine(message, color: color);
         }
 
         internal void TrySave()

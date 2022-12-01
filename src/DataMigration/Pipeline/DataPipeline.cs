@@ -1,278 +1,225 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using DataMigration.Data;
-using DataMigration.Data.DataSources;
+using DataMigration.Data.Interfaces;
 using DataMigration.Enums;
-using DataMigration.Pipeline.Commands;
-using DataMigration.Pipeline.Pipes;
-using DataMigration.Pipeline.Trace;
+using DataMigration.Pipeline.Operations;
+using DataMigration.Trace;
 using DataMigration.Utils;
 
-namespace DataMigration.Pipeline
+namespace DataMigration.Pipeline;
+
+/// <summary>
+/// Transition which transit data from DataSet of source system to DataSet of target system
+/// </summary>
+public class DataPipeline<TSource, TTarget> : IDataPipeline
+    where TSource : IDataObject
+    where TTarget : IDataObject
 {
-    /// <summary>
-    /// Transition which transit data from DataSet of source system to DataSet of target system
-    /// </summary>
-    public class DataPipeline<TSource, TTarget>: IDataPipeline 
-        where TSource : IDataObject
+    public bool Enabled { get; set; } = true;
+    public string Name { get; set; }
+
+    public IDataSource<TSource> Source { get; set; }
+    public IDataTarget<TTarget> Target { get; set; }
+
+    public ObjectTransitMode TransitMode { get; set; }
+
+    public int SaveCount { get; set; } = 50;
+
+    private TargetObjectsSaver<TTarget> Saver { get; set; }
+
+    private List<IPipe> _pipes { get; } = new List<IPipe>();
+
+    private IMigrationTracer _tracer;
+
+    public DataPipeline(IMigrationTracer tracer)
     {
-        public bool Enabled { get; set; } = true;
-        public string Name { get; set; }
+        _tracer = tracer;
+    }
 
-        public IDataSource<TSource> Source { get; set; }
-        public IDataTarget Target { get; set; }
-        
-        private IDataTarget _targetSystem { get; set; }
+    public void Initialize(IMigrationTracer tracer)
+    {
+        if (Enabled == false)
+            return;
 
-        public int SaveCount { get; set; } = 50;
+        if (Source == null)
+            throw new InvalidOperationException($"{nameof(Source)} must be set");
 
-        public TargetObjectsSaver Saver { get; set; }
-        
-        public TraceMode TraceMode { get; set; }
-
-        public IEnumerable<CommandSet<CommandBase>> Commands { get; set; }
-        
-        public IEnumerable<IEnumerable<CommandBase>> Commands2 { get; set; }
-
-        public IEnumerable<IPipe> Pipes { get; set; } = new List<IPipe>();
-
-        
-        public IEnumerable<IEnumerable<Func<ValueTransitContext, object>>> Commands3 { get; set; }
-
-        private MigrationTracer Tracer => Migrator.Current.Tracer;
-        
-
-        public void Initialize()
+        Saver ??= new TargetObjectsSaver<TTarget>(tracer)
         {
-            if (Enabled == false)
-                return;
-            
-            if (Source == null)
-                throw new InvalidOperationException($"{nameof(Source)} must be set");
+            SaveCount = SaveCount,
+            TargetSource = Target
+        };
+    }
 
-            if (Saver == null)
-            {
-                Saver = new TargetObjectsSaver();
-                Saver.SaveCount = SaveCount;
-            }
-            //shitty workaround, need to refactor!
-            //_targetSystem = Commands.SelectMany(i => i.Commands).OfType<GetTargetCommand>().Single().Target;
-            _targetSystem = Target;
-            Saver.TargetSource =  _targetSystem;
-        }
+    public void Run()
+    {
+        if (!Enabled)
+            return;
 
-        public void Run()
+        TraceLine($"\nPIPELINE '{Name}' started ", null, level: TraceMode.Pipeline, ConsoleColor.Magenta);
+        _tracer.Indent();
+
+        var srcDataSet = GetSourceDataObjects();
+        uint rowCounter = 0;
+        foreach (var sourceObject in srcDataSet)
         {
-            if (!Enabled)
-                return;
-            
-            TraceLine($"\nPIPELINE '{Name}' started ", null);
-            Tracer.Indent();
+            if (sourceObject == null)
+                continue;
 
-            TraceLine($"DataSource ({ Source }) - Get data...", null);
-            var srcDataSet = Source.GetData();
-        
-            foreach (var sourceObject in srcDataSet)
-            {
-                if (sourceObject == null)
-                    continue;
+            TraceLine(
+                $"PIPELINE '{Name}' SOURCE OBJECT: Row {rowCounter++}, Key [{sourceObject.Key}]",
+                null,
+                level: TraceMode.Object,
+                ConsoleColor.Magenta);
 
-                var target = TransitSourceObject(sourceObject);
+            var target = TransitSourceObject(sourceObject);
 
-                if (target == null)
-                    continue;
-
-                Saver.Push(target);
-            }
-
-            Saver.TrySave();
-
-            Tracer.IndentBack();
-        }
-
-        private IDataObject TransitSourceObject(IDataObject sourceObject)
-        {
-            var ctx = new ValueTransitContext(sourceObject, null);
-            ctx.Trace = (TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Commands);
-           
-            try
-            {
-                SetTargetObject(ctx);
-                RunPipes(ctx);
-
-                if (ctx.Flow == TransitionFlow.SkipObject && ctx.Target != null)
-                {
-                    //If object just created and skipped by migration logic - need to remove it from cache
-                    //because it's invalid and must be removed from cache to avoid any referencing to this object
-                    //by any migration logic (lookups, key transitions, etc.)
-                    //If object is not new, it means that it's already saved and passed by migration validation
-                    if (ctx.Target.IsNew)
-                        _targetSystem.InvalidateObject(ctx.Target);
-
-                    //Tracer.TraceEvent(MigrationEvent.ObjectSkipped, ctx, "Source object skipped");
-
-                    return null;
-                }
-            }
-            catch (Exception e) 
-            {
-                throw new DataMigrationException("Error occured while object processing", ctx, e);
-            }
-
-            return ctx.Target;
-        }
-
-        private void RunCommands(ValueTransitContext ctx)
-        {
-            foreach (var childTransition in Commands)
-            {
-                //every time after value transition finishes - reset current value to Source object
-                ctx.ResetCurrentValue();
-
-                childTransition.TraceColor = ConsoleColor.Yellow;
-                
-                TraceLine("", ctx);
-                
-                ctx.Execute(childTransition);
-
-                if (ctx.Flow == TransitionFlow.SkipValue)
-                {
-                    ctx.Flow = TransitionFlow.Continue;
-                    //Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"Value skipped");
-                    continue;
-                }
-
-                if (ctx.Flow != TransitionFlow.Continue)
-                    break;
-            }
-        }
-        
-        private void RunCommands2(ValueTransitContext ctx)
-        {
-            foreach (var childTransition in Commands2)
-            {
-                //every time after value transition finishes - reset current value to Source object
-                ctx.ResetCurrentValue();
-
-                //childTransition.TraceColor = ConsoleColor.Yellow;
-                
-                TraceLine("", ctx);
-                
-                ExecuteInternal(ctx, childTransition);
-
-                if (ctx.Flow == TransitionFlow.SkipValue)
-                {
-                    ctx.Flow = TransitionFlow.Continue;
-                    //Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"Value skipped");
-                    continue;
-                }
-
-                if (ctx.Flow != TransitionFlow.Continue)
-                    break;
-            }
-        }
-        
-        private void RunPipes(ValueTransitContext ctx)  
-        {
-            foreach (var pipe in Pipes)
-            {
-                //every time after value transition finishes - reset current value to Source object
-                ctx.ResetCurrentValue();
-
-                //childTransition.TraceColor = ConsoleColor.Yellow;
-                
-                TraceLine("", ctx);
-                
-                //ExecuteInternal(ctx, childTransition);
-                ExecutePipe(ctx, pipe);
-
-                if (ctx.Flow == TransitionFlow.SkipValue)
-                {
-                    ctx.Flow = TransitionFlow.Continue;
-                    //Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"Value skipped");
-                    continue;
-                }
-
-                if (ctx.Flow != TransitionFlow.Continue)
-                    break;
-            }
-        }
-
-        private void TraceLine(string message, ValueTransitContext ctx)
-        { 
-            if ((TraceMode | MapConfig.Current.TraceMode).HasFlag(TraceMode.Objects) || ctx?.Trace == true)
-                Tracer.TraceLine(message, ctx, ConsoleColor.Magenta);
-        }
-
-        private void SetTargetObject(ValueTransitContext ctx)
-        {
-            var target = _targetSystem.GetObjectByKeyOrCreate(ctx.Source.Key);
-
-            // Target can be empty when using TransitMode = OnlyExitedObjects
             if (target == null)
-            {
-                ctx.Flow = TransitionFlow.SkipObject;
-                return;
-            }
+                continue;
 
-            ctx.Target = target;
-            
-            ctx.TraceLine($"PIPELINE '{ Name }' OBJECT, Row {ctx.Source.RowNumber}, Key [{ctx.Source.Key}], IsNew:  {target.IsNew}", ConsoleColor.Magenta);
+            Saver.Push((TTarget)target);
         }
-        
-         void ExecuteInternal(ValueTransitContext ctx, IEnumerable<CommandBase> commands)
+
+        Saver.TrySave();
+
+        _tracer.IndentBack();
+
+        TraceLine($"\nPIPELINE '{Name}' finished ", null, level: TraceMode.Pipeline, ConsoleColor.Magenta);
+    }
+
+    private IEnumerable<IDataObject> GetSourceDataObjects()
+    {
+        TraceLine($"DataSource ({Source}) - Get data...", null, level: TraceMode.Pipeline);
+        var sourceDataObjects = Source.GetData();
+
+        foreach (var dataObject in sourceDataObjects)
         {
-            foreach (var childCommand in commands)
-            {
-                ctx.Execute(childCommand);
+            var key = Source.GetObjectKey(dataObject);
 
-                if (ctx.Flow != TransitionFlow.Continue)
-                {
-                    ctx.TraceLine($"Breaking {this.GetType().Name}");
-                    break;
-                }
+            if (key.IsEmpty())
+                continue;
+
+            dataObject.Key = key;
+            yield return dataObject;
+        }
+    }
+
+    private IDataObject TransitSourceObject(IDataObject sourceObject)
+    {
+        var ctx = new ValueTransitContext(sourceObject, null);
+
+        try
+        {
+            SetTargetObject(ctx);
+            
+            if (ctx.FlowControl == PipelineFlowControl.SkipObject)
+                return null;
+
+            RunPipes(ctx);
+
+            if (ctx.FlowControl == PipelineFlowControl.SkipObject && ctx.Target != null)
+            {
+                //If object just created and skipped by migration logic - need to remove it from cache
+                //because it's invalid and must be removed from cache to avoid any referencing to this object
+                //by any migration logic (lookups, key transitions, etc.)
+                //If object is not new, it means that it's already saved and passed by migration validation
+                if (ctx.Target.IsNew)
+                    Target.InvalidateObject((TTarget)ctx.Target);
+
+                TraceLine("Source object skipped", ctx, level: TraceMode.Object);
+
+                return null;
             }
         }
-         
-         void ExecutePipe(ValueTransitContext ctx, IPipe pipe)
-         {
-             var pipesSequence = new List<IPipe>();
-             var previousPipe = pipe;
-             
-             do
-             {
-                 pipesSequence.Add(previousPipe);
-                 previousPipe = previousPipe.PreviousPipe;
-             } while (previousPipe != null);
+        catch (Exception e)
+        {
+            throw new DataMigrationException("Error occured while object processing", ctx, e);
+        }
 
-             pipesSequence.Reverse();
-              
-             foreach (var nextPipe in pipesSequence)
-             {
-               
-                 
-                 // TraceLine($"{ CommandUtils.GetCommandYamlName(cmd.GetType()) } { cmd.GetParametersInfo() }");
-                 
-                 TraceLine($"PIPE { nextPipe.ToString() }", ctx);
-                 Migrator.Current.Tracer.Indent();
-            
-                 var result = nextPipe.Execute(ctx.TransitValue, ctx.Source, ctx.Target);
-          
-                 Migrator.Current.Tracer.IndentBack();
-                 
-                 
-                 ctx.SetCurrentValue(result);
-                 
-                // ctx.Execute(childCommand);
+        return ctx.Target;
+    }
 
-                 if (ctx.Flow != TransitionFlow.Continue)
-                 {
-                     ctx.TraceLine($"Breaking {this.GetType().Name}");
-                     break;
-                 }
-             }
-         }
+    private void RunPipes(ValueTransitContext ctx)
+    {
+        foreach (var pipe in _pipes)
+        {
+            // Every time after value transition finishes - reset current value to Source object
+            ctx.ResetCurrentValue();
+
+            TraceLine("", ctx, level: TraceMode.Pipes);
+            pipe.Execute(ctx);
+
+            if (ctx.FlowControl == PipelineFlowControl.SkipValue)
+            {
+                ctx.FlowControl = PipelineFlowControl.Continue;
+                //Tracer.TraceEvent(MigrationEvent.ValueSkipped, ctx,"Value skipped");
+                continue;
+            }
+
+            if (ctx.FlowControl != PipelineFlowControl.Continue)
+                break;
+        }
+    }
+
+    private void SetTargetObject(ValueTransitContext ctx)
+    {
+        var target = GetObjectByKeyOrCreate(ctx.Source.Key);
+
+        // Target can be empty when using TransitMode = OnlyExitedObjects
+        if (target == null)
+        {
+            ctx.FlowControl = PipelineFlowControl.SkipObject;
+            TraceLine("Skipping object because TransitMode = OnlyExitedObjects",
+                ctx,
+                level: TraceMode.Object,
+                ConsoleColor.Magenta);
+            return;
+        }
+
+        TraceLine(
+            $"\t\tTARGET OBJECT: IsNew=" + target.IsNew,
+            null,
+            level: TraceMode.Object,
+            ConsoleColor.Magenta);
+
+        ctx.Target = target;
+    }
+
+    public IDataObject GetObjectByKeyOrCreate(string key)
+    {
+        var targetObject = Target.GetObjectsByKey(key).SingleOrDefault();
+
+        switch (TransitMode)
+        {
+            case ObjectTransitMode.OnlyExistedObjects:
+                return targetObject;
+            case ObjectTransitMode.OnlyNewObjects when targetObject != null:
+                return null;
+        }
+
+        if (targetObject != null)
+            return targetObject;
+
+        targetObject = Target.GetNewObject(key);
+        return targetObject;
+    }
+
+    private void TraceLine(string message, ValueTransitContext ctx, TraceMode level,
+        ConsoleColor color = ConsoleColor.White)
+    {
+        _tracer.TraceLine(message, ctx, level, color);
+    }
+
+    public IOperation<PipeContext<TSource, TTarget, object>, object> START(string pipeName)
+    {
+        var context = new PipeContext<TSource, TTarget, object>(null);
+        var operation = new GetOperation<PipeContext<TSource, TTarget, object>, object>(_ => null, context);
+
+        var pipe = new Pipe<TSource, TTarget>(operation, _tracer);
+        _pipes.Add(pipe);
+
+        return operation;
     }
 }

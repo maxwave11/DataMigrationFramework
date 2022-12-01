@@ -1,99 +1,61 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
+using DataMigration.Enums;
 using DataMigration.Pipeline;
-using DataMigration.Pipeline.Commands;
-using DataMigration.Pipeline.Trace;
+using DataMigration.Trace;
 
-namespace DataMigration
+namespace DataMigration;
+
+public class Migrator
 {
-    public interface IMigrationLogger
+    internal IMigrationTracer Tracer { get; private set; }
+        
+    public IDataPipeline[] Pipelines { get; set; }
+
+    public static Migrator Current  {get; private set; }
+    public bool BreakOnError { get; }
+
+    
+    public Migrator(IMigrationTracer tracer, TraceMode traceMode)
     {
-        void Log(ConsoleColor color, string text);
+        Current = this;
+        Tracer = tracer;
     }
 
-    public class Migrator : IMigrator
+    public void Run()
     {
-        internal MigrationTracer Tracer { get; }
+        var migrationTimeCounter = new Stopwatch();
+        migrationTimeCounter.Start();
 
-        public static Migrator Current  {get; private set; }
-        public bool BreakOnError { get; }
+        Tracer.TraceLine(" - Migration start...");
 
-        private readonly MapConfig _mapConfig;
-        private readonly IMigrationLogger _logger;
-
-        public Migrator(MapConfig mapConfig, IMigrationLogger logger)
+        try
         {
-            if (mapConfig == null)
-                throw new ArgumentNullException(nameof(mapConfig));
-
-            _mapConfig = mapConfig;
-            _logger = logger;
-            Current = this;
-            Tracer = new MigrationTracer();
-            Tracer.Trace += Migrator_Trace;
-        }
-
-        private void Migrator_Trace(object sender, TraceMessage e)
-        {
-            _logger.Log(e.Color, e.Text);
-        }
-
-        public void Run()
-        {
-            var migrationTimeCounter = new Stopwatch();
-            migrationTimeCounter.Start();
-
-            Tracer.TraceLine(" - Migration start...");
-
-            try
+            foreach (var pipeline in Pipelines)
             {
-                InitializeVariables();
-                RunPipelines();
+                pipeline.Initialize(Tracer);
             }
-            catch (DataMigrationException e)
-            {
-                Tracer.TraceMigrationException("Error occured while pipeline processing", e);
-                if (BreakOnError)
-                    throw;
-            }
-            catch (Exception e)
-            {
-                Tracer.TraceLine(e.ToString());
-                if (BreakOnError)
-                    throw;
-            }
-                
-            migrationTimeCounter.Stop();
-            
-            Tracer.TraceLine($"\n - Migration end {migrationTimeCounter.Elapsed.TotalMinutes} mins");
-        }
 
-        private void InitializeVariables() 
-        {
-            if (_mapConfig.Variables == null)
-                return;
-
-            //Calculate variable values from appropriate YAML expressions
-            foreach (string varName in _mapConfig.Variables.Keys)
-            {
-                if (_mapConfig.Variables[varName] is CommandBase command)
-                {
-                    var ctx = new ValueTransitContext(null, null);
-                    ctx.Execute(command);
-                    _mapConfig.Variables[varName] = ctx.TransitValue;
-                }
-            }
-        }
-
-        private void RunPipelines() 
-        {
-            foreach (var pipeline in _mapConfig.Pipeline)
+            foreach (var pipeline in Pipelines)
             {
                 pipeline.Run();
             }
         }
+      
+        catch (DataMigrationException e)
+        {
+            Tracer.TraceMigrationException("Error occured while pipeline processing", e);
+            if (BreakOnError)
+                throw;
+        }
+        catch (Exception e)
+        {
+            Tracer.TraceLine(e.ToString());
+            if (BreakOnError)
+                throw;;
+        }
+                
+        migrationTimeCounter.Stop();
+        Tracer.TraceLine($"\n - Migration end {migrationTimeCounter.Elapsed.TotalMinutes} mins");
     }
 }
-
-

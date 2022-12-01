@@ -5,8 +5,8 @@ namespace DataMigration.Enums
     [Flags]
     public enum TraceMode
     {
-        Auto     = 0, // 000000
-        Objects  = 1, // 000001
-        Commands = 3, // 000011
+        Pipeline = 0, // 00000
+        Object = 1, // 00001
+        Pipes = 3, // 00011
     }
 }

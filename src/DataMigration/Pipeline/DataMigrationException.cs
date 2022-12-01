@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DataMigration.Data;
+using DataMigration.Data.Interfaces;
 using DataMigration.Utils;
 
 namespace DataMigration.Pipeline
