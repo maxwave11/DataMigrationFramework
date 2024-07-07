@@ -1,9 +1,9 @@
-﻿namespace DataMigration.Enums
+namespace DataMigrationCore.Enums
 {
     public enum LookupMode
     {
         /// <summary>
-        /// Find single object by key from data source (default mode). Lookup will throw an error if 
+        /// Find single object by key from data source (default mode). Lookup will fail if
         /// more than one object will found.
         /// </summary>
         Single,
